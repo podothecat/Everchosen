@@ -5,7 +5,7 @@ public class GameController : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-        Debug.Log("test");
+        DontDestroyOnLoad(this.gameObject);
 	}
 	
 	// Update is called once per frame
