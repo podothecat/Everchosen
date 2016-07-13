@@ -2,9 +2,9 @@ Mono path[0] = 'C:/Users/Administrator/Documents/GitHub/Everchosen/UnityProject/
 Mono path[1] = 'C:/Users/Administrator/Documents/GitHub/Everchosen/UnityProject/Play_Data/Mono'
 Mono config path = 'C:/Users/Administrator/Documents/GitHub/Everchosen/UnityProject/Play_Data/Mono/etc'
 PlayerConnection initialized from C:/Users/Administrator/Documents/GitHub/Everchosen/UnityProject/Play_Data (debug = 0)
-PlayerConnection initialized network socket : 0.0.0.0 55032
-Multi-casting "[IP] 192.168.0.2 [Port] 55032 [Flags] 2 [Guid] 4014679670 [EditorId] 1881365450 [Version] 1048832 [Id] WindowsPlayer(monjon-PC) [Debug] 0" to [225.0.0.222:54997]...
-PlayerConnection already initialized - listening to [192.168.0.2:55032]
+PlayerConnection initialized network socket : 0.0.0.0 55241
+Multi-casting "[IP] 192.168.0.2 [Port] 55241 [Flags] 2 [Guid] 1854874632 [EditorId] 3728743204 [Version] 1048832 [Id] WindowsPlayer(monjon-PC) [Debug] 0" to [225.0.0.222:54997]...
+PlayerConnection already initialized - listening to [192.168.0.2:55241]
 Initialize engine version: 5.3.5f1 (960ebf59018a)
 GfxDevice: creating device client; threaded=1
 Direct3D:
@@ -23,22 +23,46 @@ Platform assembly: C:\Users\Administrator\Documents\GitHub\Everchosen\UnityProje
 Loading C:\Users\Administrator\Documents\GitHub\Everchosen\UnityProject\Play_Data\Managed\UnityEngine.UI.dll into Unity Child Domain
 Platform assembly: C:\Users\Administrator\Documents\GitHub\Everchosen\UnityProject\Play_Data\Managed\UnityEngine.Networking.dll (this message is harmless)
 Loading C:\Users\Administrator\Documents\GitHub\Everchosen\UnityProject\Play_Data\Managed\UnityEngine.Networking.dll into Unity Child Domain
-- Completed reload, in  0.118 seconds
+- Completed reload, in  0.142 seconds
 Platform assembly: C:\Users\Administrator\Documents\GitHub\Everchosen\UnityProject\Play_Data\Managed\System.Core.dll (this message is harmless)
 Platform assembly: C:\Users\Administrator\Documents\GitHub\Everchosen\UnityProject\Play_Data\Managed\System.dll (this message is harmless)
 desktop: 2560x1440 60Hz; virtual: 4480x1440 at -1920,0
 <RI> Initializing input.
 <RI> Input initialized.
 <RI> Initialized touch support.
-UnloadTime: 0.463425 ms
+UnloadTime: 0.745754 ms
 Unloading 5 Unused Serialized files (Serialized files now loaded: 0)
-UnloadTime: 9.608467 ms
-System memory in use before: 15.9 MB.
-System memory in use after: 15.9 MB.
+UnloadTime: 2.482433 ms
+System memory in use before: 15.6 MB.
+System memory in use after: 15.6 MB.
 
-Unloading 30 unused Assets to reduce memory usage. Loaded Objects now: 202.
-Total: 0.553535 ms (FindLiveObjects: 0.043007 ms CreateObjectMapping: 0.037741 ms MarkObjects: 0.414566 ms  DeleteObjects: 0.055880 ms)
+Unloading 30 unused Assets to reduce memory usage. Loaded Objects now: 218.
+Total: 0.225569 ms (FindLiveObjects: 0.009069 ms CreateObjectMapping: 0.008484 ms MarkObjects: 0.184609 ms  DeleteObjects: 0.022820 ms)
+
+Unloading 2 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 0.318605 ms
+System memory in use before: 15.6 MB.
+System memory in use after: 15.6 MB.
+
+Unloading 3 unused Assets to reduce memory usage. Loaded Objects now: 291.
+Total: 0.232883 ms (FindLiveObjects: 0.031012 ms CreateObjectMapping: 0.014335 ms MarkObjects: 0.179343 ms  DeleteObjects: 0.007314 ms)
+
+Unloading 3 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 0.416908 ms
+System memory in use before: 15.7 MB.
+System memory in use after: 15.7 MB.
+
+Unloading 28 unused Assets to reduce memory usage. Loaded Objects now: 218.
+Total: 0.166178 ms (FindLiveObjects: 0.013165 ms CreateObjectMapping: 0.007899 ms MarkObjects: 0.129607 ms  DeleteObjects: 0.014628 ms)
+
+Unloading 2 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 0.334989 ms
+System memory in use before: 15.7 MB.
+System memory in use after: 15.7 MB.
+
+Unloading 3 unused Assets to reduce memory usage. Loaded Objects now: 291.
+Total: 0.215914 ms (FindLiveObjects: 0.014628 ms CreateObjectMapping: 0.011702 ms MarkObjects: 0.181099 ms  DeleteObjects: 0.007314 ms)
 
 Setting up 2 worker threads for Enlighten.
-  Thread -> id: 568 -> priority: 1 
-  Thread -> id: 2908 -> priority: 1 
+  Thread -> id: 2730 -> priority: 1 
+  Thread -> id: 224c -> priority: 1 
