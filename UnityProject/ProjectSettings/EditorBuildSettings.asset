@@ -9,3 +9,5 @@ EditorBuildSettings:
     path: Assets/Scene/MainMenu.unity
   - enabled: 1
     path: Assets/Scene/Match.unity
+  - enabled: 1
+    path: Assets/Scene/Campaign.unity
