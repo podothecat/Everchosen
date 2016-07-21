@@ -10,7 +10,9 @@ namespace MatchingServer
     {
         static void Main(string[] args)
         {
-            Console.Write("asd");
+            Server server = new Server();
+
+            server.StartServer(8888);
         }
     }
 }
