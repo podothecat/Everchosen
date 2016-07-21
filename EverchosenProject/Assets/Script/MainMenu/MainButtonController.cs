@@ -1,8 +1,21 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
+using UnityEngine.Networking;
+using System.Net;
+using System.Net.Sockets;
 
-public class MainButtonController : MonoBehaviour {
+public class MainButtonController : MonoBehaviour
+{
+    /// <summary>
+    /// Client for networking.
+    /// </summary>
+    private NetworkClient client;
+
+    /// <summary>
+    /// Variable for checking connection between client and matching server.
+    /// </summary>
+    private bool isConnectServer;
 
     public GameObject QueuePanelPrefab;
     GameObject QueuePanel;
@@ -27,6 +40,7 @@ public class MainButtonController : MonoBehaviour {
 
     void Start()
     {
+        isConnectServer = false;
         OptionPanel.SetActive(false);
     }
 
@@ -40,11 +54,15 @@ public class MainButtonController : MonoBehaviour {
                 StartCoroutine(MatchStart(2f));
             }
         }
-    }
-    
-   
 
-    //Main Menu Button
+        // Check connection to server.
+        if (isConnectServer)
+        {
+            SetClient();
+        }
+    }
+
+    //Match Start Button
     public void MatchButtonInvoke()
     {
         QueuePanel = Instantiate(QueuePanelPrefab);//버튼 클릭시 queue panel prefab생성
@@ -61,12 +79,54 @@ public class MainButtonController : MonoBehaviour {
 
         StartCoroutine(queueTimeCounter());
 
-
-
         matchButton.GetComponent<Button>().interactable = false; //매칭대기열 시작시 매칭버튼 interactable;
+
+        isConnectServer = true;
     }
 
-    
+    /// <summary>
+    /// Set client instance and try connection to server.
+    /// </summary>
+    public void SetClient()
+    {
+        Debug.Log("SetClient function was called.");
+        client = new NetworkClient();
+        client.RegisterHandler(MsgType.Connect, OnConnected);
+        client.RegisterHandler(MsgType.Disconnect, OnDisConnected);
+        client.RegisterHandler(MsgType.Error, OnError);
+        
+        // Temp IP address (local) and port number.
+        client.Connect("127.0.0.1", 8889);
+        isConnectServer = false;
+    }
+
+    /// <summary>
+    /// Called when connection is success.
+    /// </summary>
+    /// <param name="netMsg"></param>
+    public void OnConnected(NetworkMessage netMsg)
+    {
+        MatchSuccess = true;
+        Debug.Log("Connected to server.");
+    }
+
+    /// <summary>
+    /// Called when connection is fail.
+    /// </summary>
+    /// <param name="netMsg"></param>
+    public void OnDisConnected(NetworkMessage netMsg)
+    {
+        Debug.Log("Disconnected from server.");
+    }
+
+    /// <summary>
+    /// Called when connection has error.
+    /// </summary>
+    /// <param name="netMsg"></param>
+    public void OnError(NetworkMessage netMsg)
+    {
+        Debug.Log("Error connecting with code.");
+    }
 
     public void CampaignInvoke() //매칭을 켜두고 캠페인같은것을 들어갈시에 레벨을 넘겨버리면 안되려나 DonDestroy사용
     {
@@ -120,7 +180,7 @@ public class MainButtonController : MonoBehaviour {
                 yield break;
             }
         }
-        MatchSuccess = true;
+        //MatchSuccess = true;
        
 
         yield break;
