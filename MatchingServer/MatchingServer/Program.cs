@@ -10,9 +10,14 @@ namespace MatchingServer
     {
         static void Main(string[] args)
         {
-            Server server = new Server();
+            MatchingServer server = new MatchingServer();
 
-            server.StartServer(8888);
+            server.StartServer(8889);
+
+            while (true)
+            {
+
+            }
         }
     }
 }
