@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.SceneManagement;
 
 public class CampaignButtonControllScript : MonoBehaviour {
 
@@ -10,6 +11,6 @@ public class CampaignButtonControllScript : MonoBehaviour {
 	
     public void CampaignBackButton()
     {
-        Application.LoadLevel("MainMenu");
+        SceneManager.LoadScene("01.MainMenu");
     }
 }

@@ -6,8 +6,8 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scene/MainMenu.unity
+    path: Assets/Scene/01.MainMenu.unity
   - enabled: 1
-    path: Assets/Scene/Match.unity
+    path: Assets/Scene/02.Match.unity
   - enabled: 1
-    path: Assets/Scene/Campaign.unity
+    path: Assets/Scene/03.Campaign.unity

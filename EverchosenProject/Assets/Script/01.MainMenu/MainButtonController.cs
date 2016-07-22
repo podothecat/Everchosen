@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class MainButtonController : MonoBehaviour {
@@ -70,7 +71,7 @@ public class MainButtonController : MonoBehaviour {
 
     public void CampaignInvoke() //매칭을 켜두고 캠페인같은것을 들어갈시에 레벨을 넘겨버리면 안되려나 DonDestroy사용
     {
-        Application.LoadLevel("Campaign");
+        SceneManager.LoadScene("03.Campaign");
     }
 
     public void OptionInvoke()
@@ -100,6 +101,9 @@ public class MainButtonController : MonoBehaviour {
     }
     
     
+
+
+
     
     IEnumerator queueTimeCounter() //매칭 카운터
     {
@@ -129,7 +133,7 @@ public class MainButtonController : MonoBehaviour {
     IEnumerator MatchStart(float count) // 매칭 카운터 완료후 2초후 시작
     {
         yield return new WaitForSeconds(count);
-        Application.LoadLevel("Match");
+        SceneManager.LoadScene("02.Match");
     }
 
 
