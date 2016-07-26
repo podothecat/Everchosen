@@ -1,0 +1,44 @@
+[
+    {
+        "id": 0, 
+        "value": 0,
+        "title": "level0",
+        "resourceName": "level0",
+        "cost": 0,
+        "createCount": 1.5,
+        "spawnUnitID": 0
+
+    },
+    {
+        "id": 1,
+        "value": 1,
+        "title": "level1",
+        "resourceName": "level1",
+        "cost": 10,
+        "createCount": 2,
+        "spawnUnitID": 1
+
+    },
+    {
+        "id": 2,
+        "value": 2,
+        "title": "level2",
+        "resourceName": "level2",
+        "cost": 20,
+        "createCount": 2,
+        "spawnUnitID": 0
+
+    },
+     {
+        "id": 3, 
+        "value": 3,
+        "title": "level3",
+        "resourceName": "level3",
+        "cost": 10,
+        "createCount": 2,
+        "spawnUnitID": 1
+
+    }
+
+
+]

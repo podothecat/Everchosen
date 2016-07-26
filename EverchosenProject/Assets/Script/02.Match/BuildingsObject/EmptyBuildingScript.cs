@@ -1,16 +1,24 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class EmptyBuildingScript : MonoBehaviour {
     private GameObject Team1buildingPrefab;
     private GameObject Team1building;
+
+   
+
+    
     private GameObject Team2buildingPrefab;
     private GameObject Team2building;
+    
     // Use this for initialization
     void Start()
     {
         Team1buildingPrefab = Resources.Load<GameObject>("Team1building");
         Team2buildingPrefab = Resources.Load<GameObject>("Team2building");
+
+       
 
     }
 
@@ -32,6 +40,9 @@ public class EmptyBuildingScript : MonoBehaviour {
                     Team1building.transform.SetParent(GameObject.Find("MapObject").gameObject.transform);
                     Team1building.transform.position = this.gameObject.transform.position;
                     Team1building.transform.localScale = Vector3.one;
+                    Team1building.transform.localRotation = Quaternion.Euler(Vector3.zero);
+                
+                 
                 }
 
             }
@@ -43,6 +54,7 @@ public class EmptyBuildingScript : MonoBehaviour {
                     Team2building.transform.SetParent(GameObject.Find("MapObject").gameObject.transform);
                     Team2building.transform.position = this.gameObject.transform.position;
                     Team2building.transform.localScale = Vector3.one;
+                    Team2building.transform.localRotation = Quaternion.Euler(Vector3.zero);
 
                 }
             }

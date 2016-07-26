@@ -1,0 +1,17 @@
+[
+    {
+        "id": 0,
+        "title": "army1",
+        "resourceName" : "army1",
+        "value": 1,
+        "power": 1
+            
+    },
+    {
+         "id": 1,
+        "title": "army2",
+        "resourceName" : "army2",
+        "value": 2, 
+        "power": 2
+    }
+]

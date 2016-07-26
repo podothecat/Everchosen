@@ -61,6 +61,9 @@
     <Reference Include="UnityEditor">
       <HintPath>Library\UnityAssemblies\UnityEditor.dll</HintPath>
     </Reference>
+    <Reference Include="LitJson">
+      <HintPath>Assets\Plugins\LitJson.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="EverchosenProject.CSharp.Plugins.csproj">
@@ -71,11 +74,13 @@
   <ItemGroup>
     <Compile Include="Assets\Script\01.MainMenu\MainButtonController.cs" />
     <Compile Include="Assets\Script\02.Match\BuildingsObject\BuildingControllScript.cs" />
+    <Compile Include="Assets\Script\02.Match\BuildingsObject\BuildingDatabase.cs" />
     <Compile Include="Assets\Script\02.Match\BuildingsObject\EmptyBuildingScript.cs" />
     <Compile Include="Assets\Script\02.Match\GameControllerObject\TeamSettingScript.cs" />
     <Compile Include="Assets\Script\02.Match\MapObject\MapTouchScript.cs" />
     <Compile Include="Assets\Script\02.Match\UIObject\MatchButtonControllerScript.cs" />
     <Compile Include="Assets\Script\02.Match\UnitObject\UnitControllScript.cs" />
+    <Compile Include="Assets\Script\02.Match\UnitObject\UnitDataBase.cs" />
     <Compile Include="Assets\Script\03.Campaign\CampaignButtonControllScript.cs" />
     <Compile Include="Assets\Script\GameController.cs" />
   </ItemGroup>

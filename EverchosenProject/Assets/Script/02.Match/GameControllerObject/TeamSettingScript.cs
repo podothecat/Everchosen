@@ -10,7 +10,7 @@ public class TeamSettingScript : MonoBehaviour
     // Use this for initialization
     void Awake ()
     {
-       SetPlayerTeam(1);
+       SetPlayerTeam(playerTeam);
     }
 
 
