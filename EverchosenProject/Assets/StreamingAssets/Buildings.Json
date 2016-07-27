@@ -1,7 +1,7 @@
 [
     {
         "id": 0, 
-        "value": 0,
+        "value": 1,
         "title": "level0",
         "resourceName": "level0",
         "cost": 0,
@@ -11,7 +11,7 @@
     },
     {
         "id": 1,
-        "value": 1,
+        "value": 2,
         "title": "level1",
         "resourceName": "level1",
         "cost": 10,
@@ -21,7 +21,7 @@
     },
     {
         "id": 2,
-        "value": 2,
+        "value": 1,
         "title": "level2",
         "resourceName": "level2",
         "cost": 20,
@@ -31,7 +31,7 @@
     },
      {
         "id": 3, 
-        "value": 3,
+        "value": 2,
         "title": "level3",
         "resourceName": "level3",
         "cost": 10,

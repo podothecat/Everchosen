@@ -17,7 +17,7 @@ public class BuildingControllScript : MonoBehaviour
     //생성하는 유닛관련 변수들
     public GameObject UnitPrefab;
     private GameObject _unit;
-    public int _unitNumber = 1;
+    public float _unitNumber = 1;
     private GameObject _unitNumberPanelPrefab;
     private GameObject _unitNumberPanel;
 
@@ -32,7 +32,7 @@ public class BuildingControllScript : MonoBehaviour
   
 
     private int buildingID;//데이터베이스에서 가져올 빌딩 아이디
-    private Building buildingToAdd;// 데이터베이스에서 가져오는 모든데이터 저장할변수
+    public Building buildingToAdd;// 데이터베이스에서 가져오는 모든데이터 저장할변수
     private int unitSpawnID; // unit생성시 unitid를 설정할 변수
     private float DelayCreateCount;//유닛생성시 스폰 딜레이 카운트 설정
     private bool couroutineReset;
@@ -149,7 +149,7 @@ public class BuildingControllScript : MonoBehaviour
         }
         else if (_unitNumber > 0 && _unitNumber < 5)
         {
-            int createUnitnumber = _unitNumber;
+            int createUnitnumber = (int)_unitNumber;
             for (int i = 0; i < createUnitnumber; i++) //유닛 생성
             {
 
