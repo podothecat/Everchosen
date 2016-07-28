@@ -48,6 +48,8 @@ public class MainButtonController : MonoBehaviour {
     //Main Menu Button
     public void MatchButtonInvoke()
     {
+        NetworkController.connectionFlag = true;
+
         QueuePanel = Instantiate(QueuePanelPrefab);//버튼 클릭시 queue panel prefab생성
         QueuePanel.transform.SetParent(GameObject.Find("QueueSetPanel").gameObject.transform);
         QueuePanel.transform.localPosition = Vector2.zero;
@@ -77,7 +79,7 @@ public class MainButtonController : MonoBehaviour {
     public void OptionInvoke()
     {
         OptionPanel.SetActive(true);
-        OptionPanel.transform.Find("OptionImage").GetComponent<Image>().color = new Color(1, 1, 1, 1);
+        OptionPanel.GetComponent<Image>().color = new Color(1, 1, 1, 1);
     }
     
     public void ExitButtonInvoke()
@@ -95,7 +97,7 @@ public class MainButtonController : MonoBehaviour {
     
     public void BackButtonInvoke()
     {
-        OptionPanel.transform.Find("OptionImage").GetComponent<Image>().color = new Color(1, 1, 1, 1);
+        OptionPanel.GetComponent<Image>().color = new Color(1, 1, 1, 0);
         OptionPanel.SetActive(false);
       
     }
