@@ -77,7 +77,7 @@ public class MainButtonController : MonoBehaviour {
     public void OptionInvoke()
     {
         OptionPanel.SetActive(true);
-        OptionPanel.GetComponent<Image>().color = new Color(1, 1, 1, 1);
+        OptionPanel.transform.Find("OptionImage").GetComponent<Image>().color = new Color(1, 1, 1, 1);
     }
     
     public void ExitButtonInvoke()
@@ -95,7 +95,7 @@ public class MainButtonController : MonoBehaviour {
     
     public void BackButtonInvoke()
     {
-        OptionPanel.GetComponent<Image>().color = new Color(1, 1, 1, 0);
+        OptionPanel.transform.Find("OptionImage").GetComponent<Image>().color = new Color(1, 1, 1, 1);
         OptionPanel.SetActive(false);
       
     }

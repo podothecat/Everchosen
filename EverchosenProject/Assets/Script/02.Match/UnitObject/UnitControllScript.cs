@@ -6,11 +6,15 @@ using System.Runtime.CompilerServices;
 public class UnitControllScript : MonoBehaviour
 {
     private GameObject GameControllerObject;
+  
     public int Team;
+    
 
-    private UnitDataBase unitDB;
-    public int UnitId; //건물이 변경됨에 따라 building으로부터 설정되는 아이디값 변경 현재는 0이면 기본보병 1이면 기마병
-    private Unit unitToAdd;
+  
+    
+   
+    public float unitPower;
+    public Sprite UnitSprite;
     public float unitDamageAmount;
     public float unitSupportAmount;
 
@@ -21,11 +25,11 @@ public class UnitControllScript : MonoBehaviour
     {
        
         GameControllerObject = GameObject.Find("GameControllerObject");
-        unitDB = GameControllerObject.GetComponent<UnitDataBase>();//unitDatabase
+  
         Team = GameControllerObject.GetComponent<TeamSettingScript>().playerTeam;//유닛 팀설정
 
         
-        unitDataSet(UnitId); //생성될 유닛 데이터 설정 unitid는 buildingControllerScript에서 unit을 spawn할시 값 초기화
+        unitDataSet(); //생성될 유닛 데이터 설정 unitid는 buildingControllerScript에서 unit을 spawn할시 값 초기화
         
         
     }
@@ -40,11 +44,10 @@ public class UnitControllScript : MonoBehaviour
 
 
 
-    void unitDataSet(int UnitID)
+    void unitDataSet()
     {
-       unitToAdd = unitDB.FetchUnitByID(UnitID);//아이디에 따른 유닛 데이터 정보를 받아옴
-
-        this.gameObject.GetComponentInChildren<SpriteRenderer>().sprite = unitToAdd.Sprite;
+   
+        this.gameObject.GetComponentInChildren<SpriteRenderer>().sprite = UnitSprite;
     }
 
 
@@ -67,7 +70,6 @@ public class UnitControllScript : MonoBehaviour
         else if (other.tag == GameControllerObject.GetComponent<TeamSettingScript>().playerbuilding) //&& other.gameObject!=this.gameObject.transform.parent.gameObject)
         {
             unitCalculateSupport(other);
-            Debug.Log(unitSupportAmount);
             other.GetComponent<BuildingControllScript>()._unitNumber += unitSupportAmount;//(int)unitToAdd.Value;// 값에 따라 +변경
             other.GetComponent<BuildingControllScript>().unitNumbersetText();
             Destroy(this.gameObject);
@@ -79,7 +81,7 @@ public class UnitControllScript : MonoBehaviour
     {
         
             unitDamageAmount =
-                (float) Math.Round( unitToAdd.Power/ other.GetComponent<BuildingControllScript>().buildingToAdd.Value, 2); //유닛의 공격력/건물이 가지고 있는유닛의 value값
+                (float) Math.Round( unitPower/ other.GetComponent<BuildingControllScript>().buildingValue, 2); //유닛의 공격력/건물이 가지고 있는유닛의 value값
        
     }
 
@@ -89,6 +91,6 @@ public class UnitControllScript : MonoBehaviour
     void unitCalculateSupport(Collider other) // 우리진영건물을 지원할때 식
     {
             unitSupportAmount =
-                (float)Math.Round( unitToAdd.Power/ other.GetComponent<BuildingControllScript>().buildingToAdd.Value, 2); 
+                (float)Math.Round( unitPower/ other.GetComponent<BuildingControllScript>().buildingValue, 2); 
     }
 }

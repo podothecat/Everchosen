@@ -255,8 +255,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   UnitPrefab: {fileID: 0}
   _unitNumber: 1
-  buildingSettingPanel: {fileID: 0}
   buildingSettingObject: {fileID: 0}
+  buildingValue: 0
+  unitPower: 0
+  unitSprite: {fileID: 0}
 --- !u!135 &13549212
 SphereCollider:
   m_ObjectHideFlags: 1
@@ -410,7 +412,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: b12ea709de9b2914380ffc7ab0241cee, type: 3}
-  m_Color: {r: 0.26913932, g: 0.27392614, b: 0.9632353, a: 1}
+  m_Color: {r: 0.46323532, g: 0.46693712, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
 --- !u!1001 &100100000
