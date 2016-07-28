@@ -8,8 +8,11 @@ TagManager:
   - Team2building
   - unit
   - drageffect
-  - EnableBuilding
+  - EmptyBuilding
   - UI
+  - Level1Setting
+  - Level2Setting
+  - Level3Setting
   layers:
   - Default
   - TransparentFX

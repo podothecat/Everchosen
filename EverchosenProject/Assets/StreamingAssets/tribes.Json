@@ -1,0 +1,141 @@
+[
+    { //"tribeID": 0, // 종족은 0,1,2,3으로 나눕시다
+        "building": [
+            { //건물
+                "buildingID": 0,
+                "value": 1,
+                "buildingresourceName": "level0",
+                "cost": 0,
+                "createCount": 1.5,
+                "spawnUnitID": 0,
+                "unitpower": 1,
+                "unitresourceName": "army1"
+            },
+            { //건물
+                "buildingID": 1,
+                "value": 2,
+                "buildingresourceName": "level1",
+                "cost": 10,
+                "createCount": 2,
+                "spawnUnitID": 1,
+                "unitpower": 2,
+                "unitresourceName": "army2"
+            },
+            { //건물
+                "buildingID": 2,
+                "value": 1,
+                "buildingresourceName": "level2",
+                "cost": 20,
+                "createCount": 2,
+                "spawnUnitID": 0,
+                "unitpower": 1,
+                "unitresourceName": "army1"
+            },
+            { //건물
+                "buildingID": 3,
+                "value": 2,
+                "buildingresourceName": "level3",
+                "cost": 10,
+                "createCount": 2,
+                "spawnUnitID": 1,
+                "unitpower": 2,
+                "unitresourceName": "army2"
+            }
+        ]
+    },
+
+    { //"tribeID": 0, // 종족은 0,1,2,3으로 나눕시다
+        "building": [
+            { //건물
+                "buildingID": 1,
+                "value": 2,
+                "buildingresourceName": "level0",
+                "cost": 0,
+                "createCount": 1.5,
+                "spawnUnitID": 0,
+                "unitpower": 1,
+                "unitresourceName": "army1"
+            },
+            { //건물
+                "buildingID": 2,
+                "value": 3,
+                "buildingresourceName": "level1",
+                "cost": 10,
+                "createCount": 2,
+                "spawnUnitID": 1,
+                "unitpower": 2,
+                "unitresourceName": "army2"
+            },
+            { //건물
+                "buildingID": 3,
+                "value": 4,
+                "buildingresourceName": "level2",
+                "cost": 20,
+                "createCount": 2,
+                "spawnUnitID": 0,
+                "unitpower": 1,
+                "unitresourceName": "army1"
+            },
+            { //건물
+                "buildingID": 5,
+                "value": 6,
+                "buildingresourceName": "level3",
+                "cost": 10,
+                "createCount": 2,
+                "spawnUnitID": 1,
+                "unitpower": 2,
+                "unitresourceName": "army2"
+            }
+        ]
+    }
+
+]
+
+ /* {
+        "tribe": { //종족
+            "tribeid": 0,
+            "building": { //건물
+                "buildingid": 1,
+                "value": 2,
+                "title": "level1",
+                "buildingresourceName": "level1",
+                "cost": 10,
+                "createCount": 2,
+                "spawnUnitID": 1,
+                "power": 2,
+                "unitresourceName": "army2"
+            }
+        }
+    },
+    {
+        "tribe": { //종족
+            "tribeid": 0,
+            "building": { //건물
+                "buildingid": 2,
+                "value": 1,
+                "title": "level2",
+                "buildingresourceName": "level2",
+                "cost": 20,
+                "createCount": 2,
+                "spawnUnitID": 0,
+                "power": 1,
+                "unitresourceName": "army1"
+            }
+        }
+    },
+    {
+        "tribe": { //종족
+            "tribeid": 0,
+            "building": { //건물
+                "buildingid": 3,
+                "value": 2,
+                "title": "level3",
+                "buildingresourceName": "level3",
+                "cost": 10,
+                "createCount": 2,
+                "spawnUnitID": 1,
+                "power": 2,
+                "unitresourceName": "army2"
+            }
+        }
+    }*/
