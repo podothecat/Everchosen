@@ -15,7 +15,8 @@ namespace MatchingServer
 		private AsyncCallback m_fnReceiveHandler;
 		private AsyncCallback m_fnSendHandler;
 		private AsyncCallback m_fnAcceptHandler;
-		
+        
+        
 		public Server() 
         {
 			m_fnReceiveHandler = handleDataReceive;
@@ -25,9 +26,16 @@ namespace MatchingServer
 		
 		public void StartServer(UInt16 port) 
         {
+            // Creation server socket
             socketServer = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.IP);
+
+            // Assign address to server socket
             socketServer.Bind(new IPEndPoint(IPAddress.Any, port));
+
+            // Waiting onnection request 
             socketServer.Listen(5);
+
+            // Accept connection
             socketServer.BeginAccept(m_fnAcceptHandler, null);
 
             Console.WriteLine("Server open");

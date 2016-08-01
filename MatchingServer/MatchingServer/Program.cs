@@ -12,7 +12,11 @@ namespace MatchingServer
         {
             Server server = new Server();
 
-            server.StartServer(8888);
+            server.StartServer(8889);
+            while (true)
+            {
+                
+            }
         }
     }
 }

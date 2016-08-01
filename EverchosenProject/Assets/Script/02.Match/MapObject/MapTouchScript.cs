@@ -23,12 +23,7 @@ public class MapTouchScript : MonoBehaviour
     public Vector3 _EndDesPosition;
     private float TouchCounter;
 
-
-    //빌딩셋팅이펙트 관리를 위한 오브젝트변수들
-    GameObject BuildingLevel1;
-    GameObject BuildingLevel2;
-    GameObject BuildingLevel3;
-    
+    private GameObject buildingSettingPanel;
     // Use this for initialization
     void Start ()
     {
@@ -40,8 +35,8 @@ public class MapTouchScript : MonoBehaviour
 
         DragCirclePrefab = Resources.Load<GameObject>("DragCircleObject");
 
-       
-       
+     //   buildingSettingPanel = GameObject.Find("BuildingSettingPanel");
+     //   buildingSettingPanel.SetActive(false);
         
     }
 	
@@ -68,42 +63,22 @@ public class MapTouchScript : MonoBehaviour
 
             if (Physics.Raycast(Startray, out hit)) //collider
             {
-                if (hit.collider.tag == playerbuilding) //플레이어의 빌딩을 클릭했을시에 DragCircle 생성 
+                if (hit.collider.tag == playerbuilding) //빌딩을 클릭했을시에 DragCircle 생성 
                 {
 
                     Selectedbuilding = hit.collider.transform.gameObject;
                     DragEffectSpawn();
-                    if (!Selectedbuilding.GetComponent<BuildingControllScript>().buildingSettingObject.activeSelf)//선택한 빌딩의 빌딩셋팅 패널이 꺼져있을경우 
+                 /*   if (buildingSettingPanel.activeSelf)
                     {
                         TouchCounter = 0;
-                        Selectedbuilding.GetComponent<BuildingControllScript>().buildingSettingObject.SetActive(false);
-                    }
-
-
-                    /*if (!Selectedbuilding.GetComponent<BuildingControllScript>().buildingSettingPanel.activeSelf)//선택한 빌딩의 빌딩셋팅 패널이 꺼져있을경우 
-                    {
-                        TouchCounter = 0;
-                        Selectedbuilding.GetComponent<BuildingControllScript>().buildingSettingPanel.SetActive(false);
-                    }
-
-                
-
-                if(hit.collider.transform.gameObject.transform.position == Selectedbuilding.transform.position)
-                {
-                   if (Selectedbuilding.GetComponent<BuildingControllScript>().buildingSettingPanel.activeSelf)
-                    {
-                        Selectedbuilding.GetComponent<BuildingControllScript>()
-                            .buildingSettingPanel.SetActive(false);
-                    }
-                }*/
-
-
+                        buildingSettingPanel.SetActive(false);
+                    }*/
 
                 }
-
-
-
-
+             
+                
+              
+              
             }
         }
 
@@ -114,35 +89,24 @@ public class MapTouchScript : MonoBehaviour
                 _touchPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
              
                 DragCircle.transform.position = new Vector3(_touchPosition.x, _touchPosition.y - 10f, _touchPosition.z);
-                Ray dragRay = Camera.main.ScreenPointToRay(Input.mousePosition);
+            /*    Ray dragRay = Camera.main.ScreenPointToRay(Input.mousePosition);
                 if (Physics.Raycast(dragRay, out hit)) //collider
                 {
-                    if (hit.collider.transform.gameObject == Selectedbuilding) //해당빌딩을 지속적으로 터치했을시에 카운터스타트 , 카운터가 일정시간넘어가면 해당 buildingsettingpanel 보여줌  
+                    if (hit.collider.transform.gameObject == Selectedbuilding) //빌딩을 클릭했을시에 DragCircle 생성 
                     {
-                        if (!Selectedbuilding.GetComponent<BuildingControllScript>().buildingSettingObject.activeSelf)
+                        if (!buildingSettingPanel.activeSelf)
                         {
-                            if (TouchCounter < 1)
+                            if (TouchCounter < 2)
                             {
                                 TouchCounter += Time.deltaTime;
                             }
                             else
                             {
-                                Selectedbuilding.GetComponent<BuildingControllScript>()
-                                    .buildingSettingObject.SetActive(true);
+                                buildingSettingPanel.SetActive(true);
                             }
                         }
-                        
                     }
-
-
-                    
-                        
-                    ///건물레벨설정 오브젝트위로 버튼을 누를시 이펙트
-                    BuildingSettingObjectDragEffect();
-
-                
-
-                }
+                }*/
             }
 
          
@@ -166,10 +130,12 @@ public class MapTouchScript : MonoBehaviour
                 {
                     if (hit.collider.tag == Enemybuilding) //빌딩을 클릭했을시에 DragCircle 생성 
                     {
+
                         _EndDesPosition = hit.collider.gameObject.transform.position;
                         Selectedbuilding.GetComponent<BuildingControllScript>().UnitSpawn(_EndDesPosition);
+
                     }
-                    else if (hit.collider.tag == "EmptyBuilding")
+                    else if (hit.collider.tag == "EnableBuilding")
                     {
                         _EndDesPosition = hit.collider.gameObject.transform.position;
                         Selectedbuilding.GetComponent<BuildingControllScript>().UnitSpawn(_EndDesPosition);
@@ -179,115 +145,10 @@ public class MapTouchScript : MonoBehaviour
                         _EndDesPosition = hit.collider.gameObject.transform.position;
                         Selectedbuilding.GetComponent<BuildingControllScript>().UnitSpawn(_EndDesPosition);
                     }
-
-
-                    buildingSettingFunction();//건물레벨 설정 오브젝트위에서 버튼을 땟을때 
-                    
-
-
-                    if (Selectedbuilding.GetComponent<BuildingControllScript>()
-                        .buildingSettingObject.activeSelf)
-                    {
-                        Selectedbuilding.GetComponent<BuildingControllScript>()
-                                   .buildingSettingObject.SetActive(false);
-                    }
-
-
-
-
-
                     Destroy(DragCircle);
                 }
-
-
-
-
             }
         }
-    }
-
-    void buildingSettingFunction()
-    {
-
-        //건물 레벨 변경 
-        if (hit.collider.tag == "Level1Setting")
-        {
-            Selectedbuilding.GetComponent<BuildingControllScript>().buildingSet1();
-        }
-        else if (hit.collider.tag == "Level2Setting")
-        {
-            Selectedbuilding.GetComponent<BuildingControllScript>().buildingSet2();
-        }
-        else if (hit.collider.tag == "Level3Setting")
-        {
-            Selectedbuilding.GetComponent<BuildingControllScript>().buildingSet3();
-        }
-    }
-
-
-
-    void BuildingSettingObjectDragEffect()
-    {
-        if (Selectedbuilding.GetComponent<BuildingControllScript>().buildingSettingObject.activeSelf)
-        {
-            if (hit.collider.tag == "Level1Setting")
-            {
-                BuildingLevel1 = hit.collider.transform.gameObject;
-                BuildingLevel1.transform.localScale = Vector3.one*1.5f;
-            }
-            else
-            {
-                if (BuildingLevel1)
-                {
-                    BuildingLevel1.transform.localScale = Vector3.one;
-                }
-            }
-
-            if (hit.collider.tag == "Level2Setting")
-            {
-                BuildingLevel2 = hit.collider.transform.gameObject;
-                BuildingLevel2.transform.localScale = Vector3.one*1.5f;
-            }
-            else
-            {
-                if (BuildingLevel2)
-                {
-                    BuildingLevel2.transform.localScale = Vector3.one;
-                }
-            }
-
-            if (hit.collider.tag == "Level3Setting")
-            {
-                BuildingLevel3 = hit.collider.transform.gameObject;
-                BuildingLevel3.transform.localScale = Vector3.one*1.5f;
-            }
-            else
-            {
-                if (BuildingLevel3)
-                {
-                    BuildingLevel3.transform.localScale = Vector3.one;
-                }
-            }
-        }
-        /*
-
-        if (hit.collider.tag == "Level2Setting")
-        {
-            hit.collider.transform.localScale = Vector3.one * 1.2f;
-        }
-        else
-        {
-            hit.collider.transform.localScale = Vector3.one;
-        }
-
-        if (hit.collider.tag == "Level3Setting")
-        {
-            hit.collider.transform.localScale = Vector3.one * 1.2f;
-        }
-        else
-        {
-            hit.collider.transform.localScale = Vector3.one;
-        }*/
     }
 
     public void DragEffectSpawn() // 드래그이펙트 생성함수
