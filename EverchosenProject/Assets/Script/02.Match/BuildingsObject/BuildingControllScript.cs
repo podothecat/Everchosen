@@ -8,23 +8,25 @@ using UnityEngine.UI;
 public class BuildingControllScript : MonoBehaviour
 {
 
-    
+    private GameObject gameController;
     //부서졌을대 다시 기본 엠티빌딩 생성 변수들
-    private GameObject EmptyBuildingPrefab;
-    private GameObject EmptyBuidling;
 
 
 
+        
 
-   
+
+
 
 
     //생성하는 유닛관련 변수들
     public GameObject UnitPrefab;
     private GameObject _unit;
-    public float _unitNumber = 1;
+    public float _unitNumber = 0;
     private GameObject _unitNumberPanelPrefab;
     private GameObject _unitNumberPanel;
+
+    public bool PlayerCastle;
 
 
    
@@ -39,7 +41,7 @@ public class BuildingControllScript : MonoBehaviour
 
     private List<Tribe> buildingDataList; //게임오브젝트 변수에서 받아올 빌딩데이터
     //db에서 받아온 값들을 셋팅 해줄 변수들
-    private int buildingID;//데이터베이스에서 가져올 빌딩 아이디
+    public int buildingID;//데이터베이스에서 가져올 빌딩 아이디
     private float DelayCreateCount;//유닛생성시 스폰 딜레이 카운트 설정
     
     private float unitCreateCounter;//유닛 숫자가 1 올라가는데 걸리는 시간
@@ -54,12 +56,21 @@ public class BuildingControllScript : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-
-        buildingDataList = GameObject.Find("GameControllerObject").GetComponent<TeamSettingScript>().tribeDataToAdd;
-       
+        gameController = GameObject.Find("GameControllerObject");
+        if (this.gameObject.tag == gameController.GetComponent<TeamSettingScript>().playerbuilding)
+        {
+            buildingDataList = gameController.GetComponent<TeamSettingScript>().PlayertribeDataToAdd;
+        }
+        else if (this.gameObject.tag == gameController.GetComponent<TeamSettingScript>().Enemybuilding)
+        {
+            buildingDataList = gameController.GetComponent<TeamSettingScript>().EnemytribeDataToAdd;
+        }
+    
         UnitPrefab = Resources.Load<GameObject>("Unit");
-        EmptyBuildingPrefab = Resources.Load<GameObject>("EmptyBuilding");
-      
+
+
+        
+
 
         //UNITNUMBER UI 생성
         _unitNumberPanelPrefab = Resources.Load<GameObject>("UnitNumberPanel");
@@ -71,8 +82,19 @@ public class BuildingControllScript : MonoBehaviour
         _unitNumberPanel.GetComponentInChildren<Text>().text = "" + _unitNumber;
 
 
-        buildingID = 0; //처음 시작할땐 빌딩id 0으로설정
+        if (PlayerCastle) //본진이면 아이디 0 , 아니면 1
+        {
+            buildingID = 0;
+        }
+        else
+        {
+            buildingID = 1;
+        }
+
+
         BuildingDataSet(buildingID); //빌딩 데이터 설정
+
+
         
 
        //ui 유닛 넘버 카운트 스타트
@@ -98,11 +120,10 @@ public class BuildingControllScript : MonoBehaviour
 
     void BuildingDataSet(int buildingID)
     {
-       
-
+      
         //건물관련
         this.gameObject.GetComponent<SpriteRenderer>().sprite = buildingDataList[buildingID].BuildingSprite;//선택한 빌딩에 따라 건물스프라이트 가져옴
-       
+     
         DelayCreateCount = buildingDataList[buildingID].CreateCount;//생성하는 유닛에 따라 유닛수증가 딜레이 설정
         buildingValue = buildingDataList[buildingID].Value;
 
@@ -216,11 +237,30 @@ public class BuildingControllScript : MonoBehaviour
 
     public void DestroythisBuilding() //침공당해서 숫자가 적어졌을경우 모두파괴
     {
-        EmptyBuidling = Instantiate(EmptyBuildingPrefab);
-        EmptyBuidling.transform.SetParent(GameObject.Find("MapObject").gameObject.transform);
-        EmptyBuidling.transform.position = this.gameObject.transform.position;
-        EmptyBuidling.transform.localScale = this.gameObject.transform.localScale;
-        EmptyBuidling.transform.localRotation = Quaternion.Euler(Vector3.zero);
+
+
+     GameObject buildingPrefab;
+     GameObject building;
+        switch (this.gameObject.tag)
+        {
+            case "Player1building":
+                buildingPrefab = Resources.Load<GameObject>("Player2building");
+                building = Instantiate(buildingPrefab);
+                building.transform.SetParent(GameObject.Find("MapObject").gameObject.transform);
+                building.transform.position = this.gameObject.transform.position;
+                building.transform.localScale = this.gameObject.transform.localScale;
+                building.transform.localRotation = Quaternion.Euler(Vector3.zero);
+                break;
+            case "Player2building":
+                buildingPrefab = Resources.Load<GameObject>("Player1building");
+                building = Instantiate(buildingPrefab);
+                building.transform.SetParent(GameObject.Find("MapObject").gameObject.transform);
+                building.transform.position = this.gameObject.transform.position;
+                building.transform.localScale = this.gameObject.transform.localScale;
+                building.transform.localRotation = Quaternion.Euler(Vector3.zero);
+                break;
+        }
+     
         Destroy(this.gameObject);
         Destroy(_unitNumberPanel);
 
@@ -232,20 +272,9 @@ public class BuildingControllScript : MonoBehaviour
 
 
 
+
+
     public void buildingSet1()
-    {
-        int offsetbuildingID = buildingID;
-        buildingID = 1;
-        if (buildingID != buildingDataList[offsetbuildingID].BuildingID)
-        {
-            
-            BuildingDataSet(buildingID);
-        }
-      
-
-    }
-
-    public void buildingSet2()
     {
         int offsetbuildingID = buildingID;
         buildingID = 2;
@@ -254,10 +283,15 @@ public class BuildingControllScript : MonoBehaviour
 
             BuildingDataSet(buildingID);
         }
+        else
+        {
+            Debug.Log("이미 같은 종류의 건물입니다.");
+        }
       
+
     }
 
-    public void buildingSet3()
+    public void buildingSet2()
     {
         int offsetbuildingID = buildingID;
         buildingID = 3;
@@ -266,7 +300,27 @@ public class BuildingControllScript : MonoBehaviour
 
             BuildingDataSet(buildingID);
         }
-      
+        else
+        {
+            Debug.Log("이미 같은 종류의 건물입니다.");
+        }
+
+    }
+
+    public void buildingSet3()
+    {
+        int offsetbuildingID = buildingID;
+        buildingID = 4;
+        if (buildingID != buildingDataList[offsetbuildingID].BuildingID)
+        {
+
+            BuildingDataSet(buildingID);
+        }
+        else
+        {
+            Debug.Log("이미 같은 종류의 건물입니다.");
+        }
+
     }
     
 }

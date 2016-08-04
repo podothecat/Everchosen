@@ -9,6 +9,8 @@ public class TribeDatabase : MonoBehaviour {
     private List<List<Tribe>> database = new List<List<Tribe>>();
     private JsonData TribeData;
 
+    
+
    
 	// Use this for initialization
 	void Awake ()
@@ -83,8 +85,8 @@ public class Tribe
         this.SpawnUnitID = spawnUnitID;
         this.UnitPower = unitPower;
         this.UnitResourceName = unitResourceName;
-        this.BuildingSprite = Resources.Load<Sprite>("Material/Sprite/building/" + buildingResourceName);
-        this.UnitSprite = Resources.Load<Sprite>("Material/Sprite/unit/" + unitResourceName);
+        this.BuildingSprite = Resources.Load<Sprite>("Sprite/building/" + buildingResourceName);
+        this.UnitSprite = Resources.Load<Sprite>("Sprite/unit/" + unitResourceName);
     }
     public Tribe()//아무값이 없을땐 id -1로 설정
     {

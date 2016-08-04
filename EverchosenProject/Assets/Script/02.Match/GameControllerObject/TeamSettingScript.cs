@@ -6,39 +6,53 @@ using System.Reflection.Emit;
 public class TeamSettingScript : MonoBehaviour
 {
     public int playerTeam; //플레이어 
-    public int tribeid;
+    public int playertribeid;
+    
     public string playerbuilding;
+
+
+    public int Enemytribeid;
     public string Enemybuilding;
 
 
     private TribeDatabase tribeDB;
-    public List<Tribe> tribeDataToAdd;
+    public List<Tribe> PlayertribeDataToAdd;
+    public List<Tribe> EnemytribeDataToAdd;
     // Use this for initialization
     void Awake ()
     {
-       tribeDB = GetComponent<TribeDatabase>();
-       SetPlayerTeam(playerTeam,tribeid);
+
+
+        tribeDB = GetComponent<TribeDatabase>();
+        playertribeid = TribeSetManager.p1Data.Tribe;
+        Enemytribeid = TribeSetManager.p2Data.Tribe;
+        SetPlayerTeam(playerTeam,playertribeid, Enemytribeid);
         
     }
 
 
-    void SetPlayerTeam(int playerteamNumber, int tribeid) // 종족 팀 설정;
+    void SetPlayerTeam(int playerteamNumber, int tribeid1, int tribeid2) // 종족 팀 설정;
     {
         playerTeam = playerteamNumber;
 
         if (playerTeam == 1)
         {
-            playerbuilding = "Team1building";
-            Enemybuilding = "Team2building";
+            playerbuilding = "Player1building";
+            Enemybuilding = "Player2building";
+            
         }
         else if (playerTeam == 2)
         {
-            playerbuilding = "Team2building";
-            Enemybuilding = "Team1building";
-            
+            playerbuilding = "Player2building";
+            Enemybuilding = "Player1building";
+          
         }
 
-        tribeDataToAdd = tribeDB.FetchBuildingByID(tribeid);
+        PlayertribeDataToAdd = tribeDB.FetchBuildingByID(tribeid1);
+        EnemytribeDataToAdd = tribeDB.FetchBuildingByID(tribeid2);
+
+
+
     }
 
     public string[] playerTeamSetting()//팀설정함수

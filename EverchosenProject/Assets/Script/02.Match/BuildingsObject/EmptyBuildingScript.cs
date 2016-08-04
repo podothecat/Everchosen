@@ -3,20 +3,18 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class EmptyBuildingScript : MonoBehaviour {
-    private GameObject Team1buildingPrefab;
-    private GameObject Team1building;
+    private GameObject _player1BuildingPrefab;
+    private GameObject _player1Building;
 
    
-
-    
-    private GameObject Team2buildingPrefab;
-    private GameObject Team2building;
+    private GameObject _player2BuildingPrefab;
+    private GameObject _player2Building;
     
     // Use this for initialization
     void Start()
     {
-        Team1buildingPrefab = Resources.Load<GameObject>("Team1building");
-        Team2buildingPrefab = Resources.Load<GameObject>("Team2building");
+        _player1BuildingPrefab = Resources.Load<GameObject>("Player1building");
+        _player2BuildingPrefab = Resources.Load<GameObject>("Player2building");
 
        
 
@@ -34,30 +32,31 @@ public class EmptyBuildingScript : MonoBehaviour {
         {
             if (other.gameObject.GetComponent<UnitControllScript>().Team == 1)
             {
-                if (Team1building == null)
+                if (_player1Building == null)
                 {
-                    Team1building = Instantiate(Team1buildingPrefab);
-                    Team1building.transform.SetParent(GameObject.Find("MapObject").gameObject.transform);
-                    Team1building.transform.position = this.gameObject.transform.position;
-                    Team1building.transform.localScale = Vector3.one;
-                    Team1building.transform.localRotation = Quaternion.Euler(Vector3.zero);
-                
-                 
+                    _player1Building = Instantiate(_player1BuildingPrefab);
+                    _player1Building.transform.SetParent(GameObject.Find("MapObject").gameObject.transform);
+                    _player1Building.transform.position = this.gameObject.transform.position;
+                    _player1Building.transform.localScale = Vector3.one;
+                    _player1Building.transform.localRotation = Quaternion.Euler(Vector3.zero);
+             
+
                 }
 
             }
             else if (other.gameObject.GetComponent<UnitControllScript>().Team==2)
             {
-                if (Team2building == null)
+                if (_player2Building == null)
                 {
-                    Team2building = Instantiate(Team2buildingPrefab);
-                    Team2building.transform.SetParent(GameObject.Find("MapObject").gameObject.transform);
-                    Team2building.transform.position = this.gameObject.transform.position;
-                    Team2building.transform.localScale = Vector3.one;
-                    Team2building.transform.localRotation = Quaternion.Euler(Vector3.zero);
-
+                    _player2Building = Instantiate(_player2BuildingPrefab);
+                    _player2Building.transform.SetParent(GameObject.Find("MapObject").gameObject.transform);
+                    _player2Building.transform.position = this.gameObject.transform.position;
+                    _player2Building.transform.localScale = Vector3.one;
+                    _player2Building.transform.localRotation = Quaternion.Euler(Vector3.zero);
+                    
                 }
             }
+            Destroy(other.gameObject);
             Destroy(this.gameObject);
 
 

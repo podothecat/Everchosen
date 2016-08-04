@@ -58,7 +58,7 @@ public class MapTouchScript : MonoBehaviour
 
     public void PlayerTouch() // 플레이어 터치함수
     {
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(0))//다운
         {
 
             
@@ -107,7 +107,7 @@ public class MapTouchScript : MonoBehaviour
             }
         }
 
-        if (Input.GetMouseButton(0))
+        if (Input.GetMouseButton(0))//드래그
         {
             if (draggingMode)
             {
@@ -117,21 +117,26 @@ public class MapTouchScript : MonoBehaviour
                 Ray dragRay = Camera.main.ScreenPointToRay(Input.mousePosition);
                 if (Physics.Raycast(dragRay, out hit)) //collider
                 {
+                    
                     if (hit.collider.transform.gameObject == Selectedbuilding) //해당빌딩을 지속적으로 터치했을시에 카운터스타트 , 카운터가 일정시간넘어가면 해당 buildingsettingpanel 보여줌  
                     {
-                        if (!Selectedbuilding.GetComponent<BuildingControllScript>().buildingSettingObject.activeSelf)
+                        if (Selectedbuilding.GetComponent<BuildingControllScript>().PlayerCastle == false)
                         {
-                            if (TouchCounter < 1)
+                            if (!Selectedbuilding.GetComponent<BuildingControllScript>()
+                                    .buildingSettingObject.activeSelf)
                             {
-                                TouchCounter += Time.deltaTime;
-                            }
-                            else
-                            {
-                                Selectedbuilding.GetComponent<BuildingControllScript>()
-                                    .buildingSettingObject.SetActive(true);
+                                if (TouchCounter < 1)
+                                {
+                                    TouchCounter += Time.deltaTime;
+                                }
+                                else
+                                {
+                                    Selectedbuilding.GetComponent<BuildingControllScript>()
+                                        .buildingSettingObject.SetActive(true);
+                                }
                             }
                         }
-                        
+
                     }
 
 

@@ -72,10 +72,11 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\Script\00.StartScene\UIControllScript.cs" />
     <Compile Include="Assets\Script\01.MainMenu\MainButtonController.cs" />
     <Compile Include="Assets\Script\02.Match\BuildingsObject\BuildingControllScript.cs" />
     <Compile Include="Assets\Script\02.Match\BuildingsObject\EmptyBuildingScript.cs" />
-    <Compile Include="Assets\Script\02.Match\GameControllerObject\SetupLocalPlayer.cs" />
+    <Compile Include="Assets\Script\02.Match\GameControllerObject\GameControllScript.cs" />
     <Compile Include="Assets\Script\02.Match\GameControllerObject\TeamSettingScript.cs" />
     <Compile Include="Assets\Script\02.Match\GameControllerObject\TribeDatabase.cs" />
     <Compile Include="Assets\Script\02.Match\MapObject\MapTouchScript.cs" />
@@ -83,7 +84,9 @@
     <Compile Include="Assets\Script\02.Match\UnitObject\UnitControllScript.cs" />
     <Compile Include="Assets\Script\02.Match\_Trash\UnitDataBase.cs" />
     <Compile Include="Assets\Script\03.Campaign\CampaignButtonControllScript.cs" />
-    <Compile Include="Assets\Script\GameController.cs" />
+    <Compile Include="Assets\Script\AllScene\BackUIScript.cs" />
+    <Compile Include="Assets\Script\AllScene\SoundControllScript.cs" />
+    <Compile Include="Assets\Script\TribeSetManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Standard Assets\CrossPlatformInput\CrossPlatformInputGuidelines.txt" />
