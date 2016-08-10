@@ -7,27 +7,17 @@ using UnityEngine.UI;
 
 public class UIControllScript : MonoBehaviour
 {
-    private GameObject loadingPanel;
-   
-
-    private GameObject IDInput;
-    private GameObject PassInput;
-
-   
-
-
+    private GameObject _loadingPanel;
     public bool LoadingComplete=false;//로딩확인
     public bool AccountValid=false;//계정확인
 
-    private string UserID="1";
-    private string UserPassword = "1";
- 
+
     
 
     
 	// Use this for initialization
 	void Start () {
-	    loadingPanel = GameObject.Find("LoadingPanel");
+	    _loadingPanel = GameObject.Find("LoadingPanel");
      
 	    StartCoroutine(loadingRoutine());
         
@@ -42,7 +32,7 @@ public class UIControllScript : MonoBehaviour
 
 	    if (AccountValid == true)
 	    {
-            SceneManager.LoadScene("01.MainMenu");
+            //SceneManager.LoadScene("01.MainMenu");
         }
 
         //뒤로가기 버튼 종료 처리 함수
@@ -53,10 +43,10 @@ public class UIControllScript : MonoBehaviour
 
     IEnumerator loadingRoutine()//테스트로 만든 로딩하는데 걸리는  시간 설정
     {
-        yield return new WaitForSeconds(Random.Range(3,7));
+        yield return new WaitForSeconds(Random.Range(2,3));
         LoadingComplete = true;
         AccountValid = true;
-        Debug.Log("로딩완료");
+       // Debug.Log("로딩완료");
 
     }
 

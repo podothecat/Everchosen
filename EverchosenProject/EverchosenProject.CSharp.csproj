@@ -86,6 +86,8 @@
     <Compile Include="Assets\Script\03.Campaign\CampaignButtonControllScript.cs" />
     <Compile Include="Assets\Script\AllScene\BackUIScript.cs" />
     <Compile Include="Assets\Script\AllScene\SoundControllScript.cs" />
+    <Compile Include="Assets\Script\ClientNetworkManager.cs" />
+    <Compile Include="Assets\Script\TestScript.cs" />
     <Compile Include="Assets\Script\TribeSetManager.cs" />
   </ItemGroup>
   <ItemGroup>

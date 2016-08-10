@@ -211,6 +211,12 @@ public class MapTouchScript : MonoBehaviour
         }
     }
 
+
+    void PhoneTouch()
+    {
+        
+    }
+
     void buildingSettingFunction()
     {
 

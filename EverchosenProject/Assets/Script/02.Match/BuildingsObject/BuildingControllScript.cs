@@ -8,7 +8,7 @@ using UnityEngine.UI;
 public class BuildingControllScript : MonoBehaviour
 {
 
-    private GameObject gameController;
+    private GameObject _gameController;
     //부서졌을대 다시 기본 엠티빌딩 생성 변수들
 
 
@@ -21,12 +21,15 @@ public class BuildingControllScript : MonoBehaviour
 
     //생성하는 유닛관련 변수들
     public GameObject UnitPrefab;
-    private GameObject _unit;
+    
     public float _unitNumber = 0;
+    private GameObject _unit;
     private GameObject _unitNumberPanelPrefab;
     private GameObject _unitNumberPanel;
 
     public bool PlayerCastle;
+
+   
 
 
    
@@ -36,19 +39,21 @@ public class BuildingControllScript : MonoBehaviour
 
 
     public GameObject buildingSettingObject; //오브젝트로 만든것   ui와 오브젝트 2개중 하나사용하면될듯
-
+    
 
 
     private List<Tribe> buildingDataList; //게임오브젝트 변수에서 받아올 빌딩데이터
     //db에서 받아온 값들을 셋팅 해줄 변수들
-    public int buildingID;//데이터베이스에서 가져올 빌딩 아이디
-    private float DelayCreateCount;//유닛생성시 스폰 딜레이 카운트 설정
-    
-    private float unitCreateCounter;//유닛 숫자가 1 올라가는데 걸리는 시간
+    public int buildingID;//데이터베이스에서 데이터를 가져올때 필요한 빌딩 아이디
+    private float _delayCreateCount;//유닛생성시 스폰 딜레이 카운트 설정
+    private float _unitCreateCounter;//유닛 숫자가 1 올라가는데 걸리는 시간
+
     public float buildingValue;//빌딩 value는 그 빌딩의 유닛이 생산하는 유닛의 체력값 
     public float unitPower;
     public Sprite unitSprite;
 
+
+    public int playerTeam;//생성할 유닛의 색상설정을 알기위한 변수 
 
 
 
@@ -56,14 +61,15 @@ public class BuildingControllScript : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        gameController = GameObject.Find("GameControllerObject");
-        if (this.gameObject.tag == gameController.GetComponent<TeamSettingScript>().playerbuilding)
+        //각 종족에따라 가져올 db설정
+        _gameController = GameObject.Find("GameControllerObject");
+        if (this.gameObject.tag == _gameController.GetComponent<TeamSettingScript>().playerbuilding)
         {
-            buildingDataList = gameController.GetComponent<TeamSettingScript>().PlayertribeDataToAdd;
+            buildingDataList = _gameController.GetComponent<TeamSettingScript>().PlayertribeDataToAdd;
         }
-        else if (this.gameObject.tag == gameController.GetComponent<TeamSettingScript>().Enemybuilding)
+        else if (this.gameObject.tag == _gameController.GetComponent<TeamSettingScript>().Enemybuilding)
         {
-            buildingDataList = gameController.GetComponent<TeamSettingScript>().EnemytribeDataToAdd;
+            buildingDataList = _gameController.GetComponent<TeamSettingScript>().EnemytribeDataToAdd;
         }
     
         UnitPrefab = Resources.Load<GameObject>("Unit");
@@ -104,9 +110,11 @@ public class BuildingControllScript : MonoBehaviour
         buildingSettingObject.SetActive(false);
 
 
-
+        
 
        
+
+
 
 
     }
@@ -124,15 +132,26 @@ public class BuildingControllScript : MonoBehaviour
         //건물관련
         this.gameObject.GetComponent<SpriteRenderer>().sprite = buildingDataList[buildingID].BuildingSprite;//선택한 빌딩에 따라 건물스프라이트 가져옴
      
-        DelayCreateCount = buildingDataList[buildingID].CreateCount;//생성하는 유닛에 따라 유닛수증가 딜레이 설정
+        _delayCreateCount = buildingDataList[buildingID].CreateCount;//생성하는 유닛에 따라 유닛수증가 딜레이 설정
         buildingValue = buildingDataList[buildingID].Value;
-
+        
         //유닛관련
-        unitSprite = buildingDataList[buildingID].UnitSprite;//생성할 유닛 sprite
+        if (playerTeam == 1)
+        {
+            unitSprite = buildingDataList[buildingID].BUnitSprite;
+        }
+        else if (playerTeam == 2)
+        {
+            unitSprite = buildingDataList[buildingID].RUnitSprite;
+        }
+
+
+
+        //생성할 유닛 sprite
         unitPower = buildingDataList[buildingID].UnitPower;
       
         _unitNumber = 0; // 건물레벨업시 유닛숫자 초기화
-        unitCreateCounter = 0;
+        _unitCreateCounter = 0;
         
         unitNumbersetText();
     }
@@ -141,13 +160,13 @@ public class BuildingControllScript : MonoBehaviour
 
     public void UnitCreateCounterFunction()//유닛 생성 카운트 함수
     {
-        unitCreateCounter += Time.deltaTime;
+        _unitCreateCounter += Time.deltaTime;
 
-        if (unitCreateCounter > DelayCreateCount)
+        if (_unitCreateCounter > _delayCreateCount)
         {
             _unitNumber++;
             unitNumbersetText();
-            unitCreateCounter = 0;
+            _unitCreateCounter = 0;
         }
     }
 

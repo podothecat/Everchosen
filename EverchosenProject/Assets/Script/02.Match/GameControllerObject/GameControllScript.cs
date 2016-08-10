@@ -41,6 +41,8 @@ public class GameControllScript : MonoBehaviour
         MatchingDataSetting();//데이터셋팅
     }
 
+
+    //데이터패널 내부 데이터 표시 셋팅
     private void MatchingDataSetting()
     {
         _matchingDataViewPanel.transform.FindChild("Player1Panel").transform.FindChild("Player1ID").GetComponent<Text>().text = TribeSetManager.p1Data.UserID;
@@ -58,7 +60,7 @@ public class GameControllScript : MonoBehaviour
     IEnumerator gameStartCounter() //게임데이터정보를 보여주면서 게임 준비시간카운터 텍스트 변경 함수
     {
         
-        int currentStartTime = 5;
+        int currentStartTime = 2;
         Text StartCounterText = _matchingDataViewPanel.transform.Find("GameStartCountText").GetComponent<Text>();
         StartCounterText.text = "" + currentStartTime;
         while (currentStartTime > 0)
@@ -103,6 +105,8 @@ public class GameControllScript : MonoBehaviour
         _player1Building.transform.localScale = Vector3.one;
         _player1Building.transform.localRotation = Quaternion.Euler(Vector3.zero);
         _player1Building.GetComponent<BuildingControllScript>().PlayerCastle = true;//본진
+        _player1Building.GetComponent<BuildingControllScript>().playerTeam = 1;
+
 
 
         _player2Building = Instantiate(_player2BuildingPrefab);
@@ -111,7 +115,9 @@ public class GameControllScript : MonoBehaviour
         _player2Building.transform.localScale = Vector3.one;
         _player2Building.transform.localRotation = Quaternion.Euler(Vector3.zero);
         _player2Building.GetComponent<BuildingControllScript>().PlayerCastle = true;//본진
-        
+        _player2Building.GetComponent<BuildingControllScript>().playerTeam = 2;
+
+
     }
 
 }

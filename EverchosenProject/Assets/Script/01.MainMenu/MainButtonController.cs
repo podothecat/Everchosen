@@ -49,7 +49,7 @@ public class MainButtonController : MonoBehaviour
 
        
         
-        queueTime = 5;
+        queueTime = 2;
         currentQueueTime = 0;
     }
 
@@ -210,7 +210,7 @@ public class MainButtonController : MonoBehaviour
     //종족선택 버튼 4개
     public void Trbie1ButtonInvoke()
     {
-        tribeStringData = "1종족";
+        tribeStringData = "Chaos";
         tribeNumberData = 0;
         TribeViewText.text = tribeStringData;
         queueButton.interactable = true;//선택이 되면 queue버튼 클릭가능
@@ -220,7 +220,7 @@ public class MainButtonController : MonoBehaviour
 
     public void Trbie2ButtonInvoke()
     {
-        tribeStringData = "2종족";
+        tribeStringData = "Dwarf";
         tribeNumberData = 1;
         TribeViewText.text = tribeStringData;
         queueButton.interactable = true;
@@ -228,14 +228,14 @@ public class MainButtonController : MonoBehaviour
     }
     public void Trbie3ButtonInvoke()
     {
-        tribeStringData = "3종족";
+        tribeStringData = "Green";
         tribeNumberData = 2;
         TribeViewText.text = tribeStringData;
         queueButton.interactable = true;
     }
     public void Trbie4ButtonInvoke()
     {
-        tribeStringData = "4종족";
+        tribeStringData = "Human";
         tribeNumberData = 3;
         TribeViewText.text = tribeStringData;
         queueButton.interactable = true;

@@ -39,7 +39,7 @@ public class EmptyBuildingScript : MonoBehaviour {
                     _player1Building.transform.position = this.gameObject.transform.position;
                     _player1Building.transform.localScale = Vector3.one;
                     _player1Building.transform.localRotation = Quaternion.Euler(Vector3.zero);
-             
+                    _player1Building.GetComponent<BuildingControllScript>().playerTeam = 1;
 
                 }
 
@@ -53,7 +53,8 @@ public class EmptyBuildingScript : MonoBehaviour {
                     _player2Building.transform.position = this.gameObject.transform.position;
                     _player2Building.transform.localScale = Vector3.one;
                     _player2Building.transform.localRotation = Quaternion.Euler(Vector3.zero);
-                    
+                    _player2Building.GetComponent<BuildingControllScript>().playerTeam = 2;
+
                 }
             }
             Destroy(other.gameObject);

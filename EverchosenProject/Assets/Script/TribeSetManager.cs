@@ -7,7 +7,6 @@ using System.Collections;
 public class TribeSetManager : MonoBehaviour
 {
 
-
     public static Player1Data p1Data = new Player1Data();
     public static Player2Data p2Data = new Player2Data();
     public static void SetUserData()
