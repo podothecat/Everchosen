@@ -17,6 +17,7 @@ public class TribeDatabase : MonoBehaviour {
 	{
 	    TribeData = JsonMapper.ToObject(File.ReadAllText(Application.dataPath + "/StreamingAssets/Tribes.json"));
         ConstructTribeDatabase();
+        
 	}
 
 
@@ -41,6 +42,7 @@ public class TribeDatabase : MonoBehaviour {
             database.Add(new List<Tribe>());//list 초기화
             for (int j = 0; j < TribeData[i]["building"].Count; j++)
             {
+                
                 database[i].Add(new Tribe((int)TribeData[i]["building"][j]["buildingID"], (int) TribeData[i]["building"][j]["value"],
                     TribeData[i]["building"][j]["buildingresourceName"].ToString(), (int) TribeData[i]["building"][j]["cost"], float.Parse(TribeData[i]["building"][j]["createCount"].ToString()),
                     (int) TribeData[i]["building"][j]["spawnUnitID"], float.Parse(TribeData[i]["building"][j]["unitpower"].ToString()), TribeData[i]["building"][j]["unitresourceName"].ToString()));

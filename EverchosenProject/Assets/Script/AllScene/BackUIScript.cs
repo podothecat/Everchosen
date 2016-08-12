@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using Client;
 using UnityEngine.UI;
 
 public class BackUIScript : MonoBehaviour
@@ -92,6 +93,14 @@ public class BackUIScript : MonoBehaviour
     //exit panel 오픈시 yes 버튼 함수
     public void ExitYesButtonInvoke() 
     {
+
+
+        ClientNetworkManager.Send("OnExitRequest",null);
+
+       
+        
+        ClientNetworkManager.SocketClose();
+        Debug.Log(ClientNetworkManager._clientSocket.Connected);
         Application.Quit();
     }
     //exit panel 오픈시 no 버튼 함수

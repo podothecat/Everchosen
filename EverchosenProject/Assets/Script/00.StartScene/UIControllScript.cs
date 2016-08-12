@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Security.Cryptography;
+using Client;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
@@ -18,10 +19,11 @@ public class UIControllScript : MonoBehaviour
 	// Use this for initialization
 	void Start () {
 	    _loadingPanel = GameObject.Find("LoadingPanel");
-     
-	    StartCoroutine(loadingRoutine());
-        
-	}
+
+        //211.245.70.35 , 127.0.0.1
+        ClientNetworkManager.ConnectToServer("211.245.70.35", 23000);
+
+    }
 	
 	// Update is called once per frame
 	void Update () {
@@ -30,10 +32,11 @@ public class UIControllScript : MonoBehaviour
 
 
 
-	    if (AccountValid == true)
+	    if (ClientNetworkManager.Connected==true)
 	    {
-            //SceneManager.LoadScene("01.MainMenu");
+            SceneManager.LoadScene("01.MainMenu");
         }
+	   
 
         //뒤로가기 버튼 종료 처리 함수
 	 
@@ -41,14 +44,7 @@ public class UIControllScript : MonoBehaviour
 	}
 
 
-    IEnumerator loadingRoutine()//테스트로 만든 로딩하는데 걸리는  시간 설정
-    {
-        yield return new WaitForSeconds(Random.Range(2,3));
-        LoadingComplete = true;
-        AccountValid = true;
-       // Debug.Log("로딩완료");
-
-    }
+    
 
     
 

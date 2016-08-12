@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using Client;
 using UnityEngine.UI;
 
 public class GameControllScript : MonoBehaviour
@@ -16,19 +17,29 @@ public class GameControllScript : MonoBehaviour
     private GameObject _player2BuildingPrefab;
     private GameObject _player2Building;
 
-
-
+    private MatchingPacket _enemydata;
+    
 
     void Start () {
       
+            //_setPaneldata = ClientNetworkManager.PacketData;
+     
+	 
 
+        if (ClientNetworkManager.PacketData != null)
+        {
+            _enemydata = ClientNetworkManager.PacketData;
+            Debug.Log(_enemydata.Id);
+        }
         MatchingDataViewIns();
-	    StartCoroutine(gameStartCounter());
-	}
+        StartCoroutine(gameStartCounter());
+    }
 	
 	// Update is called once per frame
 	void Update () {
-	
+
+	   
+
 	}
 
 
@@ -45,14 +56,32 @@ public class GameControllScript : MonoBehaviour
     //데이터패널 내부 데이터 표시 셋팅
     private void MatchingDataSetting()
     {
-        _matchingDataViewPanel.transform.FindChild("Player1Panel").transform.FindChild("Player1ID").GetComponent<Text>().text = TribeSetManager.p1Data.UserID;
-        _matchingDataViewPanel.transform.FindChild("Player1Panel").transform.FindChild("Player1Tribe").GetComponent<Text>().text = ""+TribeSetManager.p1Data.Tribe+"종족";
-        _matchingDataViewPanel.transform.FindChild("Player1Panel").transform.FindChild("Player1Spell").GetComponent<Text>().text = ""+TribeSetManager.p1Data.Spell+"Spell";
+        if (ClientNetworkManager.PacketData.TeamColor == 2)
+        {
+            _matchingDataViewPanel.transform.FindChild("Player1Panel").transform.FindChild("Player1Team").GetComponent<Text>().text = "Blue Team";
+            _matchingDataViewPanel.transform.FindChild("Player2Panel").transform.FindChild("Player2Team").GetComponent<Text>().text = "Red Team";
+        }
+        else if(ClientNetworkManager.PacketData.TeamColor == 1)
+        {
+            _matchingDataViewPanel.transform.FindChild("Player1Panel").transform.FindChild("Player1Team").GetComponent<Text>().text = "Red Team";
 
-        _matchingDataViewPanel.transform.FindChild("Player2Panel").transform.FindChild("Player2ID").GetComponent<Text>().text = TribeSetManager.p2Data.UserID;
-        _matchingDataViewPanel.transform.FindChild("Player2Panel").transform.FindChild("Player2Tribe").GetComponent<Text>().text = "" + TribeSetManager.p2Data.Tribe+"종족";
-        _matchingDataViewPanel.transform.FindChild("Player2Panel").transform.FindChild("Player2Spell").GetComponent<Text>().text = "" + TribeSetManager.p2Data.Spell+"Spell";
+            _matchingDataViewPanel.transform.FindChild("Player2Panel").transform.FindChild("Player2Team").GetComponent<Text>().text = "Blue Team";
+        }
+
+
+            _matchingDataViewPanel.transform.FindChild("Player1Panel").transform.FindChild("Player1ID").GetComponent<Text>().text = "아이디 : " + TribeSetManager.PData.UserID;
+            _matchingDataViewPanel.transform.FindChild("Player1Panel").transform.FindChild("Player1Tribe").GetComponent<Text>().text = "종족 : " + TribeSetManager.PData.TribeName;
+            _matchingDataViewPanel.transform.FindChild("Player1Panel").transform.FindChild("Player1Spell").GetComponent<Text>().text = "스펠 : " + TribeSetManager.PData.Spell;
+
+
+
         
+            _matchingDataViewPanel.transform.FindChild("Player2Panel").transform.FindChild("Player2ID").GetComponent<Text>().text = "아이디 : " + _enemydata.Id;
+            _matchingDataViewPanel.transform.FindChild("Player2Panel").transform.FindChild("Player2Tribe").GetComponent<Text>().text = "종족 : " + _enemydata.Tribe;
+            _matchingDataViewPanel.transform.FindChild("Player2Panel").transform.FindChild("Player2Spell").GetComponent<Text>().text = "스펠 : " + _enemydata.Spell;
+        
+      
+
     }
 
 
@@ -61,7 +90,7 @@ public class GameControllScript : MonoBehaviour
     {
         
         int currentStartTime = 2;
-        Text StartCounterText = _matchingDataViewPanel.transform.Find("GameStartCountText").GetComponent<Text>();
+        Text StartCounterText = _matchingDataViewPanel.transform.FindChild("GameStartCountText").GetComponent<Text>();
         StartCounterText.text = "" + currentStartTime;
         while (currentStartTime > 0)
         {
@@ -121,3 +150,4 @@ public class GameControllScript : MonoBehaviour
     }
 
 }
+

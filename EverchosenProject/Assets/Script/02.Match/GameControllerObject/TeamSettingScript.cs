@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection.Emit;
+using Client;
 
 public class TeamSettingScript : MonoBehaviour
 {
@@ -24,10 +25,16 @@ public class TeamSettingScript : MonoBehaviour
 
 
         tribeDB = GetComponent<TribeDatabase>();
-        playertribeid = TribeSetManager.p1Data.Tribe;
-        Enemytribeid = TribeSetManager.p2Data.Tribe;
-        SetPlayerTeam(playerTeam,playertribeid, Enemytribeid);
-        
+        playertribeid = TribeSetManager.PData.Tribe;
+
+        if (ClientNetworkManager.PacketData.TeamColor == 2)
+        {
+            SetPlayerTeam(1, playertribeid, 2);
+        }
+        else if (ClientNetworkManager.PacketData.TeamColor == 1)
+        {
+            SetPlayerTeam(2, playertribeid, 2);
+        }
     }
 
 
@@ -39,13 +46,11 @@ public class TeamSettingScript : MonoBehaviour
         {
             playerbuilding = "Player1building";
             Enemybuilding = "Player2building";
-            
         }
         else if (playerTeam == 2)
         {
             playerbuilding = "Player2building";
             Enemybuilding = "Player1building";
-          
         }
 
         PlayertribeDataToAdd = tribeDB.FetchBuildingByID(tribeid1);

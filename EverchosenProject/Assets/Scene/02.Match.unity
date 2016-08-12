@@ -575,6 +575,10 @@ Prefab:
       propertyPath: m_LocalEulerAnglesHint.x
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 140010, guid: 6ad1b621c02ef0744bbe949f4d141e8b, type: 2}
+      propertyPath: m_NavMeshLayer
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 0}
   m_ParentPrefab: {fileID: 100100000, guid: 6ad1b621c02ef0744bbe949f4d141e8b, type: 2}
@@ -661,6 +665,10 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 483900, guid: 6ad1b621c02ef0744bbe949f4d141e8b, type: 2}
       propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 140010, guid: 6ad1b621c02ef0744bbe949f4d141e8b, type: 2}
+      propertyPath: m_NavMeshLayer
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
@@ -923,6 +931,10 @@ Prefab:
       propertyPath: m_LocalEulerAnglesHint.x
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 140010, guid: 6ad1b621c02ef0744bbe949f4d141e8b, type: 2}
+      propertyPath: m_NavMeshLayer
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 0}
   m_ParentPrefab: {fileID: 100100000, guid: 6ad1b621c02ef0744bbe949f4d141e8b, type: 2}
@@ -1183,6 +1195,10 @@ Prefab:
     - target: {fileID: 137168, guid: 6ad1b621c02ef0744bbe949f4d141e8b, type: 2}
       propertyPath: m_Name
       value: EmptyBuilding (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 140010, guid: 6ad1b621c02ef0744bbe949f4d141e8b, type: 2}
+      propertyPath: m_NavMeshLayer
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 6ad1b621c02ef0744bbe949f4d141e8b, type: 2}

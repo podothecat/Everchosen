@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using Client;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
@@ -26,7 +27,9 @@ public class MainButtonController : MonoBehaviour
     private GameObject CreditPanel;
 
 
-    private Text TribeViewText;
+    private Text _tribeViewText;
+    private Text _spellViewText;
+
 
     public int tribeNumberData;
     private string tribeStringData;
@@ -44,7 +47,8 @@ public class MainButtonController : MonoBehaviour
         CreditPanel = Canvas.transform.FindChild("CreditsPanel").gameObject;
         OptionPanel = GameObject.Find("BackObject").transform.FindChild("OptionPanel").gameObject;
 
-        TribeViewText = Canvas.transform.FindChild("SettingPanel").transform.FindChild("SettingImage").transform.FindChild("SettingViewPanel").transform.FindChild("TribeText").gameObject.GetComponent<Text>();
+        _tribeViewText = Canvas.transform.FindChild("SettingPanel").transform.FindChild("SettingImage").transform.FindChild("SettingViewPanel").transform.FindChild("TribeText").gameObject.GetComponent<Text>();
+        _spellViewText = Canvas.transform.FindChild("SettingPanel").transform.FindChild("SettingImage").transform.FindChild("SettingViewPanel").transform.FindChild("SpellText").gameObject.GetComponent<Text>();
         queueButton = SettingPanel.transform.FindChild("SettingImage").transform.FindChild("QueueButton").GetComponent<Button>();
 
        
@@ -65,11 +69,13 @@ public class MainButtonController : MonoBehaviour
     {
         if (QueuePanel)
         {
-            if (MatchSuccess == true)
+            if (ClientNetworkManager.ReceiveMsg == "OnSucceedMatching")
             {
-                QueueText.GetComponent<Text>().text = "Game Start";
-                StartCoroutine(MatchStart(2f));
+                Debug.Log("확인");
+                StartCoroutine(MatchStart(2));
             }
+           
+
         }
 
         
@@ -120,9 +126,9 @@ public class MainButtonController : MonoBehaviour
     public void QueueButton()
     {
 
-        TribeSetManager.SetUserData();//유저가 선택한 종족 저장
-        TribeSetManager.SetEnemyData();
-       
+
+        TribeSetManager.PData.UserID = "Monjon";
+
         SettingPanel.SetActive(false);//참여와 함께 셋팅패널 사라짐
         QueuePanel = Instantiate(QueuePanelPrefab);//버튼 클릭시 queue panel prefab생성
         QueuePanel.transform.SetParent(GameObject.Find("QueueSetPanel").gameObject.transform);
@@ -139,12 +145,24 @@ public class MainButtonController : MonoBehaviour
         StartCoroutine(queueTimeCounter());
 
         GameStartButton.GetComponent<Button>().interactable = false; //매칭대기열 시작시 매칭버튼 interactable;
+
+
+        ServerQueue();//데이터와 함께 queue
+
+    }
+
+    public void ServerQueue()
+    {
+
+        MatchingPacket setData = new MatchingPacket("Monjon", TribeSetManager.PData.TribeName, TribeSetManager.PData.Spell, 0);//마지막 파라미터는 teamflag 그냥 0 으로 보냄 
+
+        ClientNetworkManager.Send("OnMatchingRequest", setData);
     }
 
     public void SettingBackButtonInvoke()
     {
         
-        TribeViewText.text = " ";
+        _tribeViewText.text = " ";
         queueButton.interactable = false;//다시 queue 버튼 선택 불가
 
         SettingPanel.SetActive(false);
@@ -152,9 +170,6 @@ public class MainButtonController : MonoBehaviour
 
     }
    
-
-
-
 
     //creditpanel의 backbutton
     public void CreditsBackButtonInvoke()
@@ -174,7 +189,7 @@ public class MainButtonController : MonoBehaviour
     IEnumerator queueTimeCounter() 
     {
         currentQueueTime = 0;
-        while (currentQueueTime < queueTime)
+        while (true)
         {
                 yield return new WaitForSeconds(1.0f);
 
@@ -182,7 +197,7 @@ public class MainButtonController : MonoBehaviour
             {
                 {
                     currentQueueTime += 1f;
-                    QueueText.GetComponent<Text>().text = "00:0" + currentQueueTime + " / 00:0" + queueTime;
+                    QueueText.GetComponent<Text>().text = "매칭중...  " + currentQueueTime + " 초";
                 }
             }
             else
@@ -190,15 +205,14 @@ public class MainButtonController : MonoBehaviour
                 yield break;
             }
         }
-        MatchSuccess = true;
-       
-
-        yield break;
+        
+        
     }
 
     //매칭잡힌후 로딩시간 // 매칭 카운터 완료후 2초후 시작
     IEnumerator MatchStart(float count) 
     {
+        QueueText.GetComponent<Text>().text = "매칭을 찾았습니다.";
         yield return new WaitForSeconds(count);
         SceneManager.LoadScene("02.Match");
     }
@@ -210,37 +224,56 @@ public class MainButtonController : MonoBehaviour
     //종족선택 버튼 4개
     public void Trbie1ButtonInvoke()
     {
-        tribeStringData = "Chaos";
-        tribeNumberData = 0;
-        TribeViewText.text = tribeStringData;
+     
+        TribeSetManager.PData.Tribe = 0;
+        TribeSetManager.PData.TribeName = "Chaos";
+        _tribeViewText.text = TribeSetManager.PData.TribeName;
         queueButton.interactable = true;//선택이 되면 queue버튼 클릭가능
-
-
     }
 
     public void Trbie2ButtonInvoke()
     {
-        tribeStringData = "Dwarf";
-        tribeNumberData = 1;
-        TribeViewText.text = tribeStringData;
+
+        TribeSetManager.PData.Tribe = 1;
+        TribeSetManager.PData.TribeName = "Dwarf";
+       
+        _tribeViewText.text = TribeSetManager.PData.TribeName;
         queueButton.interactable = true;
 
     }
     public void Trbie3ButtonInvoke()
     {
-        tribeStringData = "Green";
-        tribeNumberData = 2;
-        TribeViewText.text = tribeStringData;
+        TribeSetManager.PData.Tribe = 2;
+        TribeSetManager.PData.TribeName = "Green";
+
+        _tribeViewText.text = TribeSetManager.PData.TribeName;
         queueButton.interactable = true;
     }
     public void Trbie4ButtonInvoke()
     {
-        tribeStringData = "Human";
-        tribeNumberData = 3;
-        TribeViewText.text = tribeStringData;
+        TribeSetManager.PData.Tribe = 3;
+        TribeSetManager.PData.TribeName = "Human";
+       
+        _tribeViewText.text = TribeSetManager.PData.TribeName;
         queueButton.interactable = true;
     }
 
 
-    
+    public void Spell1ButtonInvoke()
+    {
+        TribeSetManager.PData.Spell = 1;
+        _spellViewText.text = "One";
+
+
+
+    }
+
+    public void Spell2ButtonInvoke()
+    {
+        TribeSetManager.PData.Spell = 2;
+        _spellViewText.text = "Two";
+    }
+
+
+
 }
