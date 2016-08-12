@@ -5,14 +5,15 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace EverChosenServer
 {
-    class Program
+    internal class Program
     {
         private readonly Socket _serverSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             var p = new Program();
 
@@ -26,27 +27,29 @@ namespace EverChosenServer
 
             _serverSocket.BeginAccept(OnAccept, _serverSocket);
 
+            Console.WriteLine("Server Open");
             while (true)
             {
                 Task.Delay(1000);
             }
         }
 
+        /// <summary>
+        /// Accept connection request of client.
+        /// </summary>
+        /// <param name="ar"></param>
         private void OnAccept(IAsyncResult ar)
         {
             var socket = (Socket)ar.AsyncState;
             var clientSocket = socket.EndAccept(ar);
-
+            
             var newClient = new Client(clientSocket);
             newClient.BeginReceive();
-            GameManager._clients.Add(newClient);
+            GameManager.AddClient(newClient);
+
+            Console.WriteLine(GameManager.Clients.Count);
 
             _serverSocket.BeginAccept(OnAccept, _serverSocket);
-        }
-
-        interface Packet
-        {
-
         }
     }
 }
