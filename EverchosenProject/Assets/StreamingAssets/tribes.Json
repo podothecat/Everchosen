@@ -1,141 +1,220 @@
 [
     { //"tribeID": 0, // 종족은 0,1,2,3으로 나눕시다
         "building": [
-            { //건물
+            { //물건
                 "buildingID": 0,
                 "value": 1,
-                "buildingresourceName": "level0",
+                "buildingresourceName": "EmpireCastle",
                 "cost": 0,
                 "createCount": 1.5,
                 "spawnUnitID": 0,
                 "unitpower": 1,
-                "unitresourceName": "army1"
+                "unitresourceName": "chaos-army"
             },
             { //건물
                 "buildingID": 1,
+                "value": 1,
+                "buildingresourceName": "EmpireLevel0",
+                "cost": 0,
+                "createCount": 1.5,
+                "spawnUnitID": 0,
+                "unitpower": 1,
+                "unitresourceName": "chaos-army"
+            },
+            { //건물
+                "buildingID": 2,
                 "value": 2,
-                "buildingresourceName": "level1",
+                "buildingresourceName": "EmpireLevel1",
                 "cost": 10,
                 "createCount": 2,
                 "spawnUnitID": 1,
                 "unitpower": 2,
-                "unitresourceName": "army2"
-            },
-            { //건물
-                "buildingID": 2,
-                "value": 1,
-                "buildingresourceName": "level2",
-                "cost": 20,
-                "createCount": 2,
-                "spawnUnitID": 0,
-                "unitpower": 1,
-                "unitresourceName": "army1"
+                "unitresourceName": "chaos-javelin"
             },
             { //건물
                 "buildingID": 3,
                 "value": 2,
-                "buildingresourceName": "level3",
+                "buildingresourceName": "EmpireLevel2",
+                "cost": 20,
+                "createCount": 2,
+                "spawnUnitID": 0,
+                "unitpower": 1,
+                "unitresourceName": "chaos-knight"
+            },
+            { //건물
+                "buildingID": 4,
+                "value": 2,
+                "buildingresourceName": "EmpireLevel3",
                 "cost": 10,
                 "createCount": 2,
                 "spawnUnitID": 1,
                 "unitpower": 2,
-                "unitresourceName": "army2"
+                "unitresourceName": "chaos-shadow"
             }
         ]
     },
 
     { //"tribeID": 0, // 종족은 0,1,2,3으로 나눕시다
         "building": [
-            { //건물
-                "buildingID": 1,
-                "value": 2,
-                "buildingresourceName": "level0",
+             { //건물
+                "buildingID": 0,
+                "value": 1,
+                "buildingresourceName": "EmpireCastle",
                 "cost": 0,
                 "createCount": 1.5,
                 "spawnUnitID": 0,
                 "unitpower": 1,
-                "unitresourceName": "army1"
+                "unitresourceName": "dwarf-army"
+            },
+            { //건물
+                "buildingID": 1,
+                "value": 1,
+                "buildingresourceName": "EmpireLevel0",
+                "cost": 0,
+                "createCount": 1.5,
+                "spawnUnitID": 0,
+                "unitpower": 1,
+                "unitresourceName": "dwarf-army"
             },
             { //건물
                 "buildingID": 2,
-                "value": 3,
-                "buildingresourceName": "level1",
+                "value": 2,
+                "buildingresourceName": "EmpireLevel1",
                 "cost": 10,
                 "createCount": 2,
                 "spawnUnitID": 1,
                 "unitpower": 2,
-                "unitresourceName": "army2"
+                "unitresourceName": "dwarf-crossbow"
             },
             { //건물
                 "buildingID": 3,
-                "value": 4,
-                "buildingresourceName": "level2",
+                "value": 2,
+                "buildingresourceName": "EmpireLevel2",
                 "cost": 20,
                 "createCount": 2,
                 "spawnUnitID": 0,
                 "unitpower": 1,
-                "unitresourceName": "army1"
+                "unitresourceName": "dwarf-griffon"
             },
             { //건물
-                "buildingID": 5,
-                "value": 6,
-                "buildingresourceName": "level3",
+                "buildingID": 4,
+                "value": 2,
+                "buildingresourceName": "EmpireLevel3",
                 "cost": 10,
                 "createCount": 2,
                 "spawnUnitID": 1,
                 "unitpower": 2,
-                "unitresourceName": "army2"
+                "unitresourceName": "dwarf-knight"
             }
         ]
-    }
-
-]
-
- /* {
-        "tribe": { //종족
-            "tribeid": 0,
-            "building": { //건물
-                "buildingid": 1,
+    },
+    { //"tribeID": 0, // 종족은 0,1,2,3으로 나눕시다
+        "building": [
+            { //물건
+                "buildingID": 0,
+                "value": 1,
+                "buildingresourceName": "EmpireCastle",
+                "cost": 0,
+                "createCount": 1.5,
+                "spawnUnitID": 0,
+                "unitpower": 1,
+                "unitresourceName": "green-needle"
+            },
+            { //건물
+                "buildingID": 1,
+                "value": 1,
+                "buildingresourceName": "EmpireLevel0",
+                "cost": 0,
+                "createCount": 1.5,
+                "spawnUnitID": 0,
+                "unitpower": 1,
+                "unitresourceName": "green-needle"
+            },
+            { //건물
+                "buildingID": 2,
                 "value": 2,
-                "title": "level1",
-                "buildingresourceName": "level1",
+                "buildingresourceName": "EmpireLevel1",
                 "cost": 10,
                 "createCount": 2,
                 "spawnUnitID": 1,
-                "power": 2,
-                "unitresourceName": "army2"
-            }
-        }
-    },
-    {
-        "tribe": { //종족
-            "tribeid": 0,
-            "building": { //건물
-                "buildingid": 2,
-                "value": 1,
-                "title": "level2",
-                "buildingresourceName": "level2",
+                "unitpower": 2,
+                "unitresourceName": "green-worrior"
+            },
+            { //건물
+                "buildingID": 3,
+                "value": 2,
+                "buildingresourceName": "EmpireLevel2",
                 "cost": 20,
                 "createCount": 2,
                 "spawnUnitID": 0,
-                "power": 1,
-                "unitresourceName": "army1"
-            }
-        }
-    },
-    {
-        "tribe": { //종족
-            "tribeid": 0,
-            "building": { //건물
-                "buildingid": 3,
+                "unitpower": 1,
+                "unitresourceName": "green-wyvern"
+            },
+            { //건물
+                "buildingID": 4,
                 "value": 2,
-                "title": "level3",
-                "buildingresourceName": "level3",
+                "buildingresourceName": "EmpireLevel3",
                 "cost": 10,
                 "createCount": 2,
                 "spawnUnitID": 1,
-                "power": 2,
-                "unitresourceName": "army2"
+                "unitpower": 2,
+                "unitresourceName": "green-rider"
             }
-        }
-    }*/
+        ]
+    },
+    { //"tribeID": 0, // 종족은 0,1,2,3으로 나눕시다
+        "building": [
+             { //건물
+                "buildingID": 0,
+                "value": 1,
+                "buildingresourceName": "EmpireCastle",
+                "cost": 0,
+                "createCount": 1.5,
+                "spawnUnitID": 0,
+                "unitpower": 1,
+                "unitresourceName": "human-army"
+            },
+            { //건물
+                "buildingID": 1,
+                "value": 1,
+                "buildingresourceName": "EmpireLevel0",
+                "cost": 0,
+                "createCount": 1.5,
+                "spawnUnitID": 0,
+                "unitpower": 1,
+                "unitresourceName": "human-army"
+            },
+            { //건물
+                "buildingID": 2,
+                "value": 2,
+                "buildingresourceName": "EmpireLevel1",
+                "cost": 10,
+                "createCount": 2,
+                "spawnUnitID": 1,
+                "unitpower": 2,
+                "unitresourceName": "human-bow"
+            },
+            { //건물
+                "buildingID": 3,
+                "value": 2,
+                "buildingresourceName": "EmpireLevel2",
+                "cost": 20,
+                "createCount": 2,
+                "spawnUnitID": 0,
+                "unitpower": 1,
+                "unitresourceName": "human-dragonhawk"
+            },
+            { //건물
+                "buildingID": 4,
+                "value": 2,
+                "buildingresourceName": "EmpireLevel3",
+                "cost": 10,
+                "createCount": 2,
+                "spawnUnitID": 1,
+                "unitpower": 2,
+                "unitresourceName": "human-knight"
+            }
+        ]
+    }
+]
+

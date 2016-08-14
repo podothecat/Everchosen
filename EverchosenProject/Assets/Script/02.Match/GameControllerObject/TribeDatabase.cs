@@ -9,12 +9,15 @@ public class TribeDatabase : MonoBehaviour {
     private List<List<Tribe>> database = new List<List<Tribe>>();
     private JsonData TribeData;
 
+    
+
    
 	// Use this for initialization
 	void Awake ()
 	{
 	    TribeData = JsonMapper.ToObject(File.ReadAllText(Application.dataPath + "/StreamingAssets/Tribes.json"));
         ConstructTribeDatabase();
+        
 	}
 
 
@@ -39,14 +42,6 @@ public class TribeDatabase : MonoBehaviour {
             database.Add(new List<Tribe>());//list 초기화
             for (int j = 0; j < TribeData[i]["building"].Count; j++)
             {
-             /*   Debug.Log((int)TribeData[i]["building"][j]["buildingID"]);
-                Debug.Log((int)TribeData[i]["building"][j]["value"]);
-                Debug.Log(TribeData[i]["building"][j]["buildingresourceName"].ToString());
-                Debug.Log((int)TribeData[i]["building"][j]["cost"]);
-                Debug.Log(float.Parse(TribeData[i]["building"][j]["createCount"].ToString()));
-                Debug.Log((int)TribeData[i]["building"][j]["spawnUnitID"]);
-                Debug.Log(float.Parse(TribeData[i]["building"][j]["unitpower"].ToString()));
-                Debug.Log(TribeData[i]["building"][j]["unitresourceName"].ToString());*/
                 
                 database[i].Add(new Tribe((int)TribeData[i]["building"][j]["buildingID"], (int) TribeData[i]["building"][j]["value"],
                     TribeData[i]["building"][j]["buildingresourceName"].ToString(), (int) TribeData[i]["building"][j]["cost"], float.Parse(TribeData[i]["building"][j]["createCount"].ToString()),
@@ -70,7 +65,8 @@ public class Tribe
     public float UnitPower { get; set; }
     public string UnitResourceName { get; set; }
     public Sprite BuildingSprite { get; set; }
-    public Sprite UnitSprite { get; set; }
+    public Sprite BUnitSprite { get; set; }
+    public Sprite RUnitSprite { get; set; }
 
 
     public Tribe(int buildingID, int value, string buildingResourceName, int cost, float createCount, int spawnUnitID, float unitPower, string unitResourceName)
@@ -83,8 +79,10 @@ public class Tribe
         this.SpawnUnitID = spawnUnitID;
         this.UnitPower = unitPower;
         this.UnitResourceName = unitResourceName;
-        this.BuildingSprite = Resources.Load<Sprite>("Material/Sprite/building/" + buildingResourceName);
-        this.UnitSprite = Resources.Load<Sprite>("Material/Sprite/unit/" + unitResourceName);
+        this.BuildingSprite = Resources.Load<Sprite>("Sprite/building/" + buildingResourceName);
+        this.BUnitSprite = Resources.Load<Sprite>("Sprite/unit/B-" + unitResourceName);
+        this.RUnitSprite = Resources.Load<Sprite>("Sprite/unit/R-" + unitResourceName);
+
     }
     public Tribe()//아무값이 없을땐 id -1로 설정
     {
