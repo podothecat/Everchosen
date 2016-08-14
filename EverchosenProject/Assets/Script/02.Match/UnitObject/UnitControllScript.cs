@@ -33,12 +33,16 @@ public class UnitControllScript : MonoBehaviour
            
             other.GetComponent<BuildingControllScript>()._unitNumber--;
             other.GetComponent<BuildingControllScript>().unitNumbersetText();
-            if(other.GetComponent<BuildingControllScript>()._unitNumber<=0)
+
+            
+             
+
+            if (other.GetComponent<BuildingControllScript>()._unitNumber<=0)
             {
                 other.GetComponent<BuildingControllScript>().DestroythisBuilding();
             }
-            
             Destroy(this.gameObject);
+
         }
         else if (other.tag == GameControllerObject.GetComponent<TeamSettingScript>().playerbuilding) //&& other.gameObject!=this.gameObject.transform.parent.gameObject)
         {
@@ -46,5 +50,6 @@ public class UnitControllScript : MonoBehaviour
             other.GetComponent<BuildingControllScript>().unitNumbersetText();
             Destroy(this.gameObject);
         }
+        
     }
 }

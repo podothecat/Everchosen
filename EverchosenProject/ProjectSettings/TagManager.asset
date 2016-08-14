@@ -4,8 +4,8 @@
 TagManager:
   serializedVersion: 2
   tags:
-  - Team1building
-  - Team2building
+  - Player1building
+  - Player2building
   - unit
   - drageffect
   - EnableBuilding

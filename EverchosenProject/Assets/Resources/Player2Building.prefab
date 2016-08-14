@@ -47,8 +47,8 @@ GameObject:
   - 65: {fileID: 6568608}
   - 114: {fileID: 11479998}
   m_Layer: 0
-  m_Name: Player2Building
-  m_TagString: Team2building
+  m_Name: Player2building
+  m_TagString: Player2building
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -255,7 +255,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   UnitPrefab: {fileID: 0}
   _unitNumber: 1
+  PlayerCastle: 0
   buildingSettingObject: {fileID: 0}
+  buildingID: 0
   buildingValue: 0
   unitPower: 0
   unitSprite: {fileID: 0}
