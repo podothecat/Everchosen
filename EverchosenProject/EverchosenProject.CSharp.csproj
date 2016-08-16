@@ -69,12 +69,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="EverchosenProject.CSharp.Plugins.csproj">
-      <Project>{7D92B271-39E8-128E-AC9D-9BC922E5AA9D}</Project>
-      <Name>EverchosenProject.CSharp.Plugins</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="Assets\Script\00.StartScene\UIControllScript.cs" />
     <Compile Include="Assets\Script\01.MainMenu\MainButtonController.cs" />
     <Compile Include="Assets\Script\02.Match\BuildingsObject\BuildingControllScript.cs" />
@@ -91,9 +85,6 @@
     <Compile Include="Assets\Script\AllScene\ClientNetworkManager.cs" />
     <Compile Include="Assets\Script\AllScene\SoundControllScript.cs" />
     <Compile Include="Assets\Script\AllScene\TribeSetManager.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Assets\Standard Assets\CrossPlatformInput\CrossPlatformInputGuidelines.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\SyntaxTree\UnityVS\2015\UnityVS.CSharp.targets" />
 </Project>
