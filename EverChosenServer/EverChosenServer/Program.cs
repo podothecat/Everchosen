@@ -20,14 +20,17 @@ namespace EverChosenServer
             p.Start();
         }
 
+        /// <summary>
+        /// Open server socket and wait connection.
+        /// </summary>
         private void Start()
         {
             _serverSocket.Bind(new IPEndPoint(IPAddress.Any, 23000));
             _serverSocket.Listen(10);
 
-            _serverSocket.BeginAccept(OnAccept, _serverSocket);
+            _serverSocket.BeginAccept(OnAcceptCallback, _serverSocket);
 
-            Console.WriteLine("Server Open");
+            Console.WriteLine("Server On\n");
             while (true)
             {
                 Task.Delay(1000);
@@ -38,7 +41,7 @@ namespace EverChosenServer
         /// Accept connection request of client.
         /// </summary>
         /// <param name="ar"></param>
-        private void OnAccept(IAsyncResult ar)
+        private void OnAcceptCallback(IAsyncResult ar)
         {
             var socket = (Socket)ar.AsyncState;
             var clientSocket = socket.EndAccept(ar);
@@ -47,9 +50,9 @@ namespace EverChosenServer
             newClient.BeginReceive();
             GameManager.AddClient(newClient);
 
-            Console.WriteLine(GameManager.Clients.Count);
+            Console.WriteLine("Current # of clients : " + GameManager.Clients.Count);
 
-            _serverSocket.BeginAccept(OnAccept, _serverSocket);
+            _serverSocket.BeginAccept(OnAcceptCallback, _serverSocket);
         }
     }
 }

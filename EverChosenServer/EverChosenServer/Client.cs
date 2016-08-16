@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Sockets;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
@@ -11,8 +12,8 @@ namespace EverChosenServer
     internal class Client
     {
         public Socket Sock { get; set; }
-        public Test1 MatchingData;
-        public Test2 InGameData;
+        public MatchingPacket MatchingData;
+        public IngamePacket InGameData;
 
         private readonly byte[] _buffer = new byte[1024];
 
@@ -29,32 +30,47 @@ namespace EverChosenServer
         /// Process received packet.
         /// </summary>
         /// <param name="ar"> Asynchronous state result. </param>
-        private void OnReceive(IAsyncResult ar)
+        private void OnReceiveCallback(IAsyncResult ar)
         {
             Console.WriteLine("OnReceive..");
             var clientSock = (Socket)ar.AsyncState;
 
+            // Unexpected request (ex : force quit)
+            if (_buffer[0] == 0)
+            {
+                Console.WriteLine("Unexpected Request. Remove client.");
+                Close();
+                return;
+            }
+            else
+            {
+                Console.WriteLine(_buffer);
+            }
+            
             var packetStr = Encoding.UTF8.GetString(_buffer);
             
+            // Not using code currently.
             //JsonConverter[] converters = {new PacketConverter()};
             //var x = JsonConvert.DeserializeObject<Packet>(packetStr, 
-            //    new JsonSerializerSettings() { Converters = converters });            
-
+            //    new JsonSerializerSettings() { Converters = converters });
             var x = JsonConvert.DeserializeObject<Packet>(packetStr);
-            Console.WriteLine(string.IsNullOrEmpty(x.MsgName) ? 
+            x.Data = x.Data.Replace("\\\"", "\"");
+            x.Data = x.Data.Substring(1, x.Data.Length - 2);
+            
+            Console.WriteLine(string.IsNullOrEmpty(x.MsgName)? 
                 "MsgName has no request." : x.MsgName);
+            
             switch (x.MsgName)
             {
                 case "OnMatchingRequest":
-                    MatchingData = JsonConvert.DeserializeObject<Test1>(x.Data.ToString());
+                    Console.Write(x.Data);
+                    MatchingData = JsonConvert.DeserializeObject<MatchingPacket>(x.Data.ToString());
                     Console.WriteLine(
                         MatchingData.Id + " " + MatchingData.Tribe + " " + MatchingData.Spell);
-                    //MatchingData = new Test1();
-                    //MatchingData.ParseData(x.Data);
                     GameManager.OnMatchingRequest(this);
                     break;
                 case "OnInGameRequest":
-                    InGameData = x.Data;
+                    InGameData = JsonConvert.DeserializeObject<IngamePacket>(x.Data);
                     Console.WriteLine("In Game Request");
                     break;
                 case "OnExitRequest":
@@ -70,7 +86,7 @@ namespace EverChosenServer
         /// Process packet to send.
         /// </summary>
         /// <param name="ar"> Async State </param>
-        private void OnSend(IAsyncResult ar)
+        private void OnSendCallback(IAsyncResult ar)
         {
             Console.WriteLine("OnSend..");
         }
@@ -91,24 +107,21 @@ namespace EverChosenServer
                         JsonConvert.SerializeObject(p, Formatting.Indented));
 
                     Sock.BeginSend(sendBuf, 0, sendBuf.Length,
-                        SocketFlags.None, OnSend, Sock);
+                        SocketFlags.None, OnSendCallback, Sock);
                     break;
                 default:
                     Console.WriteLine("Msg error");
                     break;
             }            
-
-            //c.Sock.BeginSend(sendBuf, 0, sendBuf.Length, SocketFlags.None, OnSend, c.Sock);
-            //Sock.BeginSend(sendBuf, 0, sendBuf.Length, SocketFlags.None, OnSend, Sock);
         }
 
         /// <summary>
-        /// Asynchronous receive data callback
+        /// Receive asynchronous data
         /// </summary>
         public void BeginReceive()
         {
             // Message received from client is assigned to variable _buffer.
-            Sock.BeginReceive(_buffer, 0, _buffer.Length, SocketFlags.None, OnReceive, Sock);
+            Sock.BeginReceive(_buffer, 0, _buffer.Length, SocketFlags.None, OnReceiveCallback, Sock);
         }
 
         /// <summary>
