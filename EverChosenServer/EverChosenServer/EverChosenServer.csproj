@@ -49,6 +49,7 @@
   <ItemGroup>
     <Compile Include="Client.cs" />
     <Compile Include="GameManager.cs" />
+    <Compile Include="MatchingManager.cs" />
     <Compile Include="PacketManager.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
