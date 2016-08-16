@@ -24,14 +24,9 @@ namespace Client
         private static Socket _serverSocket = null;
         private static byte[] _buffer = new byte[1024];
 
-
-
-
         public static bool Connected = false;
         public static MatchingPacket PacketData; // 유니티에서 사용할 데이터를 담을변수
         
-
-
         public static string ReceiveMsg = null; //유니티쪽에서 사용할 메시지를 담을 변수
         public static void ConnectToServer(string hostName, int hostPort)
         {
@@ -76,15 +71,14 @@ namespace Client
             {
                 Debug.Log(e);
                Debug.Log("연결에 실패했습니다.2");
-
-                    
             }
 
         }
 
        
 
-
+        //매칭된시간 알려주고 3초뒤에시작한다 . 
+        //지금이 19분인데 19분 30초에 매칭시작 33초에 게임시작해 패킷을 보낸다음에 
         //데이터 전송
         public static void Send(string msg, object data)
         {
@@ -96,12 +90,10 @@ namespace Client
                     Packet sample = new Packet
                     {
                         MsgName = msg,
-                        Data = setData
+                        Data = JsonConvert.SerializeObject(setData)
                     };
-
-
-                    var json = JsonConvert.SerializeObject(sample, Formatting.Indented);
-                    var sendData = new UTF8Encoding().GetBytes(json);
+                    var json = JsonConvert.SerializeObject(sample);
+                    var sendData = Encoding.UTF8.GetBytes(json);
                     _clientSocket.BeginSend(sendData, 0, sendData.Length, SocketFlags.None, SendCallBack, _clientSocket);
                     
                 }
@@ -115,7 +107,6 @@ namespace Client
                 Debug.Log(e);
                 Debug.Log("전송에러");
             }
-
         }
 
         private static void SendCallBack(IAsyncResult ar)
@@ -129,7 +120,7 @@ namespace Client
 
 
 
-
+#region receive
 
         public static void Receive()
         {
@@ -146,63 +137,59 @@ namespace Client
                // int readSize = tempSocket.EndReceive(ar);//버퍼 사이즈 받아옴
                
                 var receiveJson = new UTF8Encoding().GetString(_buffer);
-               
+                
                 var receiveData = JsonConvert.DeserializeObject<Packet>(receiveJson);
-              
                 ReceiveMsg = receiveData.MsgName;
-                
-                
-               //  Debug.Log("ReceiveData : " + receiveData.Data.Tribe);
-
-                 Debug.Log("test : " + receiveData.Data);
+                Debug.Log("test : " + receiveData.Data);
 
                 switch (ReceiveMsg)
                 {
                     case "OnSucceedMatching":
-                        PacketData= JsonConvert.DeserializeObject<MatchingPacket>(receiveData.Data.ToString());
+                        PacketData = JsonConvert.DeserializeObject<MatchingPacket>(receiveData.Data);
                         break;
                     case "InGame":
                         break;
                 }
 
-
                 if (_serverSocket.Connected == true)
                 {
                     Receive();
                 }
-
-
-
+                    
             }
             catch (SocketException e)
             {
                 Debug.Log("exeption 에러 ; " + e);
                 //데이저 수신 에러
             }
+            catch (Exception e)
+            {
+                Debug.Log("Socket error"+e);
+            }
+
+            var matchingPakcet = new MatchingPacket("id","tribe",0,1);
+
+            var packetwrapper = new Packet()
+            {
+                MsgName = "MatchingPacket",
+                Data = JsonConvert.SerializeObject(matchingPakcet)
+            };
         }
-
-
-
-
+        
         public static void SocketClose()
         {
             _clientSocket.Shutdown(SocketShutdown.Both);
             _clientSocket.Close();
         }
-
-
-
-
     }
-    
 
+#endregion
+    
     public class Packet
     {
         public string MsgName { get; set; }
-        public object Data { get; set; }
-      
+        public string Data { get; set; }
     }
-    
 
     public class MatchingPacket
     {

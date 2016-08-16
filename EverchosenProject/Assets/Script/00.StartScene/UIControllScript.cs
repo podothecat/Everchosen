@@ -20,17 +20,14 @@ public class UIControllScript : MonoBehaviour
 	void Start () {
 	    _loadingPanel = GameObject.Find("LoadingPanel");
 
-        //211.245.70.35 , 127.0.0.1
+        //211.245.70.35 , 127.0.0.1<-자기자신한테 보낼떄 , 219.254.17.66<--내공유기외부 ip
         ClientNetworkManager.ConnectToServer("211.245.70.35", 23000);
+       
 
     }
 	
 	// Update is called once per frame
 	void Update () {
-      
-        
-
-
 
 	    if (ClientNetworkManager.Connected==true)
 	    {
@@ -39,7 +36,6 @@ public class UIControllScript : MonoBehaviour
 	   
 
         //뒤로가기 버튼 종료 처리 함수
-	 
 
 	}
 

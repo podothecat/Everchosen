@@ -13,7 +13,7 @@ GameObject:
   - 114: {fileID: 11416380}
   m_Layer: 0
   m_Name: EmptyBuilding
-  m_TagString: EnableBuilding
+  m_TagString: EmptyBuilding
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -33,7 +33,7 @@ GameObject:
   m_Name: NavSetCube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
-  m_NavMeshLayer: 1
+  m_NavMeshLayer: 0
   m_StaticEditorFlags: 8
   m_IsActive: 1
 --- !u!4 &423616
@@ -55,10 +55,10 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 137168}
-  m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071067}
-  m_LocalPosition: {x: 2.895, y: 0.5, z: -3.54}
-  m_LocalScale: {x: 0.5, y: 1, z: 1}
-  m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -9.48, y: 5.19, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_Children:
   - {fileID: 423616}
   m_Father: {fileID: 0}
@@ -157,7 +157,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: b12ea709de9b2914380ffc7ab0241cee, type: 3}
+  m_Sprite: {fileID: 21300000, guid: b7fd6c6a38dbc2c43bf0dc763a86cd5d, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 0.459}
   m_FlipX: 0
   m_FlipY: 0
