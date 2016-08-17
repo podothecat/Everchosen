@@ -20,6 +20,7 @@ namespace EverChosenServer
         public static void ReleaseClient(Client c)
         {
             Clients.Remove(c);
+
             Console.WriteLine("\nGAME MANAGER : client was removed.\n");
             PrintConnectedClients();
         }

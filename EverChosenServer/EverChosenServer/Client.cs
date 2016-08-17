@@ -65,6 +65,10 @@ namespace EverChosenServer
         /// </summary>
         public void BeginReceive()
         {
+            if (!Sock.Connected) return;
+
+            Array.Clear(_buffer, 0, _buffer.Length);
+
             // Message received from client is assigned to variable _buffer.
             try
             {
@@ -82,9 +86,8 @@ namespace EverChosenServer
         /// <param name="ar"> Asynchronous state result. </param>
         private void OnReceiveCallback(IAsyncResult ar)
         {
-            Console.WriteLine("OnReceive");
             var clientSock = (Socket)ar.AsyncState;
-
+            
             // Unexpected request (ex : force quit)
             if (_buffer[0] == 0)
             {
@@ -94,8 +97,9 @@ namespace EverChosenServer
             }
 
             var packetStr = Encoding.UTF8.GetString(_buffer);
-
+            
             var x = JsonConvert.DeserializeObject<Packet>(packetStr);
+            
             x.Data = x.Data.Replace("\\\"", "\"");
             x.Data = x.Data.Substring(1, x.Data.Length - 2);
 
@@ -103,7 +107,7 @@ namespace EverChosenServer
             {
                 case "OnLoginRequest":
                     Console.WriteLine("Client unique ID : " + x.Data);
-                    GameManager.OnLoginRequest(this);
+                    //GameManager.OnLoginRequest(this);
 
                     // Write code to get Login Information from DB (now temporary)
                     var nick = "Ragdoll";
@@ -137,6 +141,8 @@ namespace EverChosenServer
                     Console.WriteLine("Received MsgName of client is wrong.");
                     break;
             }
+            
+            BeginReceive();
         }
 
         /// <summary>
