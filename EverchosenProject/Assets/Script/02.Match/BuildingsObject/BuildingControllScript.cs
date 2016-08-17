@@ -10,15 +10,7 @@ public class BuildingControllScript : MonoBehaviour
 
     private GameObject _gameController;
     //부서졌을대 다시 기본 엠티빌딩 생성 변수들
-
-
-
-        
-
-
-
-
-
+    
     //생성하는 유닛관련 변수들
     public GameObject UnitPrefab;
     
@@ -28,20 +20,9 @@ public class BuildingControllScript : MonoBehaviour
     private GameObject _unitNumberPanel;
 
     public bool PlayerCastle;
-
-   
-
-
-   
     
-
-
-
-
     public GameObject buildingSettingObject; //오브젝트로 만든것   ui와 오브젝트 2개중 하나사용하면될듯
     
-
-
     private List<Tribe> buildingDataList; //게임오브젝트 변수에서 받아올 빌딩데이터
     //db에서 받아온 값들을 셋팅 해줄 변수들
     public int buildingID;//데이터베이스에서 데이터를 가져올때 필요한 빌딩 아이디
@@ -74,10 +55,7 @@ public class BuildingControllScript : MonoBehaviour
     
         UnitPrefab = Resources.Load<GameObject>("Unit");
 
-
         
-
-
         //UNITNUMBER UI 생성
         _unitNumberPanelPrefab = Resources.Load<GameObject>("UnitNumberPanel");
         _unitNumberPanel = Instantiate(_unitNumberPanelPrefab);
@@ -96,11 +74,8 @@ public class BuildingControllScript : MonoBehaviour
         {
             buildingID = 1;
         }
-
-
+        
         BuildingDataSet(buildingID); //빌딩 데이터 설정
-
-
         
 
        //ui 유닛 넘버 카운트 스타트
@@ -108,15 +83,7 @@ public class BuildingControllScript : MonoBehaviour
         // 빌드레벨 설정 오브젝트들
         buildingSettingObject = this.transform.FindChild("BuildingSetting").gameObject;
         buildingSettingObject.SetActive(false);
-
-
         
-
-       
-
-
-
-
     }
 
     // Update is called once per frame

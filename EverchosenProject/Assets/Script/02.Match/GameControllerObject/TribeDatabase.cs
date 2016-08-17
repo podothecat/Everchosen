@@ -14,11 +14,20 @@ public class TribeDatabase : MonoBehaviour {
    
 	// Use this for initialization
 	void Awake ()
-	{
-	    TribeData = JsonMapper.ToObject(File.ReadAllText(Application.dataPath + "/StreamingAssets/Tribes.json"));
+    {
+      //  if (Application.platform == RuntimePlatform.Android)
+      //  {
+            var data = Resources.Load("DB/tribes");
+            TribeData = JsonMapper.ToObject(data.ToString());
+            //Application.dataPath + "/StreamingAssets/Tribes.json")); //Application.persistentDataPath ,Application.dataPath
+      //  }
+      //  else 
+      //  {
+      //     TribeData = JsonMapper.ToObject(File.ReadAllText(Application.dataPath + "/StreamingAssets/tribes.json"));
+      // }
+
         ConstructTribeDatabase();
-        
-	}
+    }
 
 
 
@@ -92,19 +101,3 @@ public class Tribe
 
 
 }
-
-/*.
-public class Tribe
-{
-
-    public int TribeID { get; set; }
-
-    public Tribe(int tribeID)
-    {
-        this.TribeID = tribeID;
-    }
-    
-
-}
-
-    */

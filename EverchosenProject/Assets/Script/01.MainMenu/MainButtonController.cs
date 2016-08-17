@@ -125,8 +125,6 @@ public class MainButtonController : MonoBehaviour
     //settingpanel에서 들어갈 함수들
     public void QueueButton()
     {
-
-
         TribeSetManager.PData.UserID = "Monjon";
 
         SettingPanel.SetActive(false);//참여와 함께 셋팅패널 사라짐
@@ -145,15 +143,13 @@ public class MainButtonController : MonoBehaviour
         StartCoroutine(queueTimeCounter());
 
         GameStartButton.GetComponent<Button>().interactable = false; //매칭대기열 시작시 매칭버튼 interactable;
-
-
         ServerQueue();//데이터와 함께 queue
 
     }
 
     public void ServerQueue()
     {
-
+        
         MatchingPacket setData = new MatchingPacket("Monjon", TribeSetManager.PData.TribeName, TribeSetManager.PData.Spell, 0);//마지막 파라미터는 teamflag 그냥 0 으로 보냄 
 
         ClientNetworkManager.Send("OnMatchingRequest", setData);

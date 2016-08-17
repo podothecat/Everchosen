@@ -9,15 +9,10 @@ public class UnitControllScript : MonoBehaviour
   
     public int Team;
     
-
-  
-    
-   
     public float unitPower;
     public Sprite UnitSprite;
     public float unitDamageAmount;
     public float unitSupportAmount;
-
 
     public Vector3 destination;
     // Use this for initialization

@@ -8,14 +8,11 @@ public class TeamSettingScript : MonoBehaviour
 {
     public int playerTeam; //플레이어 
     public int playertribeid;
-    
     public string playerbuilding;
-
 
     public int Enemytribeid;
     public string Enemybuilding;
-
-
+    
     private TribeDatabase tribeDB;
     public List<Tribe> PlayertribeDataToAdd;
     public List<Tribe> EnemytribeDataToAdd;

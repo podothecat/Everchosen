@@ -5,33 +5,33 @@ using UnityEngine.UI;
 
 public class BackUIScript : MonoBehaviour
 {
-    private GameObject BackObject;
-    private GameObject BackPanel;
-    private GameObject ExitPanel;
-    private GameObject OptionPanel;
+    private GameObject _backObject;
+    private GameObject _backPanel;
+    private GameObject _exitPanel;
+    private GameObject _optionPanel;
 
     /// <summary>
     /// Called immediately when BackUIController was instantiated.
     /// </summary>
     void Awake()
     {
-        ClientNetworkManager._clientDeviceId = SystemInfo.deviceUniqueIdentifier;
+      
     }
 
 	// Use this for initialization
 	void Start () {
-	    BackObject = GameObject.Find("BackObject");
-	    BackPanel = BackObject.transform.FindChild("BackPanel").gameObject;
-	    ExitPanel = BackObject.transform.FindChild("ExitPanel").gameObject;
-	    OptionPanel = BackObject.transform.FindChild("OptionPanel").gameObject;
+	    _backObject = GameObject.Find("BackObject");
+	    _backPanel = _backObject.transform.FindChild("BackPanel").gameObject;
+	    _exitPanel = _backObject.transform.FindChild("ExitPanel").gameObject;
+	    _optionPanel = _backObject.transform.FindChild("OptionPanel").gameObject;
        
         DontDestroyOnLoad(this.gameObject);
-        ExitPanel.transform.SetAsLastSibling();
+        _exitPanel.transform.SetAsLastSibling();
 
         
-        BackPanel.SetActive(false);
-        OptionPanel.SetActive(false);
-        ExitPanel.SetActive(false);
+        _backPanel.SetActive(false);
+        _optionPanel.SetActive(false);
+        _exitPanel.SetActive(false);
         
         
 	}
@@ -52,23 +52,23 @@ public class BackUIScript : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Escape))
         {
-            if (ExitPanel.activeSelf)
+            if (_exitPanel.activeSelf)
             {
-                ExitPanel.SetActive(false);
+                _exitPanel.SetActive(false);
             }
-            else if (OptionPanel.activeSelf)
+            else if (_optionPanel.activeSelf)
             {
-                OptionPanel.SetActive(false);
+                _optionPanel.SetActive(false);
             }
             else
             {
-                if (BackPanel.activeSelf)
+                if (_backPanel.activeSelf)
                 {
-                    BackPanel.SetActive(false);
+                    _backPanel.SetActive(false);
                 }
                 else
                 {
-                    BackPanel.SetActive(true);
+                    _backPanel.SetActive(true);
                 }
 
             }
@@ -78,19 +78,18 @@ public class BackUIScript : MonoBehaviour
     //backpanel 3개 버튼 함수
     public void OptionButtonInvoke()
     {
-        OptionPanel.SetActive(true);
-       
+        _optionPanel.SetActive(true);
     }
 
     public void ReturnButtonInvoke()
     {
-        BackPanel.SetActive(false);
+        _backPanel.SetActive(false);
     }
 
     public void ExitButtonInvoke()
     {
-        if(!ExitPanel.activeSelf)
-        ExitPanel.SetActive(true);
+        if(!_exitPanel.activeSelf)
+        _exitPanel.SetActive(true);
     }
 
 
@@ -101,20 +100,14 @@ public class BackUIScript : MonoBehaviour
     //exit panel 오픈시 yes 버튼 함수
     public void ExitYesButtonInvoke() 
     {
-
-
-        ClientNetworkManager.Send("OnExitRequest",null);
-
-       
-        
-        ClientNetworkManager.SocketClose();
+        ClientNetworkManager.Send("OnExitRequest", null);
         Debug.Log(ClientNetworkManager._clientSocket.Connected);
         Application.Quit();
     }
     //exit panel 오픈시 no 버튼 함수
     public void ExitNoButtonInvoke()
     {
-            ExitPanel.SetActive(false);
+            _exitPanel.SetActive(false);
     }
 
 
@@ -122,7 +115,7 @@ public class BackUIScript : MonoBehaviour
     //optionpanel의 backbutton
     public void OptionBackButtonInvoke()
     {
-        OptionPanel.SetActive(false);
+        _optionPanel.SetActive(false);
     }
 
     /// <summary>
@@ -133,4 +126,9 @@ public class BackUIScript : MonoBehaviour
         Debug.Log("BackUIController was destroyed.");
         ClientNetworkManager.SocketClose();
     }
+    /*
+    void OnApplicationQuit()
+    {
+        ClientNetworkManager.SocketClose();
+    }*/
 }

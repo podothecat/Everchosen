@@ -22,10 +22,10 @@ namespace Client
     {
         public static Socket _clientSocket = null;
         private static Socket _serverSocket = null;
-        private static byte[] _buffer = new byte[1024];
+        private static readonly byte[] _buffer = new byte[1024];
 
         // Save device unique id.
-        public static string _clientDeviceId;
+        public static string ClientDeviceId;
 
         public static bool Connected = false;
         public static MatchingPacket PacketData; // 유니티에서 사용할 데이터를 담을변수
@@ -66,7 +66,7 @@ namespace Client
                     Debug.Log("연결됨");
                 }
 
-                Send("OnLoginRequest", _clientDeviceId);
+             
                 Receive();
                 Connected = true;
 
@@ -96,6 +96,8 @@ namespace Client
                         MsgName = msg,
                         Data = JsonConvert.SerializeObject(setData)
                     };
+
+                   // Debug.Log();
                     var json = JsonConvert.SerializeObject(sample);
                     var sendData = Encoding.UTF8.GetBytes(json);
                     _clientSocket.BeginSend(sendData, 0, sendData.Length, SocketFlags.None, SendCallBack, _clientSocket);
@@ -128,7 +130,17 @@ namespace Client
 
         public static void Receive()
         {
-            _serverSocket.BeginReceive(_buffer, 0, _buffer.Length, SocketFlags.None, ReceiveCallBack, _serverSocket);
+            Array.Clear(_buffer, 0, _buffer.Length);
+            try
+            {
+                _serverSocket.BeginReceive(_buffer, 0, _buffer.Length, SocketFlags.None, ReceiveCallBack, _serverSocket);
+            }
+            catch (Exception e)
+            {
+                
+               Debug.Log(e);
+            }
+           
         }
 
     
@@ -163,12 +175,12 @@ namespace Client
             }
             catch (SocketException e)
             {
-                Debug.Log("exeption 에러 ; " + e);
+                Debug.Log("Socket error : " + e);
                 //데이저 수신 에러
             }
             catch (Exception e)
             {
-                Debug.Log("Socket error"+e);
+                Debug.Log("exeption 에러 : "+e);
             }
 
             var matchingPakcet = new MatchingPacket("id","tribe",0,1);
