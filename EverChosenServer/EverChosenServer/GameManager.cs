@@ -14,12 +14,19 @@ namespace EverChosenServer
         {
             Clients.Add(c);
             Console.WriteLine("\nGAME MANAGER : client was added.\n");
+            PrintConnectedClients();
         }
 
         public static void ReleaseClient(Client c)
         {
             Clients.Remove(c);
             Console.WriteLine("\nGAME MANAGER : client was removed.\n");
+            PrintConnectedClients();
+        }
+
+        public static void PrintConnectedClients()
+        {
+            Console.WriteLine("# of connected clients : " + Clients.Count);
         }
 
         public static void OnMatchingRequest(Client client)

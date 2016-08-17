@@ -24,6 +24,9 @@ namespace Client
         private static Socket _serverSocket = null;
         private static byte[] _buffer = new byte[1024];
 
+        // Save device unique id.
+        public static string _clientDeviceId;
+
         public static bool Connected = false;
         public static MatchingPacket PacketData; // 유니티에서 사용할 데이터를 담을변수
         
@@ -178,6 +181,8 @@ namespace Client
         
         public static void SocketClose()
         {
+            if (!_clientSocket.Connected) return;
+
             _clientSocket.Shutdown(SocketShutdown.Both);
             _clientSocket.Close();
         }

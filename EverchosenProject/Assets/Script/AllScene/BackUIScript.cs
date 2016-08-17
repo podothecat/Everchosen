@@ -10,6 +10,14 @@ public class BackUIScript : MonoBehaviour
     private GameObject ExitPanel;
     private GameObject OptionPanel;
 
+    /// <summary>
+    /// Called immediately when BackUIController was instantiated.
+    /// </summary>
+    void Awake()
+    {
+        ClientNetworkManager._clientDeviceId = SystemInfo.deviceUniqueIdentifier;
+    }
+
 	// Use this for initialization
 	void Start () {
 	    BackObject = GameObject.Find("BackObject");
@@ -115,7 +123,14 @@ public class BackUIScript : MonoBehaviour
     public void OptionBackButtonInvoke()
     {
         OptionPanel.SetActive(false);
-
     }
 
+    /// <summary>
+    /// Called when BackUIController object was destroyed.
+    /// </summary>
+    void OnDestroy()
+    {
+        Debug.Log("BackUIController was destroyed.");
+        ClientNetworkManager.SocketClose();
+    }
 }
