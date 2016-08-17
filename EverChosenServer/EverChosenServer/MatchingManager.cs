@@ -8,7 +8,7 @@ namespace EverChosenServer
         // Clients that 
         public static Queue<Client> Clients = new Queue<Client>();
 
-        internal static void MatchProcess(Client client)
+        internal static Client MatchProcess(Client client)
         {
             if (Clients.Any())
             {
@@ -16,12 +16,13 @@ namespace EverChosenServer
 
                 opponent.MatchingData.TeamColor = 1;
                 client.MatchingData.TeamColor = 2;
-                opponent.SendPacket("OnSucceedMatching", client);
-                client.SendPacket("OnSucceedMatching", opponent);
+
+                return opponent;
             }
             else
             {
                 Clients.Enqueue(client);
+                return null;
             }
         }
     }

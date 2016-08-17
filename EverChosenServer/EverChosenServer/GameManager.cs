@@ -29,9 +29,20 @@ namespace EverChosenServer
             Console.WriteLine("# of connected clients : " + Clients.Count);
         }
 
+        public static void OnLoginRequest(Client client)
+        {
+            DatabaseManager.GetClientInfo(client);
+        }
+
         public static void OnMatchingRequest(Client client)
         {
-            MatchingManager.MatchProcess(client);
+            var oppoClient = MatchingManager.MatchProcess(client);
+
+            if (oppoClient == null)
+                return;
+
+            oppoClient.SendPacket("OnSucceedMatching", client);
+            client.SendPacket("OnSucceedMatching", oppoClient);
         }
 
         public static void OnIngameRequest(Client client)
