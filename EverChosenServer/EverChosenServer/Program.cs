@@ -47,8 +47,8 @@ namespace EverChosenServer
             var clientSocket = socket.EndAccept(ar);
             
             var newClient = new Client(clientSocket);
-            newClient.BeginReceive();
             GameManager.AddClient(newClient);
+            newClient.BeginReceive();
             
             _serverSocket.BeginAccept(OnAcceptCallback, _serverSocket);
         }

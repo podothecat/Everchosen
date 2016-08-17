@@ -28,6 +28,16 @@ namespace EverChosenServer
     }
 
     /// <summary>
+    /// Data for client information.
+    /// </summary>
+    public class LoginPacket
+    {
+        public string NickName { get; set; }
+        public int Wins { get; set; }
+        public int Loses { get; set; }
+    }
+
+    /// <summary>
     /// Data for matching clients.
     /// </summary>
     public class MatchingPacket
@@ -45,97 +55,4 @@ namespace EverChosenServer
     {
         public int UnitCount { get; set; }
     }
-
-    /*  This code may be reused..
-        public static class SplitParameter
-        {
-            public static char[] delimiterChars =
-            {
-                '{', '}', '"', ':', ',', '\n', ' ', '\t', '\r'
-            };
-        }
-
-        internal interface IPacket
-        {
-            string MsgName { get; set; }
-            dynamic Data { get; set; }
-        }
-
-        public class PacketConverter : JsonConverter
-        {
-            public override bool CanConvert(Type objectType)
-            {
-                return (objectType == typeof(IPacket));
-            }
-
-            public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
-            {
-                var jo = JObject.Load(reader);
-
-                if (jo["MsgName"].Value<string>() == "OnMatchingRequest")
-                {
-                    return jo.ToObject<MatchingPacket>(serializer);
-                }
-                if (jo["MsgName"].Value<string>() == "OnInGameRequest")
-                {
-                    return jo.ToObject<InGamePacket>(serializer);
-                }
-
-                return null;
-            }
-
-            public override bool CanWrite
-            {
-                get { return false; }
-            }
-
-            public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
-            {
-                throw new NotImplementedException();
-            }
-        }
-
-        /// <summary>
-        /// Packet which will be used in Matching Scene.
-        /// </summary>
-        internal class MatchingPacket : IPacket
-        {
-            public string MsgName { get; set; }
-            public dynamic Data { get; set; }
-
-            public string Id { get; set; }
-            public string Tribe { get; set; }
-            public int Spell { get; set; }
-
-            public MatchingPacket(string msgName, dynamic data)
-            {
-                MsgName = msgName;
-                Data = data;
-
-                ParseData();
-            }
-
-            private void ParseData()
-            {
-                string d = Data.ToString();
-
-                var tags = d.Split(SplitParameter.delimiterChars, StringSplitOptions.RemoveEmptyEntries);
-
-                Id = tags[1];
-                Tribe = tags[3];
-                Spell = Convert.ToInt32(tags[5]);
-
-                Console.WriteLine(Id + " " + Tribe + " " + Spell);
-            }
-        }
-
-        /// <summary>
-        /// Packet which will be used in InGame Scene.
-        /// </summary>
-        internal class InGamePacket : IPacket
-        {
-            public string MsgName { get; set; }
-            public dynamic Data { get; set; }
-        }
-    */
 }
