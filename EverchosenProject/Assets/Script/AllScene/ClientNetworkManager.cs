@@ -24,6 +24,9 @@ namespace Client
         private static Socket _serverSocket = null;
         private static byte[] _buffer = new byte[1024];
 
+        // Save device unique id.
+        public static string _clientDeviceId;
+
         public static bool Connected = false;
         public static MatchingPacket PacketData; // 유니티에서 사용할 데이터를 담을변수
         
@@ -63,6 +66,7 @@ namespace Client
                     Debug.Log("연결됨");
                 }
 
+                Send("OnLoginRequest", _clientDeviceId);
                 Receive();
                 Connected = true;
 
@@ -178,6 +182,8 @@ namespace Client
         
         public static void SocketClose()
         {
+            if (!_clientSocket.Connected) return;
+
             _clientSocket.Shutdown(SocketShutdown.Both);
             _clientSocket.Close();
         }
@@ -208,41 +214,4 @@ namespace Client
 
         }
     }
-
-
-    
-
-
-
-    public class MatchingReceivePacket
-    {
-        public string P1Id { get; set; }
-        public string P1Tribe { get; set; }
-        public int P1Spell { get; set; }
-
-        public string P2Id { get; set; }
-        public string P2Tribe { get; set; }
-        public int P2Spell { get; set; }
-
-        public MatchingReceivePacket(string p1id, string p2id, string p1tribe, string p2tribe, int p1spell, int p2spell)
-        {
-            this.P1Id = p1id;
-            this.P2Id = p2id;
-            this.P1Tribe = p1tribe;
-            this.P2Tribe = p2tribe;
-            this.P1Spell = p1spell;
-            this.P2Spell = p2spell;
-        }
-
-        public MatchingReceivePacket()
-        {
-            this.P1Id = null;
-        }
-    }
-
-
-
-
-
-
 }

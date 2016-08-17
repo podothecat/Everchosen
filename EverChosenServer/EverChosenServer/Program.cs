@@ -49,9 +49,7 @@ namespace EverChosenServer
             var newClient = new Client(clientSocket);
             newClient.BeginReceive();
             GameManager.AddClient(newClient);
-
-            Console.WriteLine("Current # of clients : " + GameManager.Clients.Count);
-
+            
             _serverSocket.BeginAccept(OnAcceptCallback, _serverSocket);
         }
     }
