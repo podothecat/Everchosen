@@ -42,10 +42,6 @@ namespace EverChosenServer
                 Close();
                 return;
             }
-            else
-            {
-                Console.WriteLine(_buffer);
-            }
             
             var packetStr = Encoding.UTF8.GetString(_buffer);
             
@@ -53,6 +49,7 @@ namespace EverChosenServer
             //JsonConverter[] converters = {new PacketConverter()};
             //var x = JsonConvert.DeserializeObject<Packet>(packetStr, 
             //    new JsonSerializerSettings() { Converters = converters });
+            
             var x = JsonConvert.DeserializeObject<Packet>(packetStr);
             x.Data = x.Data.Replace("\\\"", "\"");
             x.Data = x.Data.Substring(1, x.Data.Length - 2);
@@ -62,7 +59,11 @@ namespace EverChosenServer
             
             switch (x.MsgName)
             {
+                case "OnLoginRequest":
+                    Console.WriteLine("Client unique ID : " + x.Data);
+                    break;
                 case "OnMatchingRequest":
+                    Console.WriteLine("Matching Request");
                     Console.Write(x.Data);
                     MatchingData = JsonConvert.DeserializeObject<MatchingPacket>(x.Data.ToString());
                     Console.WriteLine(
