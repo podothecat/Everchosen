@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net.Sockets;
 using System.Security.Cryptography.X509Certificates;
@@ -12,7 +13,7 @@ namespace EverChosenServer
     internal class Client
     {
         public Socket Sock { get; set; }
-        public LoginPacket LoginData;
+        public ProfilePacket LoginData;
         public MatchingPacket MatchingData;
         public IngamePacket InGameData;
 
@@ -30,25 +31,13 @@ namespace EverChosenServer
         /// <summary>
         /// Send packet to client.
         /// </summary>
-        public void SendPacket(string msg, Client oppoClient)
+        public void BeginSend(string msg, dynamic data)
         {
-            Console.WriteLine(msg);         
-            
-            switch (msg)
-            {
-                case "OnSucceedMatching":
-                    var opponentMatchData = oppoClient.MatchingData;
-                    var p = new Packet(msg, opponentMatchData);
-                    var sendBuf = new UTF8Encoding().GetBytes(
-                        JsonConvert.SerializeObject(p, Formatting.Indented));
-
-                    Sock.BeginSend(sendBuf, 0, sendBuf.Length,
-                        SocketFlags.None, OnSendCallback, Sock);
-                    break;
-                default:
-                    Console.WriteLine("Msg error");
-                    break;
-            }            
+            var p = new Packet(msg, data);
+            var sendBuf = new UTF8Encoding().GetBytes(
+                JsonConvert.SerializeObject(p, Formatting.Indented));
+           
+            Sock.BeginSend(sendBuf, 0, sendBuf.Length, SocketFlags.None, OnSendCallback, Sock);
         }
 
         /// <summary>
@@ -57,7 +46,7 @@ namespace EverChosenServer
         /// <param name="ar"> Async State </param>
         private void OnSendCallback(IAsyncResult ar)
         {
-            Console.WriteLine("OnSend..");
+            //Console.WriteLine("OnSend..");
         }
 
         /// <summary>
@@ -67,9 +56,9 @@ namespace EverChosenServer
         {
             if (!Sock.Connected) return;
 
+            // Initialize buffer when each time it receives packet.
             Array.Clear(_buffer, 0, _buffer.Length);
 
-            // Message received from client is assigned to variable _buffer.
             try
             {
                 Sock.BeginReceive(_buffer, 0, _buffer.Length, SocketFlags.None, OnReceiveCallback, Sock);
@@ -100,47 +89,11 @@ namespace EverChosenServer
             
             var x = JsonConvert.DeserializeObject<Packet>(packetStr);
             
+            // Refine received packet.
             x.Data = x.Data.Replace("\\\"", "\"");
             x.Data = x.Data.Substring(1, x.Data.Length - 2);
 
-            switch (x.MsgName)
-            {
-                case "OnLoginRequest":
-                    Console.WriteLine("Client unique ID : " + x.Data);
-                    //GameManager.OnLoginRequest(this);
-
-                    // Write code to get Login Information from DB (now temporary)
-                    var nick = "Ragdoll";
-                    var wins = 10;
-                    var loses = 5;
-                    // ...
-
-                    LoginData = new LoginPacket
-                    {
-                        NickName = nick,
-                        Wins = wins,
-                        Loses = loses
-                    };
-                    break;
-                case "OnMatchingRequest":
-                    Console.WriteLine("Matching Request");
-                    Console.Write(x.Data);
-                    MatchingData = JsonConvert.DeserializeObject<MatchingPacket>(x.Data.ToString());
-                    Console.WriteLine(
-                        MatchingData.Id + " " + MatchingData.Tribe + " " + MatchingData.Spell);
-                    GameManager.OnMatchingRequest(this);
-                    break;
-                case "OnInGameRequest":
-                    Console.WriteLine("In Game Request");
-                    InGameData = JsonConvert.DeserializeObject<IngamePacket>(x.Data);
-                    break;
-                case "OnExitRequest":
-                    Close();
-                    break;
-                default:
-                    Console.WriteLine("Received MsgName of client is wrong.");
-                    break;
-            }
+            ProcessRequest(x);
             
             BeginReceive();
         }
@@ -148,12 +101,47 @@ namespace EverChosenServer
         /// <summary>
         /// Close client socket
         /// </summary>
-        public void Close()
+        private void Close()
         {
             Console.WriteLine("Close");
             Sock.Shutdown(SocketShutdown.Both);
             Sock.Close();
             GameManager.ReleaseClient(this);
+        }
+
+        /// <summary>
+        /// Processing requests of client.
+        /// </summary>
+        /// <param name="req"></param>
+        private void ProcessRequest(Packet req)
+        {
+            switch (req.MsgName)
+            {
+                case "OnLoginRequest":
+                    GameManager.LoginRequest(this);
+                    Console.WriteLine("Request : Login");
+                    break;
+                case "OnMatchingRequest":
+                    MatchingData = JsonConvert.DeserializeObject<MatchingPacket>(req.Data);
+                    GameManager.MatchingRequest(this);
+                    Console.WriteLine("Request : Matching");
+                    break;
+                case "OnMatchingCancelRequest":
+                    GameManager.MatchingCancelRequest(this);
+                    Console.WriteLine("Request : Matching Cancel");
+                    break;
+                case "OnInGameRequest":
+                    InGameData = JsonConvert.DeserializeObject<IngamePacket>(req.Data);
+                    Console.WriteLine("Request : Ingame");
+                    break;
+                case "OnExitRequest":
+                    Close();
+                    Console.WriteLine("Request : Exit");
+                    break;
+                default:
+                    Console.WriteLine("Received MsgName of client is wrong.");
+                    break;
+            }
         }
     }
 }

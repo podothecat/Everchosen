@@ -30,7 +30,7 @@ namespace EverChosenServer
     /// <summary>
     /// Data for client information.
     /// </summary>
-    public class LoginPacket
+    public class ProfilePacket
     {
         public string NickName { get; set; }
         public int Wins { get; set; }
