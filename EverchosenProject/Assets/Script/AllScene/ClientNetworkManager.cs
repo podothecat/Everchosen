@@ -12,9 +12,6 @@ using Debug = UnityEngine.Debug;
 //2.0만사용가능 3.5이후로는 호환이 안됨 유니티
 
 
-
-
-
 namespace Client
 {
 
@@ -34,8 +31,13 @@ namespace Client
         public static string ReceiveMsg = null; //유니티쪽에서 사용할 메시지를 담을 변수
         public static void ConnectToServer(string hostName, int hostPort)
         {
+<<<<<<< HEAD
            
             ClientSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+=======
+            
+            _clientSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+>>>>>>> 91abede88bc9a04598d9214ec45aab9b25e5c03b
 
             try
             {
@@ -218,9 +220,9 @@ namespace Client
         public int TeamColor { get; set;}
       
 
-        public MatchingPacket(string id, string tribe, int spell, int teamColor)
+        public MatchingPacket(string nickName, string tribe, int spell, int teamColor)
         {
-            this.Id = id;
+            this.Id = nickName;
             this.Tribe = tribe;
             this.Spell = spell;
             this.TeamColor = teamColor;
@@ -228,4 +230,11 @@ namespace Client
         }
     }
 
+<<<<<<< HEAD
+=======
+    public class IngamePacket
+    {
+        
+    }
+>>>>>>> 91abede88bc9a04598d9214ec45aab9b25e5c03b
 }
