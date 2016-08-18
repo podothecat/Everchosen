@@ -10,13 +10,7 @@ public class BackUIScript : MonoBehaviour
     private GameObject _exitPanel;
     private GameObject _optionPanel;
 
-    /// <summary>
-    /// Called immediately when BackUIController was instantiated.
-    /// </summary>
-    void Awake()
-    {
-      
-    }
+   
 
 	// Use this for initialization
 	void Start () {
@@ -43,10 +37,7 @@ public class BackUIScript : MonoBehaviour
 
 	}
 
-
-
-
-
+    
     //exit panel관련 함수들
     void BackFunction()//안드로이드 뒤로가기 버튼 누를시 exit패널 온
     {
@@ -70,12 +61,11 @@ public class BackUIScript : MonoBehaviour
                 {
                     _backPanel.SetActive(true);
                 }
-
             }
         }
     }
+    
 
-    //backpanel 3개 버튼 함수
     public void OptionButtonInvoke()
     {
         _optionPanel.SetActive(true);
@@ -91,17 +81,12 @@ public class BackUIScript : MonoBehaviour
         if(!_exitPanel.activeSelf)
         _exitPanel.SetActive(true);
     }
-
-
-
-
-
     
     //exit panel 오픈시 yes 버튼 함수
     public void ExitYesButtonInvoke() 
     {
         ClientNetworkManager.Send("OnExitRequest", null);
-        Debug.Log(ClientNetworkManager._clientSocket.Connected);
+        Debug.Log(ClientNetworkManager.ClientSocket.Connected);
         Application.Quit();
     }
     //exit panel 오픈시 no 버튼 함수
@@ -110,8 +95,7 @@ public class BackUIScript : MonoBehaviour
             _exitPanel.SetActive(false);
     }
 
-
-   
+    
     //optionpanel의 backbutton
     public void OptionBackButtonInvoke()
     {
