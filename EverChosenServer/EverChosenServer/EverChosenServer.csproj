@@ -62,6 +62,7 @@
     <Compile Include="Client.cs" />
     <Compile Include="DatabaseManager.cs" />
     <Compile Include="GameManager.cs" />
+    <Compile Include="IngameManager.cs" />
     <Compile Include="MatchingManager.cs" />
     <Compile Include="PacketManager.cs" />
     <Compile Include="Program.cs" />

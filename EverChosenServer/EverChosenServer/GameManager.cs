@@ -79,7 +79,10 @@ namespace EverChosenServer
                 return;
 
             oppoClient.BeginSend("OnSucceedMatching", client.MatchingData);
+            oppoClient.IsIngame = true;
             client.BeginSend("OnSucceedMatching", oppoClient.MatchingData);
+            client.IsIngame = true;
+            var ingame = new IngameManager(client, oppoClient);
         }
 
         /// <summary>

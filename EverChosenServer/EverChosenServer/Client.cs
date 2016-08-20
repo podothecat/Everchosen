@@ -17,6 +17,8 @@ namespace EverChosenServer
         public MatchingPacket MatchingData;
         public IngamePacket InGameData;
 
+        public bool IsIngame;
+
         private readonly byte[] _buffer = new byte[1024];
 
         /// <summary>
@@ -26,6 +28,7 @@ namespace EverChosenServer
         public Client(Socket socket)
         {
             Sock = socket;
+            IsIngame = false;
         }
 
         /// <summary>
@@ -118,25 +121,25 @@ namespace EverChosenServer
             switch (req.MsgName)
             {
                 case "OnLoginRequest":
-                    GameManager.LoginRequest(this);
                     Console.WriteLine("Request : Login");
+                    GameManager.LoginRequest(this);
                     break;
                 case "OnMatchingRequest":
+                    Console.WriteLine("Request : Matching");
                     MatchingData = JsonConvert.DeserializeObject<MatchingPacket>(req.Data);
                     GameManager.MatchingRequest(this);
-                    Console.WriteLine("Request : Matching");
                     break;
                 case "OnMatchingCancelRequest":
-                    GameManager.MatchingCancelRequest(this);
                     Console.WriteLine("Request : Matching Cancel");
+                    GameManager.MatchingCancelRequest(this);
                     break;
                 case "OnInGameRequest":
-                    InGameData = JsonConvert.DeserializeObject<IngamePacket>(req.Data);
                     Console.WriteLine("Request : Ingame");
+                    InGameData = JsonConvert.DeserializeObject<IngamePacket>(req.Data);
                     break;
                 case "OnExitRequest":
-                    Close();
                     Console.WriteLine("Request : Exit");
+                    Close();
                     break;
                 default:
                     Console.WriteLine("Received MsgName of client is wrong.");

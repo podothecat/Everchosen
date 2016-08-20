@@ -31,13 +31,11 @@ namespace Client
         public static string ReceiveMsg = null; //유니티쪽에서 사용할 메시지를 담을 변수
         public static void ConnectToServer(string hostName, int hostPort)
         {
-<<<<<<< HEAD
+
            
             ClientSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-=======
+
             
-            _clientSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
->>>>>>> 91abede88bc9a04598d9214ec45aab9b25e5c03b
 
             try
             {
@@ -229,12 +227,9 @@ namespace Client
 
         }
     }
-
-<<<<<<< HEAD
-=======
+    
     public class IngamePacket
     {
         
     }
->>>>>>> 91abede88bc9a04598d9214ec45aab9b25e5c03b
 }
