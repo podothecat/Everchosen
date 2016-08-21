@@ -7,16 +7,18 @@ using System.Threading.Tasks;
 
 namespace EverChosenServer
 {
-    internal class IngameManager
+    internal static class IngameManager
     {
-        public IngameManager(Client a, Client b)
+        private static List<GameRoom> _rooms = new List<GameRoom>();
+
+        public static void AddRoom(GameRoom room)
         {
-            
+            _rooms.Add(room);
         }
 
-        public void GameLogicProcess(Client c)
+        public static void DelRoom(GameRoom room)
         {
-
+            _rooms.Remove(room);
         }
     }
 }

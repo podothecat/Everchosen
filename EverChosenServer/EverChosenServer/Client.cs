@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Diagnostics;
 using System.Linq;
 using System.Net.Sockets;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
@@ -15,7 +17,6 @@ namespace EverChosenServer
         public Socket Sock { get; set; }
         public ProfilePacket LoginData;
         public MatchingPacket MatchingData;
-        public IngamePacket InGameData;
 
         public bool IsIngame;
 
@@ -44,15 +45,6 @@ namespace EverChosenServer
         }
 
         /// <summary>
-        /// Process packet to send.
-        /// </summary>
-        /// <param name="ar"> Async State </param>
-        private void OnSendCallback(IAsyncResult ar)
-        {
-            //Console.WriteLine("OnSend..");
-        }
-
-        /// <summary>
         /// Receive asynchronous data
         /// </summary>
         public void BeginReceive()
@@ -70,6 +62,15 @@ namespace EverChosenServer
             {
                 Console.WriteLine(e);
             }
+        }
+
+        /// <summary>
+        /// Process packet to send.
+        /// </summary>
+        /// <param name="ar"> Async State </param>
+        private void OnSendCallback(IAsyncResult ar)
+        {
+            //Console.WriteLine("OnSend..");
         }
 
         /// <summary>
@@ -93,10 +94,19 @@ namespace EverChosenServer
             var x = JsonConvert.DeserializeObject<Packet>(packetStr);
             
             // Refine received packet.
+            Console.WriteLine(x.Data);
             x.Data = x.Data.Replace("\\\"", "\"");
             x.Data = x.Data.Substring(1, x.Data.Length - 2);
 
-            ProcessRequest(x);
+            if (!IsIngame)
+                ProcessRequest(x);
+            else
+            {
+                Console.WriteLine("Request : Ingame");
+                
+                InGameRequest(this, x);
+            }
+                
             
             BeginReceive();
         }
@@ -124,27 +134,40 @@ namespace EverChosenServer
                     Console.WriteLine("Request : Login");
                     GameManager.LoginRequest(this);
                     break;
+
                 case "OnMatchingRequest":
                     Console.WriteLine("Request : Matching");
                     MatchingData = JsonConvert.DeserializeObject<MatchingPacket>(req.Data);
                     GameManager.MatchingRequest(this);
                     break;
+
                 case "OnMatchingCancelRequest":
                     Console.WriteLine("Request : Matching Cancel");
                     GameManager.MatchingCancelRequest(this);
                     break;
+
                 case "OnInGameRequest":
-                    Console.WriteLine("Request : Ingame");
-                    InGameData = JsonConvert.DeserializeObject<IngamePacket>(req.Data);
+                    //if (!IsIngame) break;
+
+                    //Console.WriteLine("Request : Ingame");
+                    
+                    //var ingameData = JsonConvert.DeserializeObject<IngamePacket>(req.Data);
+                    //Console.WriteLine(ingameData.StartNode + " " + ingameData.EndNode);
+                    //InGameRequest(this, ingameData);
                     break;
+
                 case "OnExitRequest":
                     Console.WriteLine("Request : Exit");
                     Close();
                     break;
+
                 default:
                     Console.WriteLine("Received MsgName of client is wrong.");
                     break;
             }
         }
+
+        // Ingame Event Handler
+        public event EventHandler<Packet> InGameRequest;
     }
 }
