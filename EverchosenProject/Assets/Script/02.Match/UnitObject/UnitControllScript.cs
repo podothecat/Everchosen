@@ -18,15 +18,10 @@ public class UnitControllScript : MonoBehaviour
     // Use this for initialization
     void Start ()
     {
-       
         GameControllerObject = GameObject.Find("GameControllerObject");
   
         Team = GameControllerObject.GetComponent<TeamSettingScript>().playerTeam;//유닛 팀설정
-
-        
         unitDataSet(); //생성될 유닛 데이터 설정 unitid는 buildingControllerScript에서 unit을 spawn할시 값 초기화
-        
-        
     }
 	
 	// Update is called once per frame
@@ -36,29 +31,20 @@ public class UnitControllScript : MonoBehaviour
 	        this.GetComponent<BoxCollider>().enabled = true;
 	    }
 	}
-
-
-
     void unitDataSet()
     {
    
         this.gameObject.GetComponentInChildren<SpriteRenderer>().sprite = UnitSprite;
     }
 
-
-
     void OnTriggerEnter(Collider other)
     {
         if (other.tag == GameControllerObject.GetComponent<TeamSettingScript>().Enemybuilding)
         {
-
             unitCalculateAttack(other);
             other.GetComponent<BuildingControllScript>()._unitNumber -= unitDamageAmount;//(int)unitToAdd.Power; ; //공격력에따라 데미지 변경
-            other.GetComponent<BuildingControllScript>().unitNumbersetText();
-
+            other.GetComponent<BuildingControllScript>().UnitNumbersetText();
             
-             
-
             if (other.GetComponent<BuildingControllScript>()._unitNumber<=0)
             {
                 other.GetComponent<BuildingControllScript>().DestroythisBuilding();
@@ -70,10 +56,9 @@ public class UnitControllScript : MonoBehaviour
         {
             unitCalculateSupport(other);
             other.GetComponent<BuildingControllScript>()._unitNumber += unitSupportAmount;//(int)unitToAdd.Value;// 값에 따라 +변경
-            other.GetComponent<BuildingControllScript>().unitNumbersetText();
+            other.GetComponent<BuildingControllScript>().UnitNumbersetText();
             Destroy(this.gameObject);
         }
-        
     }
 
 

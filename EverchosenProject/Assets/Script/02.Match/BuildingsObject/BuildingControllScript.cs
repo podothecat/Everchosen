@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using Client;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
@@ -9,8 +10,6 @@ public class BuildingControllScript : MonoBehaviour
 {
 
     private GameObject _gameController;
-    //부서졌을대 다시 기본 엠티빌딩 생성 변수들
-    
     //생성하는 유닛관련 변수들
     public GameObject UnitPrefab;
     
@@ -22,7 +21,6 @@ public class BuildingControllScript : MonoBehaviour
     public bool PlayerCastle;
     
     public GameObject buildingSettingObject; //오브젝트로 만든것   ui와 오브젝트 2개중 하나사용하면될듯
-    
     private List<Tribe> buildingDataList; //게임오브젝트 변수에서 받아올 빌딩데이터
     //db에서 받아온 값들을 셋팅 해줄 변수들
     public int buildingID;//데이터베이스에서 데이터를 가져올때 필요한 빌딩 아이디
@@ -32,11 +30,18 @@ public class BuildingControllScript : MonoBehaviour
     public float buildingValue;//빌딩 value는 그 빌딩의 유닛이 생산하는 유닛의 체력값 
     public float unitPower;
     public Sprite unitSprite;
-
-
     public int playerTeam;//생성할 유닛의 색상설정을 알기위한 변수 
 
+    public int NodeNumber;
 
+    private BuildingLevelData _sendLevelData = new BuildingLevelData();
+
+
+    void Awake()
+    {
+        UnitPrefab = Resources.Load<GameObject>("Unit");
+       
+    }
 
 
     // Use this for initialization
@@ -52,12 +57,12 @@ public class BuildingControllScript : MonoBehaviour
         {
             buildingDataList = _gameController.GetComponent<TeamSettingScript>().EnemytribeDataToAdd;
         }
-    
-        UnitPrefab = Resources.Load<GameObject>("Unit");
 
-        
-        //UNITNUMBER UI 생성
+
         _unitNumberPanelPrefab = Resources.Load<GameObject>("UnitNumberPanel");
+
+        //UNITNUMBER UI 생성
+
         _unitNumberPanel = Instantiate(_unitNumberPanelPrefab);
         _unitNumberPanel.transform.SetParent(GameObject.Find("UnitNumberUIObject").gameObject.transform);
         _unitNumberPanel.transform.position =
@@ -91,11 +96,9 @@ public class BuildingControllScript : MonoBehaviour
     {
         UnitCreateCounterFunction();
     }
-
-
+    
     void BuildingDataSet(int buildingID)
     {
-      
         //건물관련
         this.gameObject.GetComponent<SpriteRenderer>().sprite = buildingDataList[buildingID].BuildingSprite;//선택한 빌딩에 따라 건물스프라이트 가져옴
      
@@ -111,16 +114,14 @@ public class BuildingControllScript : MonoBehaviour
         {
             unitSprite = buildingDataList[buildingID].RUnitSprite;
         }
-
-
-
+        
         //생성할 유닛 sprite
         unitPower = buildingDataList[buildingID].UnitPower;
       
         _unitNumber = 0; // 건물레벨업시 유닛숫자 초기화
         _unitCreateCounter = 0;
         
-        unitNumbersetText();
+        UnitNumbersetText();
     }
 
 
@@ -132,7 +133,7 @@ public class BuildingControllScript : MonoBehaviour
         if (_unitCreateCounter > _delayCreateCount)
         {
             _unitNumber++;
-            unitNumbersetText();
+            UnitNumbersetText();
             _unitCreateCounter = 0;
         }
     }
@@ -146,10 +147,7 @@ public class BuildingControllScript : MonoBehaviour
         {
             for (int i = 0; i < 5; i++) //유닛 생성
             {
-
                 _unit = Instantiate(UnitPrefab);
-              
-
                 _unit.transform.SetParent(this.gameObject.transform);
                 _unit.transform.position = this.gameObject.transform.position;
                 _unit.transform.rotation = Quaternion.Euler(Vector3.zero);
@@ -169,7 +167,6 @@ public class BuildingControllScript : MonoBehaviour
                 {
                     _unit.GetComponentInChildren<SpriteRenderer>().flipX = true;
                 }
-
                 _unitNumber--;
 
             }
@@ -179,9 +176,7 @@ public class BuildingControllScript : MonoBehaviour
             int createUnitnumber = (int)_unitNumber;
             for (int i = 0; i < createUnitnumber; i++) //유닛 생성
             {
-
                 _unit = Instantiate(UnitPrefab);
-                
                 _unit.transform.SetParent(this.gameObject.transform);
                 _unit.transform.position = this.gameObject.transform.position;
                 _unit.transform.rotation = Quaternion.Euler(Vector3.zero);
@@ -201,21 +196,20 @@ public class BuildingControllScript : MonoBehaviour
                 {
                     _unit.GetComponentInChildren<SpriteRenderer>().flipX = true;
                 }
-
             }
         }
         else
         {
-
+            Debug.Log("유닛이 업성");
         }
-        unitNumbersetText();
+        UnitNumbersetText();
 
     }
 
 
 
 
-    public void unitNumbersetText() // 유닛number text생성
+    public void UnitNumbersetText() // 유닛number text생성
     {
         _unitNumberPanel.GetComponentInChildren<Text>().text = "" + _unitNumber;
     }
@@ -223,7 +217,6 @@ public class BuildingControllScript : MonoBehaviour
 
     public void DestroythisBuilding() //침공당해서 숫자가 적어졌을경우 모두파괴
     {
-
 
      GameObject buildingPrefab;
      GameObject building;
@@ -236,6 +229,13 @@ public class BuildingControllScript : MonoBehaviour
                 building.transform.position = this.gameObject.transform.position;
                 building.transform.localScale = this.gameObject.transform.localScale;
                 building.transform.localRotation = Quaternion.Euler(Vector3.zero);
+
+                _gameController.GetComponent<GameControllScript>().BuildingNode[NodeNumber] = new GameObject();
+                _gameController.GetComponent<GameControllScript>().BuildingNode[NodeNumber] = building;
+                _gameController.GetComponent<GameControllScript>().BuildingNode[NodeNumber]
+                    .GetComponent<BuildingControllScript>().NodeNumber = NodeNumber;
+
+
                 break;
             case "Player2building":
                 buildingPrefab = Resources.Load<GameObject>("Player1building");
@@ -244,21 +244,19 @@ public class BuildingControllScript : MonoBehaviour
                 building.transform.position = this.gameObject.transform.position;
                 building.transform.localScale = this.gameObject.transform.localScale;
                 building.transform.localRotation = Quaternion.Euler(Vector3.zero);
+
+                _gameController.GetComponent<GameControllScript>().BuildingNode[NodeNumber] = new GameObject();
+                _gameController.GetComponent<GameControllScript>().BuildingNode[NodeNumber] = building;
+                _gameController.GetComponent<GameControllScript>().BuildingNode[NodeNumber]
+                  .GetComponent<BuildingControllScript>().NodeNumber = NodeNumber;
+
                 break;
         }
      
         Destroy(this.gameObject);
         Destroy(_unitNumberPanel);
-
-
     }
-
-
-
-
-
-
-
+    
 
     public void buildingSet1()
     {
@@ -266,15 +264,14 @@ public class BuildingControllScript : MonoBehaviour
         buildingID = 2;
         if (buildingID != buildingDataList[offsetbuildingID].BuildingID)
         {
-
             BuildingDataSet(buildingID);
+            LevelSend(buildingID);
+           
         }
         else
         {
             Debug.Log("이미 같은 종류의 건물입니다.");
         }
-      
-
     }
 
     public void buildingSet2()
@@ -283,8 +280,8 @@ public class BuildingControllScript : MonoBehaviour
         buildingID = 3;
         if (buildingID != buildingDataList[offsetbuildingID].BuildingID)
         {
-
             BuildingDataSet(buildingID);
+            LevelSend(buildingID);
         }
         else
         {
@@ -299,8 +296,8 @@ public class BuildingControllScript : MonoBehaviour
         buildingID = 4;
         if (buildingID != buildingDataList[offsetbuildingID].BuildingID)
         {
-
             BuildingDataSet(buildingID);
+            LevelSend(buildingID);
         }
         else
         {
@@ -309,7 +306,15 @@ public class BuildingControllScript : MonoBehaviour
 
     }
     
+    public void LevelSend(int lv)
+    {
+        _sendLevelData.BuildingNode = NodeNumber;
+        _sendLevelData.BuildingLevel = lv;
+        ClientNetworkManager.Send("Option", _sendLevelData);
+    }
+    
 }
+
 
 
 /*

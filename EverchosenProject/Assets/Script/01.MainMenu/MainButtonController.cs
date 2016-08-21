@@ -58,7 +58,6 @@ public class MainButtonController : MonoBehaviour
         {
             if (ClientNetworkManager.ReceiveMsg == "OnSucceedMatching")
             {
-                Debug.Log("확인");
                 StartCoroutine(MatchStart(2));
             }
         }
@@ -93,7 +92,6 @@ public class MainButtonController : MonoBehaviour
     //settingpanel에서 들어갈 함수들
     public void QueueButton()
     {
-        TribeSetManager.PData.UserID = "Monjon";
 
         _settingPanel.SetActive(false);//참여와 함께 셋팅패널 사라짐
         _queuePanel = Instantiate(QueuePanelPrefab);//버튼 클릭시 queue panel prefab생성
@@ -145,7 +143,7 @@ public class MainButtonController : MonoBehaviour
     public void ServerQueue()
     {
 
-        MatchingPacket setData = new MatchingPacket("Monjon", TribeSetManager.PData.TribeName, TribeSetManager.PData.Spell, 0);//마지막 파라미터는 teamflag 그냥 0 으로 보냄 
+        MatchingPacket setData = new MatchingPacket(TribeSetManager.PData.UserID, TribeSetManager.PData.TribeName, TribeSetManager.PData.Spell, 0);//마지막 파라미터는 teamflag 그냥 0 으로 보냄 
 
         ClientNetworkManager.Send("OnMatchingRequest", setData);
     }

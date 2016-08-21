@@ -1,320 +1,252 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Reflection.Emit;
+using Client;
 using JetBrains.Annotations;
 
 public class MapTouchScript : MonoBehaviour
 {
-    private GameObject GameControllerObject;
-    public string playerbuilding;
+    private GameObject _gameControllerObject;
+    public string Playerbuilding;
     public string Enemybuilding;
     private string[] data = new string[2];
 
-    private RaycastHit hit;
-    private GameObject Selectedbuilding;//선택된 빌딩
+    private RaycastHit _hit;
+    private GameObject _startSelectedbuilding;//선택된 빌딩
+ 
 
-    public bool draggingMode = false;
+    public bool DraggingMode = false;
 
     public GameObject DragCirclePrefab; //생성될 dragobject;
-    private GameObject DragCircle;
+    private GameObject _dragCircle;
 
    
     private Vector3 _touchPosition; // 터치,클릭 포지션
-    public Vector3 _EndDesPosition;
-    private float TouchCounter;
+    public Vector3 EndDesPosition;
+    private float _touchCounter;
 
+    public int StartNode;
+    public int EndNode;
 
     //빌딩셋팅이펙트 관리를 위한 오브젝트변수들
-    GameObject BuildingLevel1;
-    GameObject BuildingLevel2;
-    GameObject BuildingLevel3;
+    GameObject _buildingLevel1;
+    GameObject _buildingLevel2;
+    GameObject _buildingLevel3;
     
+    private MoveData _ingamePacket = new MoveData();
+  
     // Use this for initialization
     void Start ()
     {
-        
-        GameControllerObject = GameObject.Find("GameControllerObject");
-        data= GameControllerObject.GetComponent<TeamSettingScript>().playerTeamSetting();
-        playerbuilding = data[0];
+        _gameControllerObject = GameObject.Find("GameControllerObject");
+        data= _gameControllerObject.GetComponent<TeamSettingScript>().playerTeamSetting();
+        Playerbuilding = data[0];
         Enemybuilding = data[1];
-
         DragCirclePrefab = Resources.Load<GameObject>("DragCircleObject");
-
-       
-       
-        
     }
 	
 	// Update is called once per frame
 	void Update () {
-	   
 	        PlayerTouch();
         //터치관련
-       
     }
-
-
-   
-
+    
     public void PlayerTouch() // 플레이어 터치함수
     {
-        if (Input.GetMouseButtonDown(0))//다운
+
+        if (Input.GetMouseButtonDown(0))//Mouse Down
         {
-
-            
-
-            Ray Startray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            Ray startray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
 
-            if (Physics.Raycast(Startray, out hit)) //collider
+            if (Physics.Raycast(startray, out _hit)) //collider
             {
-                if (hit.collider.tag == playerbuilding) //플레이어의 빌딩을 클릭했을시에 DragCircle 생성 
+                if (_hit.collider.tag == Playerbuilding) //플레이어의 빌딩을 클릭했을시에 DragCircle 생성 
                 {
 
-                    Selectedbuilding = hit.collider.transform.gameObject;
+                    _startSelectedbuilding = _hit.collider.transform.gameObject;
                     DragEffectSpawn();
-                    if (!Selectedbuilding.GetComponent<BuildingControllScript>().buildingSettingObject.activeSelf)//선택한 빌딩의 빌딩셋팅 패널이 꺼져있을경우 
+                    if (!_startSelectedbuilding.GetComponent<BuildingControllScript>().buildingSettingObject.activeSelf)//선택한 빌딩의 빌딩셋팅 패널이 꺼져있을경우 
                     {
-                        TouchCounter = 0;
-                        Selectedbuilding.GetComponent<BuildingControllScript>().buildingSettingObject.SetActive(false);
+                        _touchCounter = 0;
+                        _startSelectedbuilding.GetComponent<BuildingControllScript>().buildingSettingObject.SetActive(false);
+
+                        StartNode = _startSelectedbuilding.GetComponent<BuildingControllScript>().NodeNumber;
+
                     }
-
-
-                    /*if (!Selectedbuilding.GetComponent<BuildingControllScript>().buildingSettingPanel.activeSelf)//선택한 빌딩의 빌딩셋팅 패널이 꺼져있을경우 
-                    {
-                        TouchCounter = 0;
-                        Selectedbuilding.GetComponent<BuildingControllScript>().buildingSettingPanel.SetActive(false);
-                    }
-
-                
-
-                if(hit.collider.transform.gameObject.transform.position == Selectedbuilding.transform.position)
-                {
-                   if (Selectedbuilding.GetComponent<BuildingControllScript>().buildingSettingPanel.activeSelf)
-                    {
-                        Selectedbuilding.GetComponent<BuildingControllScript>()
-                            .buildingSettingPanel.SetActive(false);
-                    }
-                }*/
-
-
-
                 }
-
-
-
-
             }
         }
-
-        if (Input.GetMouseButton(0))//드래그
+        if (Input.GetMouseButton(0))//Mouse Drag
         {
-            if (draggingMode)
+            if (DraggingMode)
             {
                 _touchPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
              
-                DragCircle.transform.position = new Vector3(_touchPosition.x, _touchPosition.y - 10f, _touchPosition.z);
+                _dragCircle.transform.position = new Vector3(_touchPosition.x, _touchPosition.y - 10f, _touchPosition.z);
                 Ray dragRay = Camera.main.ScreenPointToRay(Input.mousePosition);
-                if (Physics.Raycast(dragRay, out hit)) //collider
+                if (Physics.Raycast(dragRay, out _hit)) //collider
                 {
                     
-                    if (hit.collider.transform.gameObject == Selectedbuilding) //해당빌딩을 지속적으로 터치했을시에 카운터스타트 , 카운터가 일정시간넘어가면 해당 buildingsettingpanel 보여줌  
+                    if (_hit.collider.transform.gameObject == _startSelectedbuilding) //해당빌딩을 지속적으로 터치했을시에 카운터스타트 , 카운터가 일정시간넘어가면 해당 buildingsettingpanel 보여줌  
                     {
-                        if (Selectedbuilding.GetComponent<BuildingControllScript>().PlayerCastle == false)
+                        if (_startSelectedbuilding.GetComponent<BuildingControllScript>().PlayerCastle == false)
                         {
-                            if (!Selectedbuilding.GetComponent<BuildingControllScript>()
+                            if (!_startSelectedbuilding.GetComponent<BuildingControllScript>()
                                     .buildingSettingObject.activeSelf)
                             {
-                                if (TouchCounter < 1)
+                                if (_touchCounter < 1)
                                 {
-                                    TouchCounter += Time.deltaTime;
+                                    _touchCounter += Time.deltaTime;
                                 }
                                 else
                                 {
-                                    Selectedbuilding.GetComponent<BuildingControllScript>()
+                                    _startSelectedbuilding.GetComponent<BuildingControllScript>()
                                         .buildingSettingObject.SetActive(true);
                                 }
                             }
                         }
 
                     }
-
-
-                    
-                        
                     ///건물레벨설정 오브젝트위로 버튼을 누를시 이펙트
                     BuildingSettingObjectDragEffect();
-
-                
-
                 }
             }
-
-         
         }
 
-        if (Input.GetMouseButtonUp(0))
+        if (Input.GetMouseButtonUp(0))//Mouse Up
         {
-
-            if (draggingMode == true)
+            if (DraggingMode == true)
             {
-                draggingMode = false;
-
-
+                DraggingMode = false;
                 Ray Endray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
-
-
-
-
-                if (Physics.Raycast(Endray, out hit)) //collider
+                if (Physics.Raycast(Endray, out _hit)) //collider
                 {
-                    if (hit.collider.tag == Enemybuilding) //빌딩을 클릭했을시에 DragCircle 생성 
+                    if (_hit.collider.tag == Enemybuilding|| _hit.collider.tag == "EmptyBuilding"||(_hit.collider.tag == Playerbuilding && _hit.collider.gameObject != _startSelectedbuilding)) //빌딩을 클릭했을시에 DragCircle 생성 , //선택된 빌딩을 다시 클릭했을때 유닛이 스폰되지않도록
                     {
-                        _EndDesPosition = hit.collider.gameObject.transform.position;
-                        Selectedbuilding.GetComponent<BuildingControllScript>().UnitSpawn(_EndDesPosition);
+                        EndDesPosition = _hit.collider.gameObject.transform.position;
+                        if (_startSelectedbuilding.GetComponent<BuildingControllScript>()._unitNumber > 0)//해당건물의 유닛 숫자가 0보다클때만 실행
+                        {
+                            _startSelectedbuilding.GetComponent<BuildingControllScript>().UnitSpawn(EndDesPosition);
+                            if (_hit.collider.tag == Enemybuilding ||
+                                (_hit.collider.tag == Playerbuilding &&
+                                 _hit.collider.gameObject != _startSelectedbuilding))
+                            {
+                                EndNode = _hit.collider.gameObject.GetComponent<BuildingControllScript>().NodeNumber;
+                            }
+                            if (_hit.collider.tag == "EmptyBuilding")
+                            {
+                                EndNode = _hit.collider.gameObject.GetComponent<EmptyBuildingScript>().NodeNumber;
+                            }
+                            PacketDataset(StartNode,EndNode);
+                        }
                     }
-                    else if (hit.collider.tag == "EmptyBuilding")
+
+                    BuildingSettingFunction();//건물레벨 설정 오브젝트위에서 버튼을 땟을때 
+                    if (_startSelectedbuilding.GetComponent<BuildingControllScript>()
+                        .buildingSettingObject.activeSelf)//해당 빌딩 레벨업 셋팅이 켜져있을땐 꺼줌
                     {
-                        _EndDesPosition = hit.collider.gameObject.transform.position;
-                        Selectedbuilding.GetComponent<BuildingControllScript>().UnitSpawn(_EndDesPosition);
-                    }
-                    else if (hit.collider.tag == playerbuilding && hit.collider.gameObject != Selectedbuilding)//선택된 빌딩을 다시 클릭했을때 유닛이 스폰되지않도록
-                    {
-                        _EndDesPosition = hit.collider.gameObject.transform.position;
-                        Selectedbuilding.GetComponent<BuildingControllScript>().UnitSpawn(_EndDesPosition);
-                    }
-
-
-                    buildingSettingFunction();//건물레벨 설정 오브젝트위에서 버튼을 땟을때 
-                    
-
-
-                    if (Selectedbuilding.GetComponent<BuildingControllScript>()
-                        .buildingSettingObject.activeSelf)
-                    {
-                        Selectedbuilding.GetComponent<BuildingControllScript>()
+                        _startSelectedbuilding.GetComponent<BuildingControllScript>()
                                    .buildingSettingObject.SetActive(false);
                     }
 
-
-
-
-
-                    Destroy(DragCircle);
+                    Destroy(_dragCircle);
                 }
-
-
-
-
             }
         }
     }
 
 
-    void PhoneTouch()
+    void PacketDataset(int st, int end)
     {
-        
+        Debug.Log(st);
+        Debug.Log(end);
+        _ingamePacket.StartNode = st;
+        _ingamePacket.EndNode = end;
+        ClientNetworkManager.Send("Move", _ingamePacket);
     }
 
-    void buildingSettingFunction()
+    void BuildingSettingFunction()//빌딩함수
     {
 
         //건물 레벨 변경 
-        if (hit.collider.tag == "Level1Setting")
+        if (_hit.collider.tag == "Level1Setting")
         {
-            Selectedbuilding.GetComponent<BuildingControllScript>().buildingSet1();
+            _startSelectedbuilding.GetComponent<BuildingControllScript>().buildingSet1();
         }
-        else if (hit.collider.tag == "Level2Setting")
+        else if (_hit.collider.tag == "Level2Setting")
         {
-            Selectedbuilding.GetComponent<BuildingControllScript>().buildingSet2();
+            _startSelectedbuilding.GetComponent<BuildingControllScript>().buildingSet2();
         }
-        else if (hit.collider.tag == "Level3Setting")
+        else if (_hit.collider.tag == "Level3Setting")
         {
-            Selectedbuilding.GetComponent<BuildingControllScript>().buildingSet3();
+            _startSelectedbuilding.GetComponent<BuildingControllScript>().buildingSet3();
         }
     }
 
 
 
-    void BuildingSettingObjectDragEffect()
+    void BuildingSettingObjectDragEffect()//빌딩 터치시 view 함수
     {
-        if (Selectedbuilding.GetComponent<BuildingControllScript>().buildingSettingObject.activeSelf)
+       
+        if (_startSelectedbuilding.GetComponent<BuildingControllScript>().buildingSettingObject.activeSelf)
         {
-            if (hit.collider.tag == "Level1Setting")
+            if (_hit.collider.tag == "Level1Setting")
             {
-                BuildingLevel1 = hit.collider.transform.gameObject;
-                BuildingLevel1.transform.localScale = Vector3.one*1.5f;
+                _buildingLevel1 = _hit.collider.transform.gameObject;
+                _buildingLevel1.transform.localScale = Vector3.one*1.5f;
             }
             else
             {
-                if (BuildingLevel1)
+                if (_buildingLevel1)
                 {
-                    BuildingLevel1.transform.localScale = Vector3.one;
+                    _buildingLevel1.transform.localScale = Vector3.one;
                 }
             }
 
-            if (hit.collider.tag == "Level2Setting")
+            if (_hit.collider.tag == "Level2Setting")
             {
-                BuildingLevel2 = hit.collider.transform.gameObject;
-                BuildingLevel2.transform.localScale = Vector3.one*1.5f;
+                _buildingLevel2 = _hit.collider.transform.gameObject;
+                _buildingLevel2.transform.localScale = Vector3.one*1.5f;
             }
             else
             {
-                if (BuildingLevel2)
+                if (_buildingLevel2)
                 {
-                    BuildingLevel2.transform.localScale = Vector3.one;
+                    _buildingLevel2.transform.localScale = Vector3.one;
                 }
             }
 
-            if (hit.collider.tag == "Level3Setting")
+            if (_hit.collider.tag == "Level3Setting")
             {
-                BuildingLevel3 = hit.collider.transform.gameObject;
-                BuildingLevel3.transform.localScale = Vector3.one*1.5f;
+                _buildingLevel3 = _hit.collider.transform.gameObject;
+                _buildingLevel3.transform.localScale = Vector3.one*1.5f;
             }
             else
             {
-                if (BuildingLevel3)
+                if (_buildingLevel3)
                 {
-                    BuildingLevel3.transform.localScale = Vector3.one;
+                    _buildingLevel3.transform.localScale = Vector3.one;
                 }
             }
         }
-        /*
-
-        if (hit.collider.tag == "Level2Setting")
-        {
-            hit.collider.transform.localScale = Vector3.one * 1.2f;
-        }
-        else
-        {
-            hit.collider.transform.localScale = Vector3.one;
-        }
-
-        if (hit.collider.tag == "Level3Setting")
-        {
-            hit.collider.transform.localScale = Vector3.one * 1.2f;
-        }
-        else
-        {
-            hit.collider.transform.localScale = Vector3.one;
-        }*/
     }
 
     public void DragEffectSpawn() // 드래그이펙트 생성함수
     {
-        if (DragCircle == null)
+        if (_dragCircle == null)
         {
-            DragCircle = Instantiate(DragCirclePrefab); //dragcircle생성
-            DragCircle.transform.SetParent(this.gameObject.transform);
+            _dragCircle = Instantiate(DragCirclePrefab); //dragcircle생성
+            _dragCircle.transform.SetParent(this.gameObject.transform);
             _touchPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 
-            DragCircle.transform.localRotation = Quaternion.Euler(new Vector3(90,0,0));
-            DragCircle.transform.localScale = Vector3.one;
-            DragCircle.transform.position = new Vector3(_touchPosition.x, _touchPosition.y - 10f,
+            _dragCircle.transform.localRotation = Quaternion.Euler(new Vector3(90,0,0));
+            _dragCircle.transform.localScale = Vector3.one;
+            _dragCircle.transform.position = new Vector3(_touchPosition.x, _touchPosition.y - 10f,
                 _touchPosition.z);
       
-            draggingMode = true;
+            DraggingMode = true;
         }
     }
 }

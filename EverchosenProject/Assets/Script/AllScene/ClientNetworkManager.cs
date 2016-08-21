@@ -34,9 +34,7 @@ namespace Client
 
            
             ClientSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-
             
-
             try
             {
                 //연결성공
@@ -48,7 +46,6 @@ namespace Client
                 Debug.Log(e);
                 //연결실패
                Debug.Log("연결에 실패했습니다.");
-
             }
         }
         
@@ -190,7 +187,6 @@ namespace Client
         public static void SocketClose()
         {
             if (!ClientSocket.Connected) return;
-
             ClientSocket.Shutdown(SocketShutdown.Both);
             ClientSocket.Close();
         }
@@ -227,9 +223,16 @@ namespace Client
 
         }
     }
-    
-    public class IngamePacket
+
+    public class MoveData
     {
-        
+        public int StartNode { get; set; }
+        public int EndNode { get; set; }
+    }
+
+    public class BuildingLevelData
+    {
+        public int BuildingNode { get; set; }
+        public int BuildingLevel { get; set; }
     }
 }

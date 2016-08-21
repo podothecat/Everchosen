@@ -261,6 +261,8 @@ MonoBehaviour:
   buildingValue: 0
   unitPower: 0
   unitSprite: {fileID: 0}
+  playerTeam: 0
+  NodeNumber: 0
 --- !u!135 &13514542
 SphereCollider:
   m_ObjectHideFlags: 1

@@ -9,9 +9,6 @@ public class TribeSetManager : MonoBehaviour
 
     public static PlayerData PData = new PlayerData();
     
-   
-
-
 }
 
 

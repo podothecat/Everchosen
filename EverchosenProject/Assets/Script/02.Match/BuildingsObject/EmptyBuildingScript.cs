@@ -1,29 +1,32 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using JetBrains.Annotations;
 
 public class EmptyBuildingScript : MonoBehaviour {
     private GameObject _player1BuildingPrefab;
     private GameObject _player1Building;
-
-   
     private GameObject _player2BuildingPrefab;
     private GameObject _player2Building;
+
+    public int NodeNumber;
+
+    
+
+    private GameControllScript _gamecontroll;
     
     // Use this for initialization
     void Start()
     {
+        _gamecontroll = GameObject.Find("GameControllerObject").GetComponent<GameControllScript>();
         _player1BuildingPrefab = Resources.Load<GameObject>("Player1building");
         _player2BuildingPrefab = Resources.Load<GameObject>("Player2building");
-
-       
-
     }
 
     // Update is called once per frame
     void Update()
     {
-
     }
 
     void OnTriggerEnter(Collider other)
@@ -40,9 +43,11 @@ public class EmptyBuildingScript : MonoBehaviour {
                     _player1Building.transform.localScale = Vector3.one;
                     _player1Building.transform.localRotation = Quaternion.Euler(Vector3.zero);
                     _player1Building.GetComponent<BuildingControllScript>().playerTeam = 1;
-
+                    _player1Building.GetComponent<BuildingControllScript>().NodeNumber = NodeNumber;
+                    
+                    _gamecontroll.BuildingNode[NodeNumber] = new GameObject();
+                    _gamecontroll.BuildingNode[NodeNumber] = _player1Building;
                 }
-
             }
             else if (other.gameObject.GetComponent<UnitControllScript>().Team==2)
             {
@@ -54,15 +59,15 @@ public class EmptyBuildingScript : MonoBehaviour {
                     _player2Building.transform.localScale = Vector3.one;
                     _player2Building.transform.localRotation = Quaternion.Euler(Vector3.zero);
                     _player2Building.GetComponent<BuildingControllScript>().playerTeam = 2;
+                    _player2Building.GetComponent<BuildingControllScript>().NodeNumber = NodeNumber;
 
+                    _gamecontroll.BuildingNode[NodeNumber] = new GameObject();
+                    _gamecontroll.BuildingNode[NodeNumber] = _player2Building;
                 }
             }
             Destroy(other.gameObject);
             Destroy(this.gameObject);
-
-
         }
     }
-
-   
+    
 }
