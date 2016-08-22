@@ -6,6 +6,7 @@ using System.Runtime.Remoting.Channels;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using EverChosenServer.Ingame_Module;
 
 namespace EverChosenServer
 {

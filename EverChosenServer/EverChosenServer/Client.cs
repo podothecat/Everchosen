@@ -33,7 +33,7 @@ namespace EverChosenServer
         }
 
         /// <summary>
-        /// Send packet to client.
+        /// Send data to client.
         /// </summary>
         public void BeginSend(string msg, dynamic data)
         {
@@ -45,7 +45,7 @@ namespace EverChosenServer
         }
 
         /// <summary>
-        /// Receive asynchronous data
+        /// Receive asynchronous data from client.
         /// </summary>
         public void BeginReceive()
         {
@@ -94,20 +94,19 @@ namespace EverChosenServer
             var x = JsonConvert.DeserializeObject<Packet>(packetStr);
             
             // Refine received packet.
-            Console.WriteLine(x.Data);
             x.Data = x.Data.Replace("\\\"", "\"");
             x.Data = x.Data.Substring(1, x.Data.Length - 2);
 
+            // To distinguish whether client is ingame or not.
             if (!IsIngame)
                 ProcessRequest(x);
             else
             {
-                Console.WriteLine("Request : Ingame");
+                Console.WriteLine("Request : Ingame [" + x.MsgName + "]");
                 
                 InGameRequest(this, x);
             }
                 
-            
             BeginReceive();
         }
 
@@ -144,16 +143,6 @@ namespace EverChosenServer
                 case "OnMatchingCancelRequest":
                     Console.WriteLine("Request : Matching Cancel");
                     GameManager.MatchingCancelRequest(this);
-                    break;
-
-                case "OnInGameRequest":
-                    //if (!IsIngame) break;
-
-                    //Console.WriteLine("Request : Ingame");
-                    
-                    //var ingameData = JsonConvert.DeserializeObject<IngamePacket>(req.Data);
-                    //Console.WriteLine(ingameData.StartNode + " " + ingameData.EndNode);
-                    //InGameRequest(this, ingameData);
                     break;
 
                 case "OnExitRequest":
