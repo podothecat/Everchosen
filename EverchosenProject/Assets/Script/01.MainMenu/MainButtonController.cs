@@ -19,34 +19,79 @@ public class MainButtonController : MonoBehaviour
     private Button _queueButton;
     private GameObject _gameStartButton;
 
+    private GameObject _profileSettingPanel;
+
+    private Image _profileViewImage;
+    private static Text _profileViewNameText;
+
+    private InputField _profileNameInputField;
+    private Button _profileSetButton;
+    private Image _profileImage;
+    private Text _profileInputFieldText;
+    private Text _profileInputFieldPlaceHolder;
+    private Button _profileBackButton;
+
+
     private GameObject _settingPanel;
     private GameObject _optionPanel;
     private GameObject _creditPanel;
-
-
+    
     private Text _tribeViewText;
     private Text _spellViewText;
-
-  
-
+    
+    
     void Awake()
     {
         _canvas = GameObject.Find("Canvas");
         _gameStartButton = GameObject.Find("GameStartButton");
-       
+
+        _profileSettingPanel = _canvas.transform.Find("ProfileSettingPanel").gameObject;
+
+        _profileViewNameText =
+            _canvas.transform.FindChild("MainPanel").transform.FindChild("ProfileViewPanel")
+                .transform.FindChild("ProfileTextPanel")
+                .transform.FindChild("ProfileText")
+                .GetComponent<Text>();
+     /*   _profileViewImage = _canvas.transform.FindChild("MainPanel").transform.Find("ProfileViewPanel")
+            .transform.FindChild("ProfileTextPanel").transform.FindChild("ProfileImage").GetComponent<Image>();*/
+
+        _profileNameInputField =
+            _profileSettingPanel.transform.FindChild("ProfileSettingNamePanel")
+                .transform.FindChild("ProfileNameInputField").GetComponent<InputField>();
+        _profileInputFieldText = _profileNameInputField.transform.FindChild("Text").GetComponent<Text>();
+        _profileInputFieldPlaceHolder = _profileNameInputField.transform.FindChild("Placeholder").GetComponent<Text>();
+
+        _profileSetButton = _profileSettingPanel.transform.FindChild("ProfileSettingNamePanel")
+            .transform.FindChild("NameChangeButton").gameObject.GetComponent<Button>();
+        _profileImage = _profileSettingPanel.transform.FindChild("ProfileSettingImage").gameObject.GetComponent<Image>();
+        
+
+
         _settingPanel = _canvas.transform.FindChild("SettingPanel").gameObject;
         _creditPanel = _canvas.transform.FindChild("CreditsPanel").gameObject;
         _optionPanel = GameObject.Find("BackObject").transform.FindChild("OptionPanel").gameObject;
-
+        
         _tribeViewText = _canvas.transform.FindChild("SettingPanel").transform.FindChild("SettingImage").transform.FindChild("SettingViewPanel").transform.FindChild("TribeText").gameObject.GetComponent<Text>();
         _spellViewText = _canvas.transform.FindChild("SettingPanel").transform.FindChild("SettingImage").transform.FindChild("SettingViewPanel").transform.FindChild("SpellText").gameObject.GetComponent<Text>();
         _queueButton = _settingPanel.transform.FindChild("SettingImage").transform.FindChild("QueueButton").GetComponent<Button>();
-   
+        
     }
 
     void Start()
     {
-        
+        //_profileSettingPanel.SetActive(false);
+        if (ClientNetworkManager.ProfileData != null)
+        {
+            TribeSetManager.PData.NickName = ClientNetworkManager.ProfileData.NickName;
+            Debug.Log(ClientNetworkManager.ProfileData.NickName);
+            _profileViewNameText.text = TribeSetManager.PData.NickName;
+            _profileInputFieldText.text = TribeSetManager.PData.NickName;
+            _profileInputFieldPlaceHolder.text = TribeSetManager.PData.NickName;
+        }
+        else
+        {
+            Debug.Log("프로필이 안넘어왓성");
+        }
         _creditPanel.SetActive(false);
         _queueButton.interactable = false;//종족선택이나 스펠선택이 되지않으면 대기열 참가 불가하게 하기위함
 
@@ -60,6 +105,11 @@ public class MainButtonController : MonoBehaviour
             {
                 StartCoroutine(MatchStart(2));
             }
+        }
+
+        if (ClientNetworkManager.ReceiveMsg == "OnChangedProfile")
+        {
+            ProfileSet(ClientNetworkManager.ProfileData.NickName);
         }
     }
     
@@ -86,6 +136,11 @@ public class MainButtonController : MonoBehaviour
     {
         _creditPanel.SetActive(true);
         
+    }
+
+    public void ProfileInvoke()
+    {
+        _profileSettingPanel.SetActive(true);
     }
     //
 #region QueuePanel
@@ -234,6 +289,36 @@ public class MainButtonController : MonoBehaviour
     {
         TribeSetManager.PData.Spell = 2;
         _spellViewText.text = "Two";
+    }
+    
+
+    //
+    public void ProfileSettingBackInvoke()
+    {
+        _profileSettingPanel.SetActive(false);
+    }
+
+
+    public void ProfileNameSetInvoke()
+    {
+        if (_profileNameInputField.interactable == false)
+        {
+            _profileNameInputField.interactable = true;
+        }
+        else
+        {
+            TribeSetManager.PData.NickName = _profileInputFieldText.text;
+
+            ClientNetworkManager.Send("OnNickChangeRequest", TribeSetManager.PData.NickName);
+            Debug.Log(_profileInputFieldText.text);
+           
+            _profileNameInputField.interactable = false;
+        }
+    }
+
+    public static void ProfileSet(string data)
+    {
+        _profileViewNameText.text = data;
     }
 
 

@@ -26,8 +26,12 @@ namespace Client
         public static string ClientDeviceId;
 
         public static bool Connected = false;
+
+        public static ProfileData ProfileData;
         public static MatchingPacket PacketData; // 유니티에서 사용할 데이터를 담을변수
-        public static ProfileData ProfileData=null;
+      
+       
+            //인게임
         public static MoveData MoveData;
         public static BuildingChangeData ChangeData;
         
@@ -152,20 +156,22 @@ namespace Client
 
                 switch (ReceiveMsg)
                 {
+                        //로딩씬
                     case "OnSucceedLogin":
                         ProfileData = JsonConvert.DeserializeObject<ProfileData>(receiveData.Data);
                         break;
+                        //메인메뉴
+                    case "OnChangedProfile" :
+                        Debug.Log("CHANGE");
+                        ProfileData.NickName = JsonConvert.DeserializeObject<string>(receiveData.Data);
+                        break;
                     case "OnSucceedMatching":
                         PacketData = JsonConvert.DeserializeObject<MatchingPacket>(receiveData.Data);
-                        
                         break;
+                        //ingame
                     case "Move":
-                        
                         Debug.Log(receiveData.Data);
                         MoveData = JsonConvert.DeserializeObject<MoveData>(receiveData.Data);
-                        
-
-
                         Debug.Log(MoveData);
                         break;
                     case "Change":
@@ -249,7 +255,6 @@ namespace Client
         public int Node { get; set; }
         public int Kinds { get; set; }
     }
-
 
 }
 
