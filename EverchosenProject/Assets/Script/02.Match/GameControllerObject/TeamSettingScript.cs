@@ -6,63 +6,75 @@ using Client;
 
 public class TeamSettingScript : MonoBehaviour
 {
-    public int playerTeam; //플레이어 
-    public int playertribeid;
-    public string playerbuilding;
-
-    public int Enemytribeid;
+    public int PlayerTeam; //플레이어 
+    private int _playertribeid;
+    private int _enemytribeid;
+    public string Playerbuilding;
+    
     public string Enemybuilding;
     
-    private TribeDatabase tribeDB;
+    private TribeDatabase _tribeDb;
     public List<Tribe> PlayertribeDataToAdd;
     public List<Tribe> EnemytribeDataToAdd;
     // Use this for initialization
     void Awake ()
     {
+        _tribeDb = GetComponent<TribeDatabase>();
+        _playertribeid = TribeSetManager.PData.Tribe;
 
-
-        tribeDB = GetComponent<TribeDatabase>();
-        playertribeid = TribeSetManager.PData.Tribe;
+        if (ClientNetworkManager.PacketData.Tribe == "Chaos")
+        {
+            _enemytribeid = 0;
+        }
+        else if (ClientNetworkManager.PacketData.Tribe == "Dwarf")
+        {
+            _enemytribeid = 1;
+        }
+        else if (ClientNetworkManager.PacketData.Tribe == "Green")
+        {
+            _enemytribeid = 2;
+        }
+        else if (ClientNetworkManager.PacketData.Tribe == "Human")
+        {
+            _enemytribeid = 3;
+        }
 
         if (ClientNetworkManager.PacketData.TeamColor == 2)
         {
-            SetPlayerTeam(1, playertribeid, 2);
+            SetPlayerTeam(1, _playertribeid, _enemytribeid);
         }
         else if (ClientNetworkManager.PacketData.TeamColor == 1)
         {
-            SetPlayerTeam(2, playertribeid, 2);
+            SetPlayerTeam(2, _playertribeid, _enemytribeid);
         }
     }
 
 
     void SetPlayerTeam(int playerteamNumber, int tribeid1, int tribeid2) // 종족 팀 설정;
     {
-        playerTeam = playerteamNumber;
+        PlayerTeam = playerteamNumber;
 
-        if (playerTeam == 1)
+        if (PlayerTeam == 1)
         {
-            playerbuilding = "Player1building";
+            Playerbuilding = "Player1building";
             Enemybuilding = "Player2building";
         }
-        else if (playerTeam == 2)
+        else if (PlayerTeam == 2)
         {
-            playerbuilding = "Player2building";
+            Playerbuilding = "Player2building";
             Enemybuilding = "Player1building";
         }
 
-        PlayertribeDataToAdd = tribeDB.FetchBuildingByID(tribeid1);
-        EnemytribeDataToAdd = tribeDB.FetchBuildingByID(tribeid2);
-
-
-
+        PlayertribeDataToAdd = _tribeDb.FetchBuildingById(tribeid1);
+        EnemytribeDataToAdd = _tribeDb.FetchBuildingById(tribeid2);
+        
     }
 
-    public string[] playerTeamSetting()//팀설정함수
+    public string[] PlayerTeamSetting()//팀설정함수 MaptouchScript에서 사용
     {
-
         string[] data = new string[2];
 
-        data[0] = playerbuilding;
+        data[0] = Playerbuilding;
         data[1] = Enemybuilding;
 
         return data;

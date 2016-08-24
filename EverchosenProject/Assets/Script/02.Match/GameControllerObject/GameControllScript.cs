@@ -39,9 +39,18 @@ public class GameControllScript : MonoBehaviour
 	
 	// Update is called once per frame
 	void Update () {
-       
-	   
 
+	    if (ClientNetworkManager.MoveData != null)
+	    {
+            EnemyUnitMove(ClientNetworkManager.MoveData.UnitCount, ClientNetworkManager.MoveData.StartNode, ClientNetworkManager.MoveData.EndNode);
+	        ClientNetworkManager.MoveData = null;
+	    }
+
+	    if (ClientNetworkManager.ChangeData != null)
+	    {
+	        BuildingNode[ClientNetworkManager.ChangeData.Node].GetComponent<BuildingControllScript>().BuildingDataSet(ClientNetworkManager.ChangeData.Kinds);
+	        ClientNetworkManager.ChangeData = null;
+	    }
 	}
 
 
@@ -126,7 +135,7 @@ public class GameControllScript : MonoBehaviour
         _player1Building.transform.localScale = Vector3.one;
         _player1Building.transform.localRotation = Quaternion.Euler(Vector3.zero);
         _player1Building.GetComponent<BuildingControllScript>().PlayerCastle = true;//본진
-        _player1Building.GetComponent<BuildingControllScript>().playerTeam = 1;
+        _player1Building.GetComponent<BuildingControllScript>().PlayerTeam = 1;
         _player1Building.GetComponent<BuildingControllScript>().NodeNumber = 0;
         
         _player2Building = Instantiate(_player2BuildingPrefab);
@@ -135,7 +144,7 @@ public class GameControllScript : MonoBehaviour
         _player2Building.transform.localScale = Vector3.one;
         _player2Building.transform.localRotation = Quaternion.Euler(Vector3.zero);
         _player2Building.GetComponent<BuildingControllScript>().PlayerCastle = true;//본진
-        _player2Building.GetComponent<BuildingControllScript>().playerTeam = 2;
+        _player2Building.GetComponent<BuildingControllScript>().PlayerTeam = 2;
         _player2Building.GetComponent<BuildingControllScript>().NodeNumber = 1;
 
         BuildingNode.Add(_player1Building);
@@ -159,5 +168,14 @@ public class GameControllScript : MonoBehaviour
 
     }
 
+
+    public void EnemyUnitMove(int unitCount,int stNode, int endNode)
+    {
+        BuildingNode[stNode].GetComponent<BuildingControllScript>().UnitSpawn(BuildingNode[endNode].transform.position);
+    }
+
+   
+
 }
+
 

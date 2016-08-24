@@ -6,6 +6,7 @@ using System.Collections;
 using System.Diagnostics;
 using LitJson;
 using System.Runtime.CompilerServices;
+using JetBrains.Annotations;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
 
@@ -20,13 +21,15 @@ namespace Client
         public static Socket ClientSocket = null;
         private static Socket _serverSocket = null;
         private static readonly byte[] Buffer = new byte[1024];
-
+        public static GameObject gameControll;
         // Save device unique id.
         public static string ClientDeviceId;
 
         public static bool Connected = false;
         public static MatchingPacket PacketData; // 유니티에서 사용할 데이터를 담을변수
         public static ProfileData ProfileData=null;
+        public static MoveData MoveData;
+        public static BuildingChangeData ChangeData;
         
         public static string ReceiveMsg = null; //유니티쪽에서 사용할 메시지를 담을 변수
         public static void ConnectToServer(string hostName, int hostPort)
@@ -146,7 +149,6 @@ namespace Client
                 
                 var receiveData = JsonConvert.DeserializeObject<Packet>(receiveJson);
                 ReceiveMsg = receiveData.MsgName;
-                Debug.Log("test : " + receiveData.Data);
 
                 switch (ReceiveMsg)
                 {
@@ -155,8 +157,20 @@ namespace Client
                         break;
                     case "OnSucceedMatching":
                         PacketData = JsonConvert.DeserializeObject<MatchingPacket>(receiveData.Data);
+                        
                         break;
-                    case "InGame":
+                    case "Move":
+                        
+                        Debug.Log(receiveData.Data);
+                        MoveData = JsonConvert.DeserializeObject<MoveData>(receiveData.Data);
+                        
+
+
+                        Debug.Log(MoveData);
+                        break;
+                    case "Change":
+                        Debug.Log(receiveData.Data);
+                        ChangeData = JsonConvert.DeserializeObject<BuildingChangeData>(receiveData.Data);
                         break;
                 }
                 if (_serverSocket.Connected == true)
@@ -220,7 +234,6 @@ namespace Client
             this.Tribe = tribe;
             this.Spell = spell;
             this.TeamColor = teamColor;
-
         }
     }
 
@@ -228,11 +241,16 @@ namespace Client
     {
         public int StartNode { get; set; }
         public int EndNode { get; set; }
+        public int UnitCount { get; set; }
     }
 
-    public class BuildingLevelData
+    public class BuildingChangeData
     {
-        public int BuildingNode { get; set; }
-        public int BuildingLevel { get; set; }
+        public int Node { get; set; }
+        public int Kinds { get; set; }
     }
+
+
 }
+
+

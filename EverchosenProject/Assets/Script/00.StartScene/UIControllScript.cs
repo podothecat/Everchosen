@@ -30,9 +30,10 @@ public class UIControllScript : MonoBehaviour
 	
 	// Update is called once per frame
 	void Update () {
-	    if (ClientNetworkManager.Connected==true&&ClientNetworkManager.ProfileData!=null)//소켓이 연결되고 아이디를 받아올때 다음씬으로 넘어감 
+	    if (ClientNetworkManager.Connected==true)//&&ClientNetworkManager.ProfileData!=null)//소켓이 연결되고 아이디를 받아올때 다음씬으로 넘어감 
 	    {
-	        TribeSetManager.PData.UserID = ClientNetworkManager.ProfileData.NickName;
+            
+	       // TribeSetManager.PData.UserID = ClientNetworkManager.ProfileData.NickName;
             SceneManager.LoadScene("01.MainMenu");
         }
 	}

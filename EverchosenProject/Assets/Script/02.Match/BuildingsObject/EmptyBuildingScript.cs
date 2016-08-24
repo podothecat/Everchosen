@@ -11,7 +11,6 @@ public class EmptyBuildingScript : MonoBehaviour {
     private GameObject _player2Building;
 
     public int NodeNumber;
-
     
 
     private GameControllScript _gamecontroll;
@@ -33,6 +32,8 @@ public class EmptyBuildingScript : MonoBehaviour {
     {
         if (other.tag == "unit")
         {
+
+            Debug.Log(other.gameObject.GetComponent<UnitControllScript>().Team);
             if (other.gameObject.GetComponent<UnitControllScript>().Team == 1)
             {
                 if (_player1Building == null)
@@ -42,11 +43,12 @@ public class EmptyBuildingScript : MonoBehaviour {
                     _player1Building.transform.position = this.gameObject.transform.position;
                     _player1Building.transform.localScale = Vector3.one;
                     _player1Building.transform.localRotation = Quaternion.Euler(Vector3.zero);
-                    _player1Building.GetComponent<BuildingControllScript>().playerTeam = 1;
+                    _player1Building.GetComponent<BuildingControllScript>().PlayerTeam = 1;
                     _player1Building.GetComponent<BuildingControllScript>().NodeNumber = NodeNumber;
-                    
-                    _gamecontroll.BuildingNode[NodeNumber] = new GameObject();
+
+                    _gamecontroll.BuildingNode[NodeNumber] = null;
                     _gamecontroll.BuildingNode[NodeNumber] = _player1Building;
+                 
                 }
             }
             else if (other.gameObject.GetComponent<UnitControllScript>().Team==2)
@@ -58,10 +60,10 @@ public class EmptyBuildingScript : MonoBehaviour {
                     _player2Building.transform.position = this.gameObject.transform.position;
                     _player2Building.transform.localScale = Vector3.one;
                     _player2Building.transform.localRotation = Quaternion.Euler(Vector3.zero);
-                    _player2Building.GetComponent<BuildingControllScript>().playerTeam = 2;
+                    _player2Building.GetComponent<BuildingControllScript>().PlayerTeam = 2;
                     _player2Building.GetComponent<BuildingControllScript>().NodeNumber = NodeNumber;
-
-                    _gamecontroll.BuildingNode[NodeNumber] = new GameObject();
+                   
+                    _gamecontroll.BuildingNode[NodeNumber] = null;
                     _gamecontroll.BuildingNode[NodeNumber] = _player2Building;
                 }
             }

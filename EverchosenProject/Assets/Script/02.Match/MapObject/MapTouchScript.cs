@@ -9,7 +9,7 @@ public class MapTouchScript : MonoBehaviour
     private GameObject _gameControllerObject;
     public string Playerbuilding;
     public string Enemybuilding;
-    private string[] data = new string[2];
+    private string[] _data = new string[2];
 
     private RaycastHit _hit;
     private GameObject _startSelectedbuilding;//선택된 빌딩
@@ -39,9 +39,9 @@ public class MapTouchScript : MonoBehaviour
     void Start ()
     {
         _gameControllerObject = GameObject.Find("GameControllerObject");
-        data= _gameControllerObject.GetComponent<TeamSettingScript>().playerTeamSetting();
-        Playerbuilding = data[0];
-        Enemybuilding = data[1];
+        _data= _gameControllerObject.GetComponent<TeamSettingScript>().PlayerTeamSetting();
+        Playerbuilding = _data[0];
+        Enemybuilding = _data[1];
         DragCirclePrefab = Resources.Load<GameObject>("DragCircleObject");
     }
 	
@@ -66,10 +66,10 @@ public class MapTouchScript : MonoBehaviour
 
                     _startSelectedbuilding = _hit.collider.transform.gameObject;
                     DragEffectSpawn();
-                    if (!_startSelectedbuilding.GetComponent<BuildingControllScript>().buildingSettingObject.activeSelf)//선택한 빌딩의 빌딩셋팅 패널이 꺼져있을경우 
+                    if (!_startSelectedbuilding.GetComponent<BuildingControllScript>().BuildingSettingObject.activeSelf)//선택한 빌딩의 빌딩셋팅 패널이 꺼져있을경우 
                     {
                         _touchCounter = 0;
-                        _startSelectedbuilding.GetComponent<BuildingControllScript>().buildingSettingObject.SetActive(false);
+                        _startSelectedbuilding.GetComponent<BuildingControllScript>().BuildingSettingObject.SetActive(false);
 
                         StartNode = _startSelectedbuilding.GetComponent<BuildingControllScript>().NodeNumber;
 
@@ -93,7 +93,7 @@ public class MapTouchScript : MonoBehaviour
                         if (_startSelectedbuilding.GetComponent<BuildingControllScript>().PlayerCastle == false)
                         {
                             if (!_startSelectedbuilding.GetComponent<BuildingControllScript>()
-                                    .buildingSettingObject.activeSelf)
+                                    .BuildingSettingObject.activeSelf)
                             {
                                 if (_touchCounter < 1)
                                 {
@@ -102,7 +102,7 @@ public class MapTouchScript : MonoBehaviour
                                 else
                                 {
                                     _startSelectedbuilding.GetComponent<BuildingControllScript>()
-                                        .buildingSettingObject.SetActive(true);
+                                        .BuildingSettingObject.SetActive(true);
                                 }
                             }
                         }
@@ -126,29 +126,28 @@ public class MapTouchScript : MonoBehaviour
                     if (_hit.collider.tag == Enemybuilding|| _hit.collider.tag == "EmptyBuilding"||(_hit.collider.tag == Playerbuilding && _hit.collider.gameObject != _startSelectedbuilding)) //빌딩을 클릭했을시에 DragCircle 생성 , //선택된 빌딩을 다시 클릭했을때 유닛이 스폰되지않도록
                     {
                         EndDesPosition = _hit.collider.gameObject.transform.position;
-                        if (_startSelectedbuilding.GetComponent<BuildingControllScript>()._unitNumber > 0)//해당건물의 유닛 숫자가 0보다클때만 실행
+                        if (_startSelectedbuilding.GetComponent<BuildingControllScript>().UnitNumber > 0)//해당건물의 유닛 숫자가 0보다클때만 실행
                         {
-                            _startSelectedbuilding.GetComponent<BuildingControllScript>().UnitSpawn(EndDesPosition);
-                            if (_hit.collider.tag == Enemybuilding ||
-                                (_hit.collider.tag == Playerbuilding &&
-                                 _hit.collider.gameObject != _startSelectedbuilding))
-                            {
-                                EndNode = _hit.collider.gameObject.GetComponent<BuildingControllScript>().NodeNumber;
-                            }
-                            if (_hit.collider.tag == "EmptyBuilding")
+                            if (_hit.collider.tag == "EmptyBuilding") //emptyBuilding과 playerBuilding은 스크립트 접근을따로해야하므로 분리
                             {
                                 EndNode = _hit.collider.gameObject.GetComponent<EmptyBuildingScript>().NodeNumber;
                             }
-                            PacketDataset(StartNode,EndNode);
+                            else if(_hit.collider.tag == Enemybuilding || (_hit.collider.tag == Playerbuilding && _hit.collider.gameObject != _startSelectedbuilding))
+                            { 
+                                EndNode = _hit.collider.gameObject.GetComponent<BuildingControllScript>().NodeNumber;
+                            }
+                            _startSelectedbuilding.GetComponent<BuildingControllScript>().UnitSpawn(EndDesPosition);//클라 유닛생성
+                            
+                            PacketDataset(_startSelectedbuilding.GetComponent<BuildingControllScript>().SendUnitCount,StartNode,EndNode);
                         }
                     }
 
                     BuildingSettingFunction();//건물레벨 설정 오브젝트위에서 버튼을 땟을때 
                     if (_startSelectedbuilding.GetComponent<BuildingControllScript>()
-                        .buildingSettingObject.activeSelf)//해당 빌딩 레벨업 셋팅이 켜져있을땐 꺼줌
+                        .BuildingSettingObject.activeSelf)//해당 빌딩 레벨업 셋팅이 켜져있을땐 꺼줌
                     {
                         _startSelectedbuilding.GetComponent<BuildingControllScript>()
-                                   .buildingSettingObject.SetActive(false);
+                                   .BuildingSettingObject.SetActive(false);
                     }
 
                     Destroy(_dragCircle);
@@ -158,39 +157,37 @@ public class MapTouchScript : MonoBehaviour
     }
 
 
-    void PacketDataset(int st, int end)
+    void PacketDataset(int unitCount, int st, int end)
     {
         Debug.Log(st);
         Debug.Log(end);
+
         _ingamePacket.StartNode = st;
         _ingamePacket.EndNode = end;
+        _ingamePacket.UnitCount = unitCount;
         ClientNetworkManager.Send("Move", _ingamePacket);
     }
 
     void BuildingSettingFunction()//빌딩함수
     {
-
         //건물 레벨 변경 
         if (_hit.collider.tag == "Level1Setting")
         {
-            _startSelectedbuilding.GetComponent<BuildingControllScript>().buildingSet1();
+            _startSelectedbuilding.GetComponent<BuildingControllScript>().BuildingSet(2);
         }
         else if (_hit.collider.tag == "Level2Setting")
         {
-            _startSelectedbuilding.GetComponent<BuildingControllScript>().buildingSet2();
+            _startSelectedbuilding.GetComponent<BuildingControllScript>().BuildingSet(3);
         }
         else if (_hit.collider.tag == "Level3Setting")
         {
-            _startSelectedbuilding.GetComponent<BuildingControllScript>().buildingSet3();
+            _startSelectedbuilding.GetComponent<BuildingControllScript>().BuildingSet(4);
         }
     }
-
-
-
-    void BuildingSettingObjectDragEffect()//빌딩 터치시 view 함수
+    
+    void BuildingSettingObjectDragEffect()//빌딩 터치시 view 함수 (포인터가 접근하면 원이 커지도록)
     {
-       
-        if (_startSelectedbuilding.GetComponent<BuildingControllScript>().buildingSettingObject.activeSelf)
+        if (_startSelectedbuilding.GetComponent<BuildingControllScript>().BuildingSettingObject.activeSelf)
         {
             if (_hit.collider.tag == "Level1Setting")
             {
@@ -232,6 +229,7 @@ public class MapTouchScript : MonoBehaviour
             }
         }
     }
+
 
     public void DragEffectSpawn() // 드래그이펙트 생성함수
     {
