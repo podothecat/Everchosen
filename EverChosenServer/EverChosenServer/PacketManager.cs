@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Configuration;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -30,7 +31,7 @@ namespace EverChosenServer
     /// <summary>
     /// Data for client information.
     /// </summary>
-    public class ProfilePacket
+    public class ProfileInfo
     {
         public string NickName { get; set; }
         public int Wins { get; set; }
@@ -40,19 +41,11 @@ namespace EverChosenServer
     /// <summary>
     /// Data for matching clients.
     /// </summary>
-    public class MatchingPacket
+    public class MatchingInfo
     {
         public string Id { get; set; }
         public string Tribe { get; set; }
         public int Spell { get; set; }
         public int TeamColor { get; set; }
-    }
-
-    /// <summary>
-    /// Data for processing game logic of two clients
-    /// </summary>
-    public class IngamePacket
-    {
-        public int UnitCount { get; set; }
     }
 }

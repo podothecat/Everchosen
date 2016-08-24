@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Diagnostics;
 using System.Linq;
 using System.Net.Sockets;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
@@ -13,9 +15,8 @@ namespace EverChosenServer
     internal class Client
     {
         public Socket Sock { get; set; }
-        public ProfilePacket LoginData;
-        public MatchingPacket MatchingData;
-        public IngamePacket InGameData;
+        public ProfileInfo LoginData;
+        public MatchingInfo MatchingData;
 
         public bool IsIngame;
 
@@ -32,7 +33,7 @@ namespace EverChosenServer
         }
 
         /// <summary>
-        /// Send packet to client.
+        /// Send data to client.
         /// </summary>
         public void BeginSend(string msg, dynamic data)
         {
@@ -44,16 +45,7 @@ namespace EverChosenServer
         }
 
         /// <summary>
-        /// Process packet to send.
-        /// </summary>
-        /// <param name="ar"> Async State </param>
-        private void OnSendCallback(IAsyncResult ar)
-        {
-            //Console.WriteLine("OnSend..");
-        }
-
-        /// <summary>
-        /// Receive asynchronous data
+        /// Receive asynchronous data from client.
         /// </summary>
         public void BeginReceive()
         {
@@ -70,6 +62,15 @@ namespace EverChosenServer
             {
                 Console.WriteLine(e);
             }
+        }
+
+        /// <summary>
+        /// Process packet to send.
+        /// </summary>
+        /// <param name="ar"> Async State </param>
+        private void OnSendCallback(IAsyncResult ar)
+        {
+            //Console.WriteLine("OnSend..");
         }
 
         /// <summary>
@@ -96,8 +97,16 @@ namespace EverChosenServer
             x.Data = x.Data.Replace("\\\"", "\"");
             x.Data = x.Data.Substring(1, x.Data.Length - 2);
 
-            ProcessRequest(x);
-            
+            // To distinguish whether client is ingame or not.
+            if (!IsIngame)
+                ProcessRequest(x);
+            else
+            {
+                Console.WriteLine("Request : Ingame [" + x.MsgName + "], [" + x.Data + "]");
+                
+                InGameRequest(this, x);
+            }
+                
             BeginReceive();
         }
 
@@ -122,29 +131,37 @@ namespace EverChosenServer
             {
                 case "OnLoginRequest":
                     Console.WriteLine("Request : Login");
+                    var uniqueId = JsonConvert.DeserializeObject<string>(req.Data);
+                    //LoginData = DatabaseManager.GetClientInfo(uniqueId);
                     GameManager.LoginRequest(this);
                     break;
+
                 case "OnMatchingRequest":
                     Console.WriteLine("Request : Matching");
-                    MatchingData = JsonConvert.DeserializeObject<MatchingPacket>(req.Data);
+                    MatchingData = JsonConvert.DeserializeObject<MatchingInfo>(req.Data);
                     GameManager.MatchingRequest(this);
                     break;
+
                 case "OnMatchingCancelRequest":
                     Console.WriteLine("Request : Matching Cancel");
                     GameManager.MatchingCancelRequest(this);
                     break;
-                case "OnInGameRequest":
-                    Console.WriteLine("Request : Ingame");
-                    InGameData = JsonConvert.DeserializeObject<IngamePacket>(req.Data);
-                    break;
+
                 case "OnExitRequest":
                     Console.WriteLine("Request : Exit");
                     Close();
                     break;
+
                 default:
                     Console.WriteLine("Received MsgName of client is wrong.");
                     break;
             }
         }
+
+        /// <summary>
+        /// Ingame Event Handler.
+        /// When request is arrived, then call attached method.
+        /// </summary>
+        public event EventHandler<Packet> InGameRequest;
     }
 }

@@ -1,8 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Runtime.InteropServices;
+using System.Runtime.Remoting.Channels;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using EverChosenServer.Ingame_Module;
 
 namespace EverChosenServer
 {
@@ -20,7 +24,7 @@ namespace EverChosenServer
         public static void AddClient(Client c)
         {
             Clients.Add(c);
-            Console.WriteLine("\nGAME MANAGER : client was added.\n");
+            Console.WriteLine("\nGAME MANAGER : client was added.");
             PrintConnectedClients();
         }
 
@@ -31,8 +35,7 @@ namespace EverChosenServer
         public static void ReleaseClient(Client c)
         {
             Clients.Remove(c);
-
-            Console.WriteLine("\nGAME MANAGER : client was removed.\n");
+            Console.WriteLine("\nGAME MANAGER : client was removed.");
             PrintConnectedClients();
         }
 
@@ -53,12 +56,13 @@ namespace EverChosenServer
             //DatabaseManager.GetClientInfo(client);
 
             // Write code to get Login Information from DB (now temporary)
+            
             var nick = "Ragdoll";
             var wins = 10;
             var loses = 5;
             // ...
             
-            client.LoginData = new ProfilePacket
+            client.LoginData = new ProfileInfo
             {
                 NickName = nick,
                 Wins = wins,
@@ -82,7 +86,11 @@ namespace EverChosenServer
             oppoClient.IsIngame = true;
             client.BeginSend("OnSucceedMatching", oppoClient.MatchingData);
             client.IsIngame = true;
-            var ingame = new IngameManager(client, oppoClient);
+            
+            var room = new GameRoom(oppoClient, client);
+            IngameManager.AddRoom(room);
+            client.InGameRequest += room.IngameCommand;
+            oppoClient.InGameRequest += room.IngameCommand;
         }
 
         /// <summary>
