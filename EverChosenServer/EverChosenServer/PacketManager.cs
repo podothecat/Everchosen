@@ -31,7 +31,7 @@ namespace EverChosenServer
     /// <summary>
     /// Data for client information.
     /// </summary>
-    public class ProfilePacket
+    public class ProfileInfo
     {
         public string NickName { get; set; }
         public int Wins { get; set; }
@@ -41,7 +41,7 @@ namespace EverChosenServer
     /// <summary>
     /// Data for matching clients.
     /// </summary>
-    public class MatchingPacket
+    public class MatchingInfo
     {
         public string Id { get; set; }
         public string Tribe { get; set; }

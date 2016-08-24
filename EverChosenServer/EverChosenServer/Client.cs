@@ -15,8 +15,8 @@ namespace EverChosenServer
     internal class Client
     {
         public Socket Sock { get; set; }
-        public ProfilePacket LoginData;
-        public MatchingPacket MatchingData;
+        public ProfileInfo LoginData;
+        public MatchingInfo MatchingData;
 
         public bool IsIngame;
 
@@ -102,7 +102,7 @@ namespace EverChosenServer
                 ProcessRequest(x);
             else
             {
-                Console.WriteLine("Request : Ingame [" + x.MsgName + "]");
+                Console.WriteLine("Request : Ingame [" + x.MsgName + "], [" + x.Data + "]");
                 
                 InGameRequest(this, x);
             }
@@ -131,12 +131,14 @@ namespace EverChosenServer
             {
                 case "OnLoginRequest":
                     Console.WriteLine("Request : Login");
+                    var uniqueId = JsonConvert.DeserializeObject<string>(req.Data);
+                    //LoginData = DatabaseManager.GetClientInfo(uniqueId);
                     GameManager.LoginRequest(this);
                     break;
 
                 case "OnMatchingRequest":
                     Console.WriteLine("Request : Matching");
-                    MatchingData = JsonConvert.DeserializeObject<MatchingPacket>(req.Data);
+                    MatchingData = JsonConvert.DeserializeObject<MatchingInfo>(req.Data);
                     GameManager.MatchingRequest(this);
                     break;
 
@@ -156,7 +158,10 @@ namespace EverChosenServer
             }
         }
 
-        // Ingame Event Handler
+        /// <summary>
+        /// Ingame Event Handler.
+        /// When request is arrived, then call attached method.
+        /// </summary>
         public event EventHandler<Packet> InGameRequest;
     }
 }

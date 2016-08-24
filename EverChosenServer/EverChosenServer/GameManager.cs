@@ -56,12 +56,13 @@ namespace EverChosenServer
             //DatabaseManager.GetClientInfo(client);
 
             // Write code to get Login Information from DB (now temporary)
+            
             var nick = "Ragdoll";
             var wins = 10;
             var loses = 5;
             // ...
             
-            client.LoginData = new ProfilePacket
+            client.LoginData = new ProfileInfo
             {
                 NickName = nick,
                 Wins = wins,

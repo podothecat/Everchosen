@@ -46,6 +46,7 @@ namespace EverChosenServer.Ingame_Module
             public int UnitCount { get; set; }
         }
 
+
         private class BuildingInfo
         {
             public int Node { get; set; }
@@ -82,9 +83,9 @@ namespace EverChosenServer.Ingame_Module
                     //target.BeginSend(e.MsgName, e.Data);
                     break;
 
-                case "Option":
+                case "Change":
                     var option = JsonConvert.DeserializeObject<BuildingInfo>(e.Data);
-                    ChangeUnit(option.Node, option.Kinds);
+                    ChangeUnit(target, option.Node, option.Kinds);
                     //client.BeginSend(e.MsgName, e.Data);
                     //target.BeginSend(e.MsgName, e.Data);
                     break;
@@ -102,17 +103,6 @@ namespace EverChosenServer.Ingame_Module
         {
             var movingUnit = 0;
 
-            /*if (_mapNodes[s].UnitCount < 5)
-            {
-                movingUnit = _mapNodes[s].UnitCount;
-                _mapNodes[s].UnitCount -= movingUnit;
-            }
-            else
-            {
-                movingUnit = 5;
-                _mapNodes[s].UnitCount -= movingUnit;
-            }*/
-
             var packet = new MoveInfo
             {
                 StartNode = s,
@@ -123,9 +113,16 @@ namespace EverChosenServer.Ingame_Module
             t.BeginSend("Move", packet);
         }
 
-        private void ChangeUnit(int idx, int kinds)
+        private void ChangeUnit(Client t, int idx, int kinds)
         {
-            _mapNodes[idx].Kinds = kinds;
+            //_mapNodes[idx].Kinds = kinds;
+            var packet = new BuildingInfo
+            {
+                Node = idx,
+                Kinds = kinds
+            };
+            
+            t.BeginSend("Change", packet);
         }
 
         private void UseSpell()
