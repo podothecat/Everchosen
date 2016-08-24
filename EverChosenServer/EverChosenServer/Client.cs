@@ -21,6 +21,7 @@ namespace EverChosenServer
         public bool IsIngame;
 
         private readonly byte[] _buffer = new byte[1024];
+        private string _uniqueId { get; set; }
 
         /// <summary>
         /// Constructor
@@ -131,9 +132,17 @@ namespace EverChosenServer
             {
                 case "OnLoginRequest":
                     Console.WriteLine("Request : Login");
-                    var uniqueId = JsonConvert.DeserializeObject<string>(req.Data);
-                    //LoginData = DatabaseManager.GetClientInfo(uniqueId);
+                    _uniqueId = JsonConvert.DeserializeObject<string>(req.Data);
+                    LoginData = DatabaseManager.GetClientInfo(_uniqueId);
+                    Console.WriteLine(LoginData.NickName + " " + LoginData.Wins + " " + LoginData.Loses);
                     GameManager.LoginRequest(this);
+                    break;
+
+                case "OnNickChangeRequest":
+                    Console.WriteLine("Request : Setting");
+                    var nickName = JsonConvert.DeserializeObject<string>(req.Data);
+                    LoginData.NickName = DatabaseManager.SetClientInfo(nickName, _uniqueId);
+                    BeginSend("OnChangedProfile", LoginData.NickName);
                     break;
 
                 case "OnMatchingRequest":
