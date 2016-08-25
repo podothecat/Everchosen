@@ -48,18 +48,6 @@ namespace EverChosenServer
         }
 
         /// <summary>
-        /// Get client info from DB whis has same device ID.
-        /// </summary>
-        /// <param name="client"> Accepted client. </param>
-        public static void LoginRequest(Client client)
-        {
-            //DatabaseManager.GetClientInfo(client);
-
-            // Write code to get Login Information from DB (now temporary)
-            client.BeginSend("OnSucceedLogin", client.LoginData);
-        }
-
-        /// <summary>
         /// Get opponent client from matching queue.
         /// </summary>
         /// <param name="client"> Client who request matching. </param>
@@ -69,10 +57,12 @@ namespace EverChosenServer
 
             if (oppoClient == null)
                 return;
-
-            oppoClient.BeginSend("OnSucceedMatching", client.MatchingData);
+            
+            oppoClient.BeginSend("OnSucceedMatching1", client.MatchingData);
+            oppoClient.BeginSend("OnSucceedMatching2", client.LoginData);
             oppoClient.IsIngame = true;
-            client.BeginSend("OnSucceedMatching", oppoClient.MatchingData);
+            client.BeginSend("OnSucceedMatching1", oppoClient.MatchingData);
+            client.BeginSend("OnSucceedMatching2", oppoClient.LoginData);
             client.IsIngame = true;
             
             var room = new GameRoom(oppoClient, client);
@@ -87,7 +77,8 @@ namespace EverChosenServer
         /// <param name="client"> Client who request to cancel matching. </param>
         public static void MatchingCancelRequest(Client client)
         {
-            MatchingManager.MatchCancelProcess(client);
+            if(!MatchingManager.MatchCancelProcess(client))
+                Console.WriteLine("Matching Cancel Error.");
         }
     }
 }

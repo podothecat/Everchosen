@@ -16,6 +16,7 @@ namespace EverChosenServer
         private static MongoClient _mongoClient { get; set; }
         private static IMongoDatabase _database { get; set; }
         private static IMongoCollection<BsonDocument> _users { get; set; }
+        private static IMongoCollection<BsonDocument> _maps { get; set; }
 
         internal static void Initialize()
         {
@@ -23,6 +24,7 @@ namespace EverChosenServer
             _mongoClient = new MongoClient(_connectString);
             _database = _mongoClient.GetDatabase("EverChosen");
             _users = _database.GetCollection<BsonDocument>("users");
+            _maps = _database.GetCollection<BsonDocument>("maps");
         }
 
         /// <summary>
@@ -70,6 +72,16 @@ namespace EverChosenServer
             var result = _users.UpdateOneAsync(filter, update);
 
             return nickName;
+        }
+
+        internal static string GetMapInfo()
+        {
+            var mapName = string.Empty;
+
+            var filter = Builders<BsonDocument>.Filter.Eq("_id", 2);
+            var result = _maps.Find(filter).ToListAsync().Result;
+
+            return mapName;
         }
 
         internal static void PrintClients()

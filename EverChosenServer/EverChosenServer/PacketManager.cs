@@ -43,7 +43,6 @@ namespace EverChosenServer
     /// </summary>
     public class MatchingInfo
     {
-        public string Id { get; set; }
         public string Tribe { get; set; }
         public int Spell { get; set; }
         public int TeamColor { get; set; }

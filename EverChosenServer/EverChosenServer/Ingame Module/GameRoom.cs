@@ -46,7 +46,6 @@ namespace EverChosenServer.Ingame_Module
             public int UnitCount { get; set; }
         }
 
-
         private class BuildingInfo
         {
             public int Node { get; set; }
@@ -78,16 +77,18 @@ namespace EverChosenServer.Ingame_Module
             {
                 case "Move":
                     var nodes = JsonConvert.DeserializeObject<MoveInfo>(e.Data);
-                    Move(target, nodes.StartNode, nodes.EndNode);
-                    //client.BeginSend(e.MsgName, e.Data);
-                    //target.BeginSend(e.MsgName, e.Data);
+                    var moveInfo = Move(target, nodes.StartNode, nodes.EndNode);
+
+                    client.BeginSend(e.MsgName + "Mine", moveInfo);
+                    target.BeginSend(e.MsgName + "Oppo", moveInfo);
                     break;
 
                 case "Change":
                     var option = JsonConvert.DeserializeObject<BuildingInfo>(e.Data);
-                    ChangeUnit(target, option.Node, option.Kinds);
-                    //client.BeginSend(e.MsgName, e.Data);
-                    //target.BeginSend(e.MsgName, e.Data);
+                    var buildinfo = ChangeUnit(target, option.Node, option.Kinds);
+
+                    client.BeginSend(e.MsgName + "Mine", buildinfo);
+                    target.BeginSend(e.MsgName + "Oppo", buildinfo);
                     break;
 
                 case "Fight":
@@ -99,30 +100,30 @@ namespace EverChosenServer.Ingame_Module
             }
         }
 
-        private void Move(Client t, int s, int e)
+        private MoveInfo Move(Client t, int s, int e)
         {
             var movingUnit = 0;
 
-            var packet = new MoveInfo
+            var info = new MoveInfo
             {
                 StartNode = s,
                 EndNode = e,
                 UnitCount = movingUnit
             };
 
-            t.BeginSend("Move", packet);
+            return info;
         }
 
-        private void ChangeUnit(Client t, int idx, int kinds)
+        private BuildingInfo ChangeUnit(Client t, int idx, int kinds)
         {
             //_mapNodes[idx].Kinds = kinds;
-            var packet = new BuildingInfo
+            var info = new BuildingInfo
             {
                 Node = idx,
                 Kinds = kinds
             };
             
-            t.BeginSend("Change", packet);
+            return info;
         }
 
         private void UseSpell()

@@ -31,9 +31,9 @@ namespace EverChosenServer
             }
         }
 
-        internal static void MatchCancelProcess(Client client)
+        internal static bool MatchCancelProcess(Client client)
         {
-            Clients.Remove(client);
+            return Clients.Remove(client);
         }
     }
 }

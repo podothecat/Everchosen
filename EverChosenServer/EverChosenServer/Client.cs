@@ -8,6 +8,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using MongoDB.Driver.Core.WireProtocol.Messages;
 using Newtonsoft.Json;
 
 namespace EverChosenServer
@@ -43,6 +44,7 @@ namespace EverChosenServer
                 JsonConvert.SerializeObject(p, Formatting.Indented));
            
             Sock.BeginSend(sendBuf, 0, sendBuf.Length, SocketFlags.None, OnSendCallback, Sock);
+            Console.WriteLine("Send : " + p.MsgName + ", " + p.Data);
         }
 
         /// <summary>
@@ -134,8 +136,8 @@ namespace EverChosenServer
                     Console.WriteLine("Request : Login");
                     _uniqueId = JsonConvert.DeserializeObject<string>(req.Data);
                     LoginData = DatabaseManager.GetClientInfo(_uniqueId);
-                    Console.WriteLine(LoginData.NickName + " " + LoginData.Wins + " " + LoginData.Loses);
-                    GameManager.LoginRequest(this);
+                    Console.WriteLine(_uniqueId);
+                    BeginSend("OnSucceedLogin", LoginData);
                     break;
 
                 case "OnNickChangeRequest":
