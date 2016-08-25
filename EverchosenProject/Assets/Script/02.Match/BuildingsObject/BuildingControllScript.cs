@@ -35,8 +35,6 @@ public class BuildingControllScript : MonoBehaviour
 
     public int NodeNumber;
 
-    private readonly BuildingChangeData _sendLevelData = new BuildingChangeData();
-
 
     void Awake()
     {
@@ -181,7 +179,6 @@ public class BuildingControllScript : MonoBehaviour
         _unit.GetComponent<UnitControllScript>().UnitSprite = UnitSprite;
         _unit.GetComponent<UnitControllScript>().Team = PlayerTeam;
         Debug.Log(PlayerTeam);
-        Debug.Log(_unit.GetComponent<UnitControllScript>().Team);
 
         SendUnitCount = i;
         UnitNumber--;
@@ -251,8 +248,6 @@ public class BuildingControllScript : MonoBehaviour
         if (BuildingId != _buildingDataList[offsetbuildingId].BuildingId)
         {
             BuildingDataSet(BuildingId);//data set
-            LevelSend(BuildingId);//server send
-           
         }
         else
         {
@@ -261,14 +256,6 @@ public class BuildingControllScript : MonoBehaviour
     }
     
     
-    public void LevelSend(int lv)
-    {
-        _sendLevelData.Node = NodeNumber;
-        _sendLevelData.Kinds = lv;
-
-        Debug.Log(_sendLevelData);
-        ClientNetworkManager.Send("Change", _sendLevelData);
-    }
 
 
 

@@ -20,6 +20,7 @@ public class GameControllScript : MonoBehaviour
     public GameObject ParentObject;
 
     private MatchingPacket _enemyViewPanelSetdata;
+    private ProfileData _enemyViewPanelProfileData;
 
 
     public List<GameObject> NodePosition;
@@ -28,30 +29,53 @@ public class GameControllScript : MonoBehaviour
     
 
     void Start () {
-      
-        if (ClientNetworkManager.PacketData != null)
-        {
-            _enemyViewPanelSetdata = ClientNetworkManager.PacketData;
-        }
-        MatchingDataViewIns();//매칭데이터 패널 생성
-        StartCoroutine(GameStartCounter()); //게임카운트;
+       
+
+        //게임카운트;
     }
 	
 	// Update is called once per frame
 	void Update () {
 
-	    if (ClientNetworkManager.MoveData != null)
+        if (ClientNetworkManager.PacketData != null&&ClientNetworkManager.EnemyProfileData!=null)
+        {
+            Debug.Log("확인");
+            Debug.Log(ClientNetworkManager.PacketData);
+            _enemyViewPanelSetdata = ClientNetworkManager.PacketData;
+            _enemyViewPanelProfileData = ClientNetworkManager.EnemyProfileData;
+            MatchingDataViewIns();//매칭데이터 패널 생성
+            ClientNetworkManager.PacketData = null;
+            ClientNetworkManager.EnemyProfileData = null;
+        }
+
+        if (ClientNetworkManager.EnemyMoveData != null)//적유닛이동
 	    {
-            EnemyUnitMove(ClientNetworkManager.MoveData.UnitCount, ClientNetworkManager.MoveData.StartNode, ClientNetworkManager.MoveData.EndNode);
-	        ClientNetworkManager.MoveData = null;
+            UnitMove(ClientNetworkManager.EnemyMoveData.UnitCount, ClientNetworkManager.EnemyMoveData.StartNode, ClientNetworkManager.EnemyMoveData.EndNode);
+	        ClientNetworkManager.EnemyMoveData = null;
 	    }
 
-	    if (ClientNetworkManager.ChangeData != null)
+	    if (ClientNetworkManager.MyMoveData != null)//내유닛이동 
 	    {
-	        BuildingNode[ClientNetworkManager.ChangeData.Node].GetComponent<BuildingControllScript>().BuildingDataSet(ClientNetworkManager.ChangeData.Kinds);
-	        ClientNetworkManager.ChangeData = null;
+	        UnitMove(ClientNetworkManager.MyMoveData.UnitCount,ClientNetworkManager.MyMoveData.StartNode,ClientNetworkManager.MyMoveData.EndNode);
+	        ClientNetworkManager.MyMoveData = null;
 	    }
-	}
+
+
+        //빌딩 변경
+	    if (ClientNetworkManager.EnemyChangeData != null)
+	    {
+            
+	        BuildingNode[ClientNetworkManager.EnemyChangeData.Node].GetComponent<BuildingControllScript>().BuildingDataSet(ClientNetworkManager.EnemyChangeData.Kinds);
+	        ClientNetworkManager.EnemyChangeData = null;
+	    }
+        if (ClientNetworkManager.MyChangeData != null)
+        {
+            BuildingNode[ClientNetworkManager.MyChangeData.Node].GetComponent<BuildingControllScript>().BuildingDataSet(ClientNetworkManager.MyChangeData.Kinds);
+            ClientNetworkManager.MyChangeData = null;
+        }
+
+
+    }
 
 
     private void MatchingDataViewIns() //매칭 데이터 패널 생성
@@ -60,6 +84,7 @@ public class GameControllScript : MonoBehaviour
         _matchingDataViewPanel.transform.SetParent(Canvas.transform);
         _matchingDataViewPanel.transform.SetAsLastSibling(); //가장 앞에서 보여주기위해
         _matchingDataViewPanel.transform.position = Camera.main.WorldToScreenPoint(Vector3.zero);
+        StartCoroutine(GameStartCounter());
         MatchingDataSetting();//데이터셋팅
     }
 
@@ -78,14 +103,13 @@ public class GameControllScript : MonoBehaviour
             _matchingDataViewPanel.transform.FindChild("Player2Panel").transform.FindChild("Player2Team").GetComponent<Text>().text = "Blue Team";
         }
         
-            _matchingDataViewPanel.transform.FindChild("Player1Panel").transform.FindChild("Player1ID").GetComponent<Text>().text = "아이디 : " + TribeSetManager.PData.UserID;
+            _matchingDataViewPanel.transform.FindChild("Player1Panel").transform.FindChild("Player1ID").GetComponent<Text>().text = "아이디 : " + TribeSetManager.PData.NickName;
             _matchingDataViewPanel.transform.FindChild("Player1Panel").transform.FindChild("Player1Tribe").GetComponent<Text>().text = "종족 : " + TribeSetManager.PData.TribeName;
             _matchingDataViewPanel.transform.FindChild("Player1Panel").transform.FindChild("Player1Spell").GetComponent<Text>().text = "스펠 : " + TribeSetManager.PData.Spell;
         
-            _matchingDataViewPanel.transform.FindChild("Player2Panel").transform.FindChild("Player2ID").GetComponent<Text>().text = "아이디 : " + _enemyViewPanelSetdata.Id;
+            _matchingDataViewPanel.transform.FindChild("Player2Panel").transform.FindChild("Player2ID").GetComponent<Text>().text = "아이디 : " + _enemyViewPanelProfileData.NickName;
             _matchingDataViewPanel.transform.FindChild("Player2Panel").transform.FindChild("Player2Tribe").GetComponent<Text>().text = "종족 : " + _enemyViewPanelSetdata.Tribe;
             _matchingDataViewPanel.transform.FindChild("Player2Panel").transform.FindChild("Player2Spell").GetComponent<Text>().text = "스펠 : " + _enemyViewPanelSetdata.Spell;
-        
     }
 
 
@@ -169,7 +193,7 @@ public class GameControllScript : MonoBehaviour
     }
 
 
-    public void EnemyUnitMove(int unitCount,int stNode, int endNode)
+    public void UnitMove(int unitCount,int stNode, int endNode)
     {
         BuildingNode[stNode].GetComponent<BuildingControllScript>().UnitSpawn(BuildingNode[endNode].transform.position);
     }

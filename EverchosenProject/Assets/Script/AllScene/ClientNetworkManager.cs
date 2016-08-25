@@ -21,19 +21,21 @@ namespace Client
         public static Socket ClientSocket = null;
         private static Socket _serverSocket = null;
         private static readonly byte[] Buffer = new byte[1024];
-        public static GameObject gameControll;
+
         // Save device unique id.
         public static string ClientDeviceId;
 
         public static bool Connected = false;
 
+        public static ProfileData EnemyProfileData;
         public static ProfileData ProfileData;
         public static MatchingPacket PacketData; // 유니티에서 사용할 데이터를 담을변수
-      
-       
-            //인게임
-        public static MoveData MoveData;
-        public static BuildingChangeData ChangeData;
+           
+        //인게임
+        public static MoveData MyMoveData;
+        public static MoveData EnemyMoveData;
+        public static BuildingChangeData MyChangeData;
+        public static BuildingChangeData EnemyChangeData;
         
         public static string ReceiveMsg = null; //유니티쪽에서 사용할 메시지를 담을 변수
         public static void ConnectToServer(string hostName, int hostPort)
@@ -46,7 +48,6 @@ namespace Client
             {
                 //연결성공
                 ClientSocket.BeginConnect(hostName, hostPort, ConnectCallback, ClientSocket);
-            
             }
             catch (Exception e)
             {
@@ -160,23 +161,32 @@ namespace Client
                     case "OnSucceedLogin":
                         ProfileData = JsonConvert.DeserializeObject<ProfileData>(receiveData.Data);
                         break;
+
                         //메인메뉴
                     case "OnChangedProfile" :
-                        Debug.Log("CHANGE");
                         ProfileData.NickName = JsonConvert.DeserializeObject<string>(receiveData.Data);
                         break;
-                    case "OnSucceedMatching":
+                    case "OnSucceedMatching1": //종족 스펠
                         PacketData = JsonConvert.DeserializeObject<MatchingPacket>(receiveData.Data);
                         break;
-                        //ingame
-                    case "Move":
-                        Debug.Log(receiveData.Data);
-                        MoveData = JsonConvert.DeserializeObject<MoveData>(receiveData.Data);
-                        Debug.Log(MoveData);
+                    case "OnSucceedMatching2"://닉네임, 승패
+                        EnemyProfileData = JsonConvert.DeserializeObject<ProfileData>(receiveData.Data);
                         break;
-                    case "Change":
-                        Debug.Log(receiveData.Data);
-                        ChangeData = JsonConvert.DeserializeObject<BuildingChangeData>(receiveData.Data);
+
+                        //ingame
+                    case "MoveMine":
+                        MyMoveData = JsonConvert.DeserializeObject<MoveData>(receiveData.Data);
+                        break;
+                    case "MoveOppo":
+                        EnemyMoveData = JsonConvert.DeserializeObject<MoveData>(receiveData.Data);
+                        break;
+                    case "ChangeMine":
+                        Debug.Log("My:" + receiveData.Data);
+                        MyChangeData = JsonConvert.DeserializeObject<BuildingChangeData>(receiveData.Data);
+                        break;
+                    case "ChangeOppo":
+                        Debug.Log("Oppo:" + receiveData.Data);
+                        EnemyChangeData = JsonConvert.DeserializeObject<BuildingChangeData>(receiveData.Data);
                         break;
                 }
                 if (_serverSocket.Connected == true)
@@ -194,14 +204,6 @@ namespace Client
             {
                 Debug.Log("exeption 에러 : "+e);
             }
-
-            var matchingPakcet = new MatchingPacket("id","tribe",0,1);
-
-            var packetwrapper = new Packet()
-            {
-                MsgName = "MatchingPacket",
-                Data = JsonConvert.SerializeObject(matchingPakcet)
-            };
         }
         
         public static void SocketClose()
@@ -228,15 +230,12 @@ namespace Client
 
     public class MatchingPacket
     {
-        public string Id { get; set; }
         public string Tribe { get; set;}
         public int Spell { get; set; }
         public int TeamColor { get; set;}
       
-
-        public MatchingPacket(string nickName, string tribe, int spell, int teamColor)
+        public MatchingPacket(string tribe, int spell, int teamColor)
         {
-            this.Id = nickName;
             this.Tribe = tribe;
             this.Spell = spell;
             this.TeamColor = teamColor;
