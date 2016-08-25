@@ -11,6 +11,7 @@ public class UIControllScript : MonoBehaviour
     private GameObject _loadingPanel;
     public bool LoadingComplete=false;//로딩확인
     public bool AccountValid=false;//계정확인
+    public bool Send;
 
     void Awake()
     {
@@ -24,19 +25,25 @@ public class UIControllScript : MonoBehaviour
         
         _loadingPanel = GameObject.Find("LoadingPanel");
         //211.245.70.35 , 127.0.0.1<-자기자신한테 보낼떄 , 219.254.17.66<--내공유기외부 ip
-       ClientNetworkManager.Send("OnLoginRequest", ClientNetworkManager.ClientDeviceId);
+       
     }
 
 	
 	// Update is called once per frame
 	void Update () {
-	    if (ClientNetworkManager.Connected==true&&ClientNetworkManager.ProfileData!=null)//소켓이 연결되고 아이디를 받아올때 다음씬으로 넘어감 
+
+	    if (ClientNetworkManager.Connected==true&&Send==false)//소켓이 연결되고 아이디를 받아올때 다음씬으로 넘어감 
 	    {
-            
-	       // TribeSetManager.PData.UserID = ClientNetworkManager.ProfileData.NickName;
+            ClientNetworkManager.Send("OnLoginRequest", ClientNetworkManager.ClientDeviceId);
+	        Send = true;
+	    }
+
+        if (ClientNetworkManager.ProfileData != null)
+        {
+            TribeSetManager.PData.NickName = ClientNetworkManager.ProfileData.NickName;
             SceneManager.LoadScene("01.MainMenu");
         }
-	}
+    }
     
 
 }

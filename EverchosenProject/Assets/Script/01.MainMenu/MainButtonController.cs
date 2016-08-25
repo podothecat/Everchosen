@@ -6,8 +6,6 @@ using UnityEngine.UI;
 
 public class MainButtonController : MonoBehaviour
 {
-
-
     private GameObject _canvas;
     //queue관련 변수들
     public GameObject QueuePanelPrefab;
@@ -26,12 +24,11 @@ public class MainButtonController : MonoBehaviour
 
     private InputField _profileNameInputField;
     private Button _profileSetButton;
+
     private Image _profileImage;
     private Text _profileInputFieldText;
     private Text _profileInputFieldPlaceHolder;
-    private Button _profileBackButton;
-
-
+  
     private GameObject _settingPanel;
     private GameObject _optionPanel;
     private GameObject _creditPanel;
@@ -52,8 +49,7 @@ public class MainButtonController : MonoBehaviour
                 .transform.FindChild("ProfileTextPanel")
                 .transform.FindChild("ProfileText")
                 .GetComponent<Text>();
-     /*   _profileViewImage = _canvas.transform.FindChild("MainPanel").transform.Find("ProfileViewPanel")
-            .transform.FindChild("ProfileTextPanel").transform.FindChild("ProfileImage").GetComponent<Image>();*/
+       _profileViewImage = _canvas.transform.FindChild("MainPanel").transform.Find("ProfileViewPanel").transform.FindChild("ProfileImage").GetComponent<Image>();
 
         _profileNameInputField =
             _profileSettingPanel.transform.FindChild("ProfileSettingNamePanel")
@@ -65,8 +61,6 @@ public class MainButtonController : MonoBehaviour
             .transform.FindChild("NameChangeButton").gameObject.GetComponent<Button>();
         _profileImage = _profileSettingPanel.transform.FindChild("ProfileSettingImage").gameObject.GetComponent<Image>();
         
-
-
         _settingPanel = _canvas.transform.FindChild("SettingPanel").gameObject;
         _creditPanel = _canvas.transform.FindChild("CreditsPanel").gameObject;
         _optionPanel = GameObject.Find("BackObject").transform.FindChild("OptionPanel").gameObject;
@@ -83,7 +77,7 @@ public class MainButtonController : MonoBehaviour
         if (ClientNetworkManager.ProfileData != null)
         {
             TribeSetManager.PData.NickName = ClientNetworkManager.ProfileData.NickName;
-            Debug.Log(ClientNetworkManager.ProfileData.NickName);
+           
             _profileViewNameText.text = TribeSetManager.PData.NickName;
             _profileInputFieldText.text = TribeSetManager.PData.NickName;
             _profileInputFieldPlaceHolder.text = TribeSetManager.PData.NickName;
@@ -101,16 +95,17 @@ public class MainButtonController : MonoBehaviour
     {
         if (_queuePanel)
         {
-            if (ClientNetworkManager.ReceiveMsg == "OnSucceedMatching")
+            if (ClientNetworkManager.ReceiveMsg == "OnSucceedMatching2")
             {
                 StartCoroutine(MatchStart(2));
             }
         }
 
-        if (ClientNetworkManager.ReceiveMsg == "OnChangedProfile")
+        if (ClientNetworkManager.ReceiveMsg == "OnChangedProfile"&& ClientNetworkManager.ProfileData.NickName != TribeSetManager.PData.NickName)
         {
             ProfileSet(ClientNetworkManager.ProfileData.NickName);
         }
+        
     }
     
    
@@ -197,8 +192,7 @@ public class MainButtonController : MonoBehaviour
     //큐버튼을 누를시에 서버로 보내는 함수
     public void ServerQueue()
     {
-
-        MatchingPacket setData = new MatchingPacket(TribeSetManager.PData.UserID, TribeSetManager.PData.TribeName, TribeSetManager.PData.Spell, 0);//마지막 파라미터는 teamflag 그냥 0 으로 보냄 
+        MatchingPacket setData = new MatchingPacket(TribeSetManager.PData.TribeName, TribeSetManager.PData.Spell, 0);//마지막 파라미터는 teamflag 그냥 0 으로 보냄 
 
         ClientNetworkManager.Send("OnMatchingRequest", setData);
     }
@@ -224,8 +218,6 @@ public class MainButtonController : MonoBehaviour
                 yield break;
             }
         }
-        
-        
     }
 
     //매칭잡힌후 로딩시간 // 매칭 카운터 완료후 2초후 시작
@@ -235,11 +227,7 @@ public class MainButtonController : MonoBehaviour
         yield return new WaitForSeconds(count);
         SceneManager.LoadScene("02.Match");
     }
-
-
-
-
-
+    
     //종족선택 버튼 4개
     public void Trbie1ButtonInvoke()
     {
@@ -276,8 +264,7 @@ public class MainButtonController : MonoBehaviour
         _tribeViewText.text = TribeSetManager.PData.TribeName;
         _queueButton.interactable = true;
     }
-
-
+    
     public void Spell1ButtonInvoke()
     {
         TribeSetManager.PData.Spell = 1;
@@ -291,36 +278,30 @@ public class MainButtonController : MonoBehaviour
         _spellViewText.text = "Two";
     }
     
-
-    //
     public void ProfileSettingBackInvoke()
     {
         _profileSettingPanel.SetActive(false);
     }
-
 
     public void ProfileNameSetInvoke()
     {
         if (_profileNameInputField.interactable == false)
         {
             _profileNameInputField.interactable = true;
+
         }
         else
         {
-            TribeSetManager.PData.NickName = _profileInputFieldText.text;
-
-            ClientNetworkManager.Send("OnNickChangeRequest", TribeSetManager.PData.NickName);
-            Debug.Log(_profileInputFieldText.text);
+            ClientNetworkManager.Send("OnNickChangeRequest", _profileInputFieldText.text);
            
             _profileNameInputField.interactable = false;
         }
     }
 
+
     public static void ProfileSet(string data)
     {
+        TribeSetManager.PData.NickName = data;
         _profileViewNameText.text = data;
     }
-
-
-
 }

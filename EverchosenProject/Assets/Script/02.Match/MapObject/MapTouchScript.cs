@@ -33,8 +33,10 @@ public class MapTouchScript : MonoBehaviour
     GameObject _buildingLevel2;
     GameObject _buildingLevel3;
     
-    private MoveData _ingamePacket = new MoveData();
-  
+    private readonly MoveData _ingamePacket = new MoveData();
+    private readonly BuildingChangeData _sendLevelData = new BuildingChangeData();
+
+
     // Use this for initialization
     void Start ()
     {
@@ -136,15 +138,17 @@ public class MapTouchScript : MonoBehaviour
                             { 
                                 EndNode = _hit.collider.gameObject.GetComponent<BuildingControllScript>().NodeNumber;
                             }
-                            _startSelectedbuilding.GetComponent<BuildingControllScript>().UnitSpawn(EndDesPosition);//클라 유닛생성
+                           // _startSelectedbuilding.GetComponent<BuildingControllScript>().UnitSpawn(EndDesPosition);//클라 유닛생성
                             
-                            PacketDataset(_startSelectedbuilding.GetComponent<BuildingControllScript>().SendUnitCount,StartNode,EndNode);
+                            MoveDataset(_startSelectedbuilding.GetComponent<BuildingControllScript>().SendUnitCount,StartNode,EndNode);
                         }
                     }
 
-                    BuildingSettingFunction();//건물레벨 설정 오브젝트위에서 버튼을 땟을때 
+                    //건물데이터변경 서버send함수
+                    BuildingSettingFunction(StartNode);
+                    //해당 빌딩 레벨업 셋팅이 켜져있을땐 꺼줌
                     if (_startSelectedbuilding.GetComponent<BuildingControllScript>()
-                        .BuildingSettingObject.activeSelf)//해당 빌딩 레벨업 셋팅이 켜져있을땐 꺼줌
+                        .BuildingSettingObject.activeSelf)
                     {
                         _startSelectedbuilding.GetComponent<BuildingControllScript>()
                                    .BuildingSettingObject.SetActive(false);
@@ -157,34 +161,39 @@ public class MapTouchScript : MonoBehaviour
     }
 
 
-    void PacketDataset(int unitCount, int st, int end)
+    public void LevelDataSet(int node, int lv) 
     {
-        Debug.Log(st);
-        Debug.Log(end);
-
+        _sendLevelData.Node = node;
+        _sendLevelData.Kinds = lv;
+        ClientNetworkManager.Send("Change", _sendLevelData);
+    }
+    
+    void MoveDataset(int unitCount, int st, int end)
+    {
         _ingamePacket.StartNode = st;
         _ingamePacket.EndNode = end;
         _ingamePacket.UnitCount = unitCount;
         ClientNetworkManager.Send("Move", _ingamePacket);
     }
 
-    void BuildingSettingFunction()//빌딩함수
+    void BuildingSettingFunction(int node)//빌딩함수
     {
-        //건물 레벨 변경 
+        //빌딩 변경부분
         if (_hit.collider.tag == "Level1Setting")
         {
-            _startSelectedbuilding.GetComponent<BuildingControllScript>().BuildingSet(2);
+            LevelDataSet(node, 2);
         }
         else if (_hit.collider.tag == "Level2Setting")
         {
-            _startSelectedbuilding.GetComponent<BuildingControllScript>().BuildingSet(3);
+            LevelDataSet(node, 3);
         }
         else if (_hit.collider.tag == "Level3Setting")
         {
-            _startSelectedbuilding.GetComponent<BuildingControllScript>().BuildingSet(4);
+            LevelDataSet(node, 4);
         }
+
     }
-    
+
     void BuildingSettingObjectDragEffect()//빌딩 터치시 view 함수 (포인터가 접근하면 원이 커지도록)
     {
         if (_startSelectedbuilding.GetComponent<BuildingControllScript>().BuildingSettingObject.activeSelf)
