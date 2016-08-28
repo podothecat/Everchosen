@@ -179,11 +179,9 @@ namespace Client
                         break;
                     case "MapInfo"://맵데이터 
                         MapData = JsonConvert.DeserializeObject<MapData>(receiveData.Data);
-                        Debug.Log("1"+MapData.MapName);
+                       
                         Debug.Log(MapData.MapNodes.Count);
-                        
-                        List<Building> test = JsonConvert.DeserializeObject<List<Building>>(MapData.MapNodes.ToString());
-        
+                   
                         
                         break;
 
