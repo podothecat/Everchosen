@@ -59,16 +59,19 @@ namespace EverChosenServer
                 return;
             
             oppoClient.BeginSend("OnSucceedMatching1", client.MatchingData);
-            oppoClient.BeginSend("OnSucceedMatching2", client.LoginData);
-            oppoClient.IsIngame = true;
             client.BeginSend("OnSucceedMatching1", oppoClient.MatchingData);
+            oppoClient.BeginSend("OnSucceedMatching2", client.LoginData);
             client.BeginSend("OnSucceedMatching2", oppoClient.LoginData);
+            oppoClient.IsIngame = true;
             client.IsIngame = true;
-            
-            var room = new GameRoom(oppoClient, client);
+
+            var map = DatabaseManager.GetMapInfo();
+            var room = new GameRoom(oppoClient, client, map);
             IngameManager.AddRoom(room);
             client.InGameRequest += room.IngameCommand;
             oppoClient.InGameRequest += room.IngameCommand;
+            //oppoClient.BeginSend("MapInfo", map);
+            //client.BeginSend("MapInfo", map);
         }
 
         /// <summary>

@@ -42,7 +42,7 @@ namespace EverChosenServer
             var p = new Packet(msg, data);
             var sendBuf = new UTF8Encoding().GetBytes(
                 JsonConvert.SerializeObject(p, Formatting.Indented));
-           
+
             Sock.BeginSend(sendBuf, 0, sendBuf.Length, SocketFlags.None, OnSendCallback, Sock);
             Console.WriteLine("Send : " + p.MsgName + ", " + p.Data);
         }

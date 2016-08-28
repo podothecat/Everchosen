@@ -26,15 +26,15 @@ namespace EverChosenServer
         private void Start()
         {
             DatabaseManager.Initialize();
-            
-            _serverSocket.Bind(new IPEndPoint(IPAddress.Any, 23001));
+
+            _serverSocket.Bind(new IPEndPoint(IPAddress.Any, 23000));
             _serverSocket.Listen(10);
 
             _serverSocket.BeginAccept(OnAcceptCallback, _serverSocket);
 
             Console.WriteLine("Server On\n");
             while (true)
-            {
+            {                
                 Task.Delay(1000);
             }
         }

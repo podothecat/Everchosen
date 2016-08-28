@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using EverChosenServer.Ingame_Module;
 using MongoDB.Driver;
 using MongoDB.Bson;
 using MongoDB.Driver.Linq;
@@ -31,7 +32,7 @@ namespace EverChosenServer
         /// When client connect to server, get client's profile from DB.
         /// </summary>
         /// <param name="clientUniqueId"></param>
-        /// <returns></returns>
+        /// <returns> Client's profile </returns>
         internal static ProfileInfo GetClientInfo(string clientUniqueId)
         {
             // Get ProfileInfo from DB           
@@ -63,6 +64,12 @@ namespace EverChosenServer
             return userProfile;
         }
 
+        /// <summary>
+        /// Change client's nickname.
+        /// </summary>
+        /// <param name="nickName"> Nickname to change. </param>
+        /// <param name="clientUniqueId"> Client's device id. </param>
+        /// <returns> Nickname </returns>
         internal static string SetClientInfo(string nickName, string clientUniqueId)
         {
             // Set ProfileInfo to DB when unique ID is not found.
@@ -74,14 +81,49 @@ namespace EverChosenServer
             return nickName;
         }
 
-        internal static string GetMapInfo()
+        /// <summary>
+        /// Get map data when matching was succeed.
+        /// </summary>
+        /// <returns> Map data </returns>
+        internal static GameRoom.MapInfo GetMapInfo()
         {
             var mapName = string.Empty;
 
-            var filter = Builders<BsonDocument>.Filter.Eq("_id", 2);
+            var filter = Builders<BsonDocument>.Filter.Eq("_id", "2");
             var result = _maps.Find(filter).ToListAsync().Result;
 
-            return mapName;
+            if (result.Count != 1)
+                return null;
+
+            mapName = result[0]["mapname"].AsString;
+            var nodeCount = (int)result[0]["nodes"].AsDouble;
+            var positions = result[0]["positions"];
+
+            var nodes = new List<GameRoom.Building>();
+            for (int i = 0; i < nodeCount; ++i)
+            {
+                var x = positions[i]["x"].AsDouble;
+                var z = positions[i]["z"].AsDouble;
+                var o = 0;
+                var k = 0;
+                var b = new GameRoom.Building
+                {
+                    Owner = o,
+                    //Kinds = k,
+                    XPos = x,
+                    ZPos = z,
+                    //UnitCount = 0
+                };
+                nodes.Add(b);
+            }
+            
+            var mapInfo = new GameRoom.MapInfo
+            {
+                MapName = mapName,
+                MapNodes = nodes
+            };
+
+            return mapInfo;
         }
 
         internal static void PrintClients()

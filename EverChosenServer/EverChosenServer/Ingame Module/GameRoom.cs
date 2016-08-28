@@ -24,7 +24,7 @@ namespace EverChosenServer.Ingame_Module
 
         private Client _player1;
         private Client _player2;
-        private List<Building> _mapNodes = new List<Building>();
+        private MapInfo _map;
 
         /// <summary>
         /// Data for move units from building to building.
@@ -39,11 +39,19 @@ namespace EverChosenServer.Ingame_Module
         /// <summary>
         /// Data of one building.
         /// </summary>
-        private class Building
+        public class Building
         {
-            public int Onwer { get; set; }
-            public int Kinds { get; set; }
-            public int UnitCount { get; set; }
+            public int Owner { get; set; }
+            //public int Kinds { get; set; }
+            public double XPos { get; set; }
+            public double ZPos { get; set; }
+            //public int UnitCount { get; set; }
+        }
+
+        public class MapInfo
+        {
+            public string MapName { get; set; }
+            public List<Building> MapNodes { get; set; }
         }
 
         private class BuildingInfo
@@ -52,12 +60,20 @@ namespace EverChosenServer.Ingame_Module
             public int Kinds { get; set; }
         }
 
-        public GameRoom(Client a1, Client a2)
+        public GameRoom(Client a1, Client a2, MapInfo map)
         {
             _player1 = a1;
             _player2 = a2;
+            _map = map;
+            Console.WriteLine("Game room was constructed.");
+            Console.WriteLine(_map.MapName);
         }
 
+        /// <summary>
+        /// Attached to EventHandler IngameRequest()
+        /// </summary>
+        /// <param name="sender"> Client who requested. </param>
+        /// <param name="e"> Data </param>
         public void IngameCommand(object sender, Packet e)
         {
             var client = sender as Client;
@@ -75,6 +91,11 @@ namespace EverChosenServer.Ingame_Module
 
             switch (e.MsgName)
             {
+                case "MapReq":
+                    client.BeginSend("MapInfo", _map);
+                    target.BeginSend("MapInfo", _map);
+                    break;
+
                 case "Move":
                     var nodes = JsonConvert.DeserializeObject<MoveInfo>(e.Data);
                     var moveInfo = Move(target, nodes.StartNode, nodes.EndNode);
@@ -125,7 +146,7 @@ namespace EverChosenServer.Ingame_Module
             
             return info;
         }
-
+        
         private void UseSpell()
         {
             // Need to discuss.
