@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MongoDB.Driver.Core.Operations;
 using Newtonsoft.Json;
 
 namespace EverChosenServer.Ingame_Module
@@ -65,6 +66,8 @@ namespace EverChosenServer.Ingame_Module
             _player1 = a1;
             _player2 = a2;
             _map = map;
+            _map.MapNodes[0].Owner = 1;
+            _map.MapNodes[_map.MapNodes.Count-1].Owner = 2;
             Console.WriteLine("Game room was constructed.");
             Console.WriteLine(_map.MapName);
         }
@@ -93,7 +96,6 @@ namespace EverChosenServer.Ingame_Module
             {
                 case "MapReq":
                     client.BeginSend("MapInfo", _map);
-                    target.BeginSend("MapInfo", _map);
                     break;
 
                 case "Move":
