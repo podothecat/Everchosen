@@ -3,6 +3,7 @@ using System;
 using System.Text;
 using Newtonsoft.Json;
 using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics;
 using LitJson;
 using System.Runtime.CompilerServices;
@@ -29,7 +30,8 @@ namespace Client
 
         public static ProfileData EnemyProfileData;
         public static ProfileData ProfileData;
-        public static MatchingPacket PacketData; // 유니티에서 사용할 데이터를 담을변수
+        public static MatchingPacket PacketData;
+        public static MapData MapData;
            
         //인게임
         public static MoveData MyMoveData;
@@ -151,9 +153,11 @@ namespace Client
                     return;
                 }
                 var receiveJson = new UTF8Encoding().GetString(Buffer);
-                
+                Debug.Log(receiveJson);
                 var receiveData = JsonConvert.DeserializeObject<Packet>(receiveJson);
                 ReceiveMsg = receiveData.MsgName;
+
+              
 
                 switch (ReceiveMsg)
                 {
@@ -171,6 +175,16 @@ namespace Client
                         break;
                     case "OnSucceedMatching2"://닉네임, 승패
                         EnemyProfileData = JsonConvert.DeserializeObject<ProfileData>(receiveData.Data);
+                        Send("MapReq",null);
+                        break;
+                    case "MapInfo"://맵데이터 
+                        MapData = JsonConvert.DeserializeObject<MapData>(receiveData.Data);
+                        Debug.Log("1"+MapData.MapName);
+                        Debug.Log(MapData.MapNodes.Count);
+                        
+                        List<Building> test = JsonConvert.DeserializeObject<List<Building>>(MapData.MapNodes.ToString());
+        
+                        
                         break;
 
                         //ingame
@@ -253,6 +267,24 @@ namespace Client
     {
         public int Node { get; set; }
         public int Kinds { get; set; }
+    }
+
+    
+    public class MapData
+    {
+        public string MapName { get; set; }
+        public List<Building> MapNodes { get; set; }
+    }
+
+    
+
+    public class Building
+    {
+        public int Owner { get; set; }
+        //public int Kinds { get; set; }
+        public double XPos { get; set; }
+        public double ZPos { get; set; }
+        //public int UnitCount { get; set; }
     }
 
 }

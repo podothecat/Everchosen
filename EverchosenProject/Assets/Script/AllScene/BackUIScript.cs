@@ -21,13 +21,10 @@ public class BackUIScript : MonoBehaviour
        
         DontDestroyOnLoad(this.gameObject);
         _exitPanel.transform.SetAsLastSibling();
-
         
         _backPanel.SetActive(false);
         _optionPanel.SetActive(false);
         _exitPanel.SetActive(false);
-        
-        
 	}
 	
 	// Update is called once per frame

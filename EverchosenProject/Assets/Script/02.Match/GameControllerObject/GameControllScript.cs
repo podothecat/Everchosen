@@ -17,6 +17,8 @@ public class GameControllScript : MonoBehaviour
     private GameObject _player2Building;
 
     private GameObject _emptyBuildingPrefab;
+    private GameObject _emptyBuilding;
+    
     public GameObject ParentObject;
 
     private MatchingPacket _enemyViewPanelSetdata;
@@ -26,10 +28,15 @@ public class GameControllScript : MonoBehaviour
     public List<GameObject> NodePosition;
     public List<GameObject> BuildingNode;
 
-    
 
+    void Awake()
+    {
+        _player1BuildingPrefab = Resources.Load<GameObject>("Player1building");
+        _player2BuildingPrefab = Resources.Load<GameObject>("Player2building");
+        _emptyBuildingPrefab = Resources.Load<GameObject>("EmptyBuilding");
+    }
     void Start () {
-       
+     
 
         //게임카운트;
     }
@@ -136,8 +143,33 @@ public class GameControllScript : MonoBehaviour
     IEnumerator GameStart()
     {
         yield return new WaitForSeconds(1f);
-       //플레이어 본진 생성
-       PlayerCreation();
+        if (ClientNetworkManager.MapData != null)
+        {
+          
+            for (int i = 0; i < ClientNetworkManager.MapData.MapNodes.Count; i++)
+            {
+                if (ClientNetworkManager.MapData.MapNodes[i].Owner == 1)
+                {
+                    Player1Creation((float) ClientNetworkManager.MapData.MapNodes[i].XPos,
+                        (float) ClientNetworkManager.MapData.MapNodes[i].ZPos, i);
+                }
+                else if (ClientNetworkManager.MapData.MapNodes[i].Owner == 2)
+                {
+                    Player2Creation((float) ClientNetworkManager.MapData.MapNodes[i].XPos,
+                        (float) ClientNetworkManager.MapData.MapNodes[i].ZPos, i);
+                }
+                else
+                {
+                    EmptyNodeCreation((float) ClientNetworkManager.MapData.MapNodes[i].XPos,
+                        (float) ClientNetworkManager.MapData.MapNodes[i].ZPos, i);
+                }
+            }
+        }
+        else
+        {
+            Debug.Log("맵데이터가 없습니다.");
+        }
+        //PlayerCreation();
         if (_matchingDataViewPanel.activeSelf)
         {
             _matchingDataViewPanel.SetActive(false);
@@ -146,50 +178,47 @@ public class GameControllScript : MonoBehaviour
         yield break;
     }
 
-
-    void PlayerCreation()
+    
+    void Player1Creation(float x, float z, int node)
     {
-        _player1BuildingPrefab = Resources.Load<GameObject>("Player1building");
-        _player2BuildingPrefab = Resources.Load<GameObject>("Player2building");
-        _emptyBuildingPrefab = Resources.Load<GameObject>("EmptyBuilding");
-
         _player1Building = Instantiate(_player1BuildingPrefab);
         _player1Building.transform.SetParent(GameObject.Find("MapObject").gameObject.transform);
-        _player1Building.transform.position = NodePosition[0].transform.position;
+        _player1Building.transform.position = new Vector3(x,0,z);
         _player1Building.transform.localScale = Vector3.one;
         _player1Building.transform.localRotation = Quaternion.Euler(Vector3.zero);
         _player1Building.GetComponent<BuildingControllScript>().PlayerCastle = true;//본진
         _player1Building.GetComponent<BuildingControllScript>().PlayerTeam = 1;
-        _player1Building.GetComponent<BuildingControllScript>().NodeNumber = 0;
-        
+        _player1Building.GetComponent<BuildingControllScript>().NodeNumber = node;
+
+        BuildingNode.Add(_player1Building);
+     
+    }
+
+    void Player2Creation(float x, float z, int node)
+    {
         _player2Building = Instantiate(_player2BuildingPrefab);
         _player2Building.transform.SetParent(GameObject.Find("MapObject").gameObject.transform);
-        _player2Building.transform.position = NodePosition[1].transform.position;
+        _player2Building.transform.position = new Vector3(x, 0, z);
         _player2Building.transform.localScale = Vector3.one;
         _player2Building.transform.localRotation = Quaternion.Euler(Vector3.zero);
         _player2Building.GetComponent<BuildingControllScript>().PlayerCastle = true;//본진
         _player2Building.GetComponent<BuildingControllScript>().PlayerTeam = 2;
-        _player2Building.GetComponent<BuildingControllScript>().NodeNumber = 1;
+        _player2Building.GetComponent<BuildingControllScript>().NodeNumber = node;
 
-        BuildingNode.Add(_player1Building);
         BuildingNode.Add(_player2Building);
 
-        EmptyNodeCreation();
     }
 
-
-    void EmptyNodeCreation()
+    void EmptyNodeCreation(float x, float z, int node)
     {
-        for (int i = 2; i < NodePosition.Count; i++)
-        {
-            BuildingNode.Add(Instantiate(_emptyBuildingPrefab));
-            BuildingNode[i].transform.SetParent(ParentObject.transform);
-            BuildingNode[i].transform.position = NodePosition[i].transform.position;
-            BuildingNode[i].transform.localScale = Vector3.one;
-            BuildingNode[i].transform.localRotation = Quaternion.Euler(Vector3.zero);
-            BuildingNode[i].GetComponent<EmptyBuildingScript>().NodeNumber = i;
-        }
+        _emptyBuilding=Instantiate(_emptyBuildingPrefab);
+        _emptyBuilding.transform.SetParent(ParentObject.transform);
+        _emptyBuilding.transform.position = new Vector3(x, 0, z);
+        _emptyBuilding.transform.localScale = Vector3.one;
+        _emptyBuilding.transform.localRotation = Quaternion.Euler(Vector3.zero);
+        _emptyBuilding.GetComponent<EmptyBuildingScript>().NodeNumber = node;
 
+        BuildingNode.Add(_emptyBuilding);
     }
 
 
