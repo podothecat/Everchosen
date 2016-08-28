@@ -1,20 +1,15 @@
-﻿using System;
+﻿
 using UnityEngine;
-using System.Collections;
 
 
 
 public class TribeSetManager : MonoBehaviour
 {
-
     public static PlayerData PData = new PlayerData();
-    
 }
-
 
 public class PlayerData
 {
-  
     public string UserID { get; set; }
     public string NickName { get; set; }
     public int Tribe { get; set; }

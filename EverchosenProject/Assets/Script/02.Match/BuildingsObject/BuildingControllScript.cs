@@ -255,12 +255,6 @@ public class BuildingControllScript : MonoBehaviour
         }
     }
     
-    
-
-
-
-
-
     void OnTriggerEnter(Collider other)
     {
         if (other.tag == "unit")
@@ -284,25 +278,4 @@ public class BuildingControllScript : MonoBehaviour
             Destroy(other.gameObject);
         }
     }
-
-
-
 }
-
-
-
-/*
-    IEnumerator UnitNumberCounter(float spawnCount) //유닛스폰시간
-    {
-       
-        while (_unitNumberPanel)
-        {
-            yield return new WaitForSeconds(spawnCount);
-            {
-                _unitNumber++;
-                unitNumbersetText();
-            }
-        }
-        yield break;
-    }
-*/
