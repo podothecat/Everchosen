@@ -66,8 +66,7 @@ public class GameControllScript : MonoBehaviour
 	        UnitMove(ClientNetworkManager.MyMoveData.UnitCount,ClientNetworkManager.MyMoveData.StartNode,ClientNetworkManager.MyMoveData.EndNode);
 	        ClientNetworkManager.MyMoveData = null;
 	    }
-
-
+        
         //빌딩 변경
 	    if (ClientNetworkManager.EnemyChangeData != null)
 	    {
@@ -145,7 +144,6 @@ public class GameControllScript : MonoBehaviour
         yield return new WaitForSeconds(1f);
         if (ClientNetworkManager.MapData != null)
         {
-          
             for (int i = 0; i < ClientNetworkManager.MapData.MapNodes.Count; i++)
             {
                 if (ClientNetworkManager.MapData.MapNodes[i].Owner == 1)
