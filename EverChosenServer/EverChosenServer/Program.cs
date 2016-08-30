@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
@@ -26,7 +27,7 @@ namespace EverChosenServer
         private void Start()
         {
             DatabaseManager.Initialize();
-
+            
             _serverSocket.Bind(new IPEndPoint(IPAddress.Any, 23000));
             _serverSocket.Listen(10);
 
@@ -35,7 +36,7 @@ namespace EverChosenServer
             Console.WriteLine("Server On\n");
             while (true)
             {                
-                Task.Delay(1000);
+                Thread.Sleep(1);
             }
         }
 

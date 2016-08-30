@@ -21,8 +21,8 @@ namespace EverChosenServer
 
         internal static void Initialize()
         {
-            _connectString = "mongodb://localhost";
-            _mongoClient = new MongoClient(_connectString);
+            //_connectString = "mongodb://52.78.94.58";
+            _mongoClient = new MongoClient("mongodb://52.78.94.58:23001");
             _database = _mongoClient.GetDatabase("EverChosen");
             _users = _database.GetCollection<BsonDocument>("users");
             _maps = _database.GetCollection<BsonDocument>("maps");
@@ -89,14 +89,14 @@ namespace EverChosenServer
         {
             var mapName = string.Empty;
 
-            var filter = Builders<BsonDocument>.Filter.Eq("_id", "2");
+            var filter = Builders<BsonDocument>.Filter.Eq("_id", "0");
             var result = _maps.Find(filter).ToListAsync().Result;
 
             if (result.Count != 1)
                 return null;
 
             mapName = result[0]["mapname"].AsString;
-            var nodeCount = (int)result[0]["nodes"].AsDouble;
+            var nodeCount = result[0]["nodes"].AsInt32;
             var positions = result[0]["positions"];
 
             var nodes = new List<GameRoom.Building>();
