@@ -35,6 +35,7 @@ public class UnitControllScript : MonoBehaviour
     }
 
 
+    /*
     void UnitCalculateAttack(Collider other) //적건물을 공격할때 식
     {
             UnitDamageAmount =
@@ -48,4 +49,5 @@ public class UnitControllScript : MonoBehaviour
             UnitSupportAmount =
                 (float)Math.Round( UnitPower/ other.GetComponent<BuildingControllScript>().BuildingValue, 2); 
     }
+    */
 }

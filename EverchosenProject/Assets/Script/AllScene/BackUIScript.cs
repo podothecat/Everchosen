@@ -1,7 +1,5 @@
 ﻿using UnityEngine;
-using System.Collections;
 using Client;
-using UnityEngine.UI;
 
 public class BackUIScript : MonoBehaviour
 {

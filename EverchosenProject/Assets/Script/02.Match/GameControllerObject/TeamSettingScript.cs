@@ -22,34 +22,33 @@ public class TeamSettingScript : MonoBehaviour
         _tribeDb = GetComponent<TribeDatabase>();
         _playertribeid = TribeSetManager.PData.Tribe;
 
-        if (ClientNetworkManager.PacketData.Tribe == "Chaos")
+        if (ClientNetworkManager.EnemyMatchingData.Tribe == "Chaos")
         {
             _enemytribeid = 0;
         }
-        else if (ClientNetworkManager.PacketData.Tribe == "Dwarf")
+        else if (ClientNetworkManager.EnemyMatchingData.Tribe == "Dwarf")
         {
             _enemytribeid = 1;
         }
-        else if (ClientNetworkManager.PacketData.Tribe == "Green")
+        else if (ClientNetworkManager.EnemyMatchingData.Tribe == "Green")
         {
             _enemytribeid = 2;
         }
-        else if (ClientNetworkManager.PacketData.Tribe == "Human")
+        else if (ClientNetworkManager.EnemyMatchingData.Tribe == "Human")
         {
             _enemytribeid = 3;
         }
 
-        if (ClientNetworkManager.PacketData.TeamColor == 2)
+        if (ClientNetworkManager.EnemyMatchingData.TeamColor == 2)
         {
             SetPlayerTeam(1, _playertribeid, _enemytribeid);
         }
-        else if (ClientNetworkManager.PacketData.TeamColor == 1)
+        else if (ClientNetworkManager.EnemyMatchingData.TeamColor == 1)
         {
             SetPlayerTeam(2, _playertribeid, _enemytribeid);
         }
     }
-
-
+    
     void SetPlayerTeam(int playerteamNumber, int tribeid1, int tribeid2) // 종족 팀 설정;
     {
         PlayerTeam = playerteamNumber;

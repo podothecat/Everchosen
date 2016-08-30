@@ -14,13 +14,11 @@ public class MapTouchScript : MonoBehaviour
     private RaycastHit _hit;
     private GameObject _startSelectedbuilding;//선택된 빌딩
  
-
     public bool DraggingMode = false;
 
     public GameObject DragCirclePrefab; //생성될 dragobject;
     private GameObject _dragCircle;
-
-   
+    
     private Vector3 _touchPosition; // 터치,클릭 포지션
     public Vector3 EndDesPosition;
     private float _touchCounter;
@@ -159,8 +157,7 @@ public class MapTouchScript : MonoBehaviour
             }
         }
     }
-
-
+    
     public void LevelDataSet(int node, int lv) 
     {
         _sendLevelData.Node = node;
@@ -238,8 +235,7 @@ public class MapTouchScript : MonoBehaviour
             }
         }
     }
-
-
+    
     public void DragEffectSpawn() // 드래그이펙트 생성함수
     {
         if (_dragCircle == null)
