@@ -21,69 +21,62 @@ public class GameControllScript : MonoBehaviour
     
     public GameObject ParentObject;
 
-    private MatchingPacket _enemyViewPanelSetdata;
+    private MatchingInfo _enemyViewPanelSetdata;
     private ProfileData _enemyViewPanelProfileData;
-
-
+    
     public List<GameObject> NodePosition;
     public List<GameObject> BuildingNode;
-
+    
+    private Sprite _mapSpriteData;
+    private SpriteRenderer _backGroundObject;
 
     void Awake()
     {
         _player1BuildingPrefab = Resources.Load<GameObject>("Player1building");
         _player2BuildingPrefab = Resources.Load<GameObject>("Player2building");
         _emptyBuildingPrefab = Resources.Load<GameObject>("EmptyBuilding");
+        _backGroundObject = GameObject.Find("MapObject").transform.FindChild("background").GetComponent<SpriteRenderer>();
     }
-    void Start () {
-     
-
-        //게임카운트;
+    void Start ()
+    {
+        DataSetting();//서버에서 받아온 데이터처리
     }
 	
-	// Update is called once per frame
-	void Update () {
+    //시스템시간 , 게임이시작됫을때 틱을 저장 서버에서 게임시작됬을떄 틱에서 얼마나 지낫는지 보내주고 클라에서도 
+    //예를들어 시작시간이 0초 , 시스템틱이라는게 있음, (어떤기준시간을 가지고서 어느정도 지났는지 잼)
+    //time.deltatime 은 프레임 갱신시간 
 
-        if (ClientNetworkManager.PacketData != null&&ClientNetworkManager.EnemyProfileData!=null)
+	void Update ()
+	{
+	    IngameFunction();
+	}
+
+//Server's receive Data reraltion
+    void DataSetting()
+    {
+        if (ClientNetworkManager.EnemyMatchingData != null && ClientNetworkManager.EnemyProfileData != null && ClientNetworkManager.MapData != null)
         {
-            Debug.Log("확인");
-            Debug.Log(ClientNetworkManager.PacketData);
-            _enemyViewPanelSetdata = ClientNetworkManager.PacketData;
+            Debug.Log(ClientNetworkManager.MapData.MapName);
+            _mapSpriteData = Resources.Load<Sprite>("Sprite/MapData/" + ClientNetworkManager.MapData.MapName);
+            Debug.Log(_mapSpriteData);
+            _backGroundObject.sprite = _mapSpriteData;
+            
+            _enemyViewPanelSetdata = ClientNetworkManager.EnemyMatchingData;
             _enemyViewPanelProfileData = ClientNetworkManager.EnemyProfileData;
             MatchingDataViewIns();//매칭데이터 패널 생성
-            ClientNetworkManager.PacketData = null;
+            ClientNetworkManager.EnemyMatchingData = null;
             ClientNetworkManager.EnemyProfileData = null;
         }
-
-        if (ClientNetworkManager.EnemyMoveData != null)//적유닛이동
-	    {
-            UnitMove(ClientNetworkManager.EnemyMoveData.UnitCount, ClientNetworkManager.EnemyMoveData.StartNode, ClientNetworkManager.EnemyMoveData.EndNode);
-	        ClientNetworkManager.EnemyMoveData = null;
-	    }
-
-	    if (ClientNetworkManager.MyMoveData != null)//내유닛이동 
-	    {
-	        UnitMove(ClientNetworkManager.MyMoveData.UnitCount,ClientNetworkManager.MyMoveData.StartNode,ClientNetworkManager.MyMoveData.EndNode);
-	        ClientNetworkManager.MyMoveData = null;
-	    }
-        
-        //빌딩 변경
-	    if (ClientNetworkManager.EnemyChangeData != null)
-	    {
-            
-	        BuildingNode[ClientNetworkManager.EnemyChangeData.Node].GetComponent<BuildingControllScript>().BuildingDataSet(ClientNetworkManager.EnemyChangeData.Kinds);
-	        ClientNetworkManager.EnemyChangeData = null;
-	    }
-        if (ClientNetworkManager.MyChangeData != null)
+        else
         {
-            BuildingNode[ClientNetworkManager.MyChangeData.Node].GetComponent<BuildingControllScript>().BuildingDataSet(ClientNetworkManager.MyChangeData.Kinds);
-            ClientNetworkManager.MyChangeData = null;
+            Debug.Log("데이터 관련이 존재하지 않습니다.");
+            Debug.Log("EnemyMatchingData : " + ClientNetworkManager.EnemyMatchingData);
+            Debug.Log("EnemyProfileData :" + ClientNetworkManager.EnemyProfileData);
+            Debug.Log("MapData : " + ClientNetworkManager.MapData);
         }
-
-
     }
 
-
+#region MatchingPanel's Function
     private void MatchingDataViewIns() //매칭 데이터 패널 생성
     {
         _matchingDataViewPanel = Instantiate(MatchingDataViewPanelPrefab);
@@ -98,12 +91,12 @@ public class GameControllScript : MonoBehaviour
     //데이터패널 내부 데이터 표시 셋팅 , 어떤팀으로 실행하던지 자신의 데이터는 왼쪽
     private void MatchingDataSetting() 
     {
-        if (ClientNetworkManager.PacketData.TeamColor == 2)
+        if (ClientNetworkManager.EnemyMatchingData.TeamColor == 2)
         {
             _matchingDataViewPanel.transform.FindChild("Player1Panel").transform.FindChild("Player1Team").GetComponent<Text>().text = "Blue Team";
             _matchingDataViewPanel.transform.FindChild("Player2Panel").transform.FindChild("Player2Team").GetComponent<Text>().text = "Red Team";
         }
-        else if(ClientNetworkManager.PacketData.TeamColor == 1)
+        else if(ClientNetworkManager.EnemyMatchingData.TeamColor == 1)
         {
             _matchingDataViewPanel.transform.FindChild("Player1Panel").transform.FindChild("Player1Team").GetComponent<Text>().text = "Red Team";
             _matchingDataViewPanel.transform.FindChild("Player2Panel").transform.FindChild("Player2Team").GetComponent<Text>().text = "Blue Team";
@@ -117,66 +110,9 @@ public class GameControllScript : MonoBehaviour
             _matchingDataViewPanel.transform.FindChild("Player2Panel").transform.FindChild("Player2Tribe").GetComponent<Text>().text = "종족 : " + _enemyViewPanelSetdata.Tribe;
             _matchingDataViewPanel.transform.FindChild("Player2Panel").transform.FindChild("Player2Spell").GetComponent<Text>().text = "스펠 : " + _enemyViewPanelSetdata.Spell;
     }
-
-
-
-    IEnumerator GameStartCounter() //게임데이터정보를 보여주면서 게임 준비시간카운터 텍스트 변경 함수
-    {
-        int currentStartTime = 2;
-        Text startCounterText = _matchingDataViewPanel.transform.FindChild("GameStartCountText").GetComponent<Text>();
-        startCounterText.text = "" + currentStartTime;
-        while (currentStartTime > 0)
-        {
-            yield return new WaitForSeconds(1.0f);
-                    currentStartTime--;//
-                    startCounterText.text = ""+currentStartTime;
-        }
-        
-        startCounterText.text = "Start!";
-        StartCoroutine(GameStart());
-
-        yield break;
-    }
-
-    //매칭잡힌후 로딩시간 // 매칭 카운터 완료후 2초후 시작
-    IEnumerator GameStart()
-    {
-        yield return new WaitForSeconds(1f);
-        if (ClientNetworkManager.MapData != null)
-        {
-            for (int i = 0; i < ClientNetworkManager.MapData.MapNodes.Count; i++)
-            {
-                if (ClientNetworkManager.MapData.MapNodes[i].Owner == 1)
-                {
-                    Player1Creation((float) ClientNetworkManager.MapData.MapNodes[i].XPos,
-                        (float) ClientNetworkManager.MapData.MapNodes[i].ZPos, i);
-                }
-                else if (ClientNetworkManager.MapData.MapNodes[i].Owner == 2)
-                {
-                    Player2Creation((float) ClientNetworkManager.MapData.MapNodes[i].XPos,
-                        (float) ClientNetworkManager.MapData.MapNodes[i].ZPos, i);
-                }
-                else
-                {
-                    EmptyNodeCreation((float) ClientNetworkManager.MapData.MapNodes[i].XPos,
-                        (float) ClientNetworkManager.MapData.MapNodes[i].ZPos, i);
-                }
-            }
-        }
-        else
-        {
-            Debug.Log("맵데이터가 없습니다.");
-        }
-        //PlayerCreation();
-        if (_matchingDataViewPanel.activeSelf)
-        {
-            _matchingDataViewPanel.SetActive(false);
-        }
-        
-        yield break;
-    }
-
+#endregion
     
+#region Creation Node
     void Player1Creation(float x, float z, int node)
     {
         _player1Building = Instantiate(_player1BuildingPrefab);
@@ -218,14 +154,100 @@ public class GameControllScript : MonoBehaviour
 
         BuildingNode.Add(_emptyBuilding);
     }
+    #endregion
 
+#region Ingame Data 
+    private void IngameFunction()
+    {
+        if (ClientNetworkManager.EnemyMoveData != null)//적유닛이동
+        {
+            UnitMove(ClientNetworkManager.EnemyMoveData.UnitCount, ClientNetworkManager.EnemyMoveData.StartNode, ClientNetworkManager.EnemyMoveData.EndNode);
+            ClientNetworkManager.EnemyMoveData = null;
+        }
 
-    public void UnitMove(int unitCount,int stNode, int endNode)
+        if (ClientNetworkManager.MyMoveData != null)//내유닛이동 
+        {
+            UnitMove(ClientNetworkManager.MyMoveData.UnitCount, ClientNetworkManager.MyMoveData.StartNode, ClientNetworkManager.MyMoveData.EndNode);
+            ClientNetworkManager.MyMoveData = null;
+        }
+
+        //빌딩 변경
+        if (ClientNetworkManager.EnemyChangeData != null)
+        {
+            BuildingNode[ClientNetworkManager.EnemyChangeData.Node].GetComponent<BuildingControllScript>().BuildingDataSet(ClientNetworkManager.EnemyChangeData.Kinds);
+            ClientNetworkManager.EnemyChangeData = null;
+        }
+        if (ClientNetworkManager.MyChangeData != null)
+        {
+            BuildingNode[ClientNetworkManager.MyChangeData.Node].GetComponent<BuildingControllScript>().BuildingDataSet(ClientNetworkManager.MyChangeData.Kinds);
+            ClientNetworkManager.MyChangeData = null;
+        }
+    }
+    //유닛이동관련
+    private void UnitMove(int unitCount, int stNode, int endNode)
     {
         BuildingNode[stNode].GetComponent<BuildingControllScript>().UnitSpawn(BuildingNode[endNode].transform.position);
     }
+    #endregion
 
-   
+#region Corutine
+    IEnumerator GameStartCounter() //게임데이터정보를 보여주면서 게임 준비시간카운터 텍스트 변경 함수
+    {
+        int currentStartTime = 2;
+        Text startCounterText = _matchingDataViewPanel.transform.FindChild("GameStartCountText").GetComponent<Text>();
+        startCounterText.text = "" + currentStartTime;
+        while (currentStartTime > 0)
+        {
+            yield return new WaitForSeconds(1.0f);
+            currentStartTime--;//
+            startCounterText.text = "" + currentStartTime;
+        }
+
+        startCounterText.text = "Start!";
+        StartCoroutine(GameStart());
+
+        yield break;
+    }
+
+    //매칭잡힌후 로딩시간 // 매칭 카운터 완료후 2초후 시작
+    IEnumerator GameStart()
+    {
+        yield return new WaitForSeconds(1f);
+        if (ClientNetworkManager.MapData != null)
+        {
+            for (int i = 0; i < ClientNetworkManager.MapData.MapNodes.Count; i++)
+            {
+                if (ClientNetworkManager.MapData.MapNodes[i].Owner == 1)
+                {
+                    Player1Creation((float)ClientNetworkManager.MapData.MapNodes[i].XPos,
+                        (float)ClientNetworkManager.MapData.MapNodes[i].ZPos, i);
+                }
+                else if (ClientNetworkManager.MapData.MapNodes[i].Owner == 2)
+                {
+                    Player2Creation((float)ClientNetworkManager.MapData.MapNodes[i].XPos,
+                        (float)ClientNetworkManager.MapData.MapNodes[i].ZPos, i);
+                }
+                else
+                {
+                    EmptyNodeCreation((float)ClientNetworkManager.MapData.MapNodes[i].XPos,
+                        (float)ClientNetworkManager.MapData.MapNodes[i].ZPos, i);
+                }
+            }
+        }
+        else
+        {
+            Debug.Log("맵데이터가 없습니다.");
+        }
+        //PlayerCreation();
+        if (_matchingDataViewPanel.activeSelf)
+        {
+            _matchingDataViewPanel.SetActive(false);
+        }
+
+        yield break;
+    }
+    #endregion
+
 
 }
 

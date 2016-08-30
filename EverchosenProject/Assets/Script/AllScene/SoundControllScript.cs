@@ -28,16 +28,9 @@ public class SoundControllScript : MonoBehaviour
 
 	}
 	
-	// Update is called once per frame
-	void Update () {
-	
-	}
-
-
     //bgm 슬라이더 함수
     public void BGMSliderInvoke()
     {
-
         BGM.GetComponent<AudioSource>().volume = BGMSlider.value;
     }
 

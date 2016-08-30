@@ -57,7 +57,6 @@ public class MainButtonController : MonoBehaviour
 
     void Start()
     {
-       
         if (ClientNetworkManager.ProfileData != null)
         {
             TribeSetManager.PData.NickName = ClientNetworkManager.ProfileData.NickName;
@@ -66,7 +65,7 @@ public class MainButtonController : MonoBehaviour
         }
         else
         {
-            Debug.Log("프로필이 안넘어왓성");
+            Debug.Log("자신의 프로필이 넘어오지 않았습니다.");
         }
         _creditPanel.SetActive(false);
         _queueButton.interactable = false;//종족선택이나 스펠선택이 되지않으면 대기열 참가 불가하게 하기위함
@@ -77,86 +76,78 @@ public class MainButtonController : MonoBehaviour
     {
         //스펠과 종족이 모두선택될시에 queue버튼 활성화
         QueueSelectCheck();
-
         //매칭 관련
         if (_queuePanel)
         {
-           // Debug.Log("1" + ClientNetworkManager.PacketData);
-           // Debug.Log("2" + ClientNetworkManager.EnemyProfileData);
-           // Debug.Log("3" + ClientNetworkManager.MapData);
-            if (ClientNetworkManager.PacketData != null&&ClientNetworkManager.EnemyProfileData != null)
+            if (ClientNetworkManager.EnemyMatchingData != null&&ClientNetworkManager.EnemyProfileData != null&&ClientNetworkManager.MapData!=null)
             {
                 StartCoroutine(MatchStart(2));
             }
         }
-
         //프로필 변경관련
         if (ClientNetworkManager.ReceiveMsg == "OnChangedProfile"&& ClientNetworkManager.ProfileData.NickName != TribeSetManager.PData.NickName)
         {
             ProfileSet(ClientNetworkManager.ProfileData.NickName);
-        }
-        
+        }   
     }
-
-
-#region 메인4버튼 함수
+    
+#region Functions related to MainMenuButtons
     //Game Start Button 함수
     public void GameStartButtonInvoke()
     {
        _settingPanel.SetActive(true);
     }
-
-    public void TutorialButtonInvoke() //매칭을 켜두고 캠페인같은것을 들어갈시에 레벨을 넘겨버리면 안되려나 DonDestroy사용
+    //Tutorial
+    public void TutorialButtonInvoke() 
     {
         SceneManager.LoadScene("03.Tutorial");
     }
-
+    //Option
     public void OptionInvoke()
     {
         _optionPanel.SetActive(true);
-        
     }
-    
+    //Credits
     public void CreditsButtonInvoke()
     {
         _creditPanel.SetActive(true);
         
     }
+    //Credit's Backbutton
+    public void CreditsBackButtonInvoke()
+    {
+        _creditPanel.SetActive(false);
+    }
     #endregion
-    
-#region 상단에 생성되는 Queue관련
-    //큐버튼을 누를시에 서버로 보내는 함수
+
+#region Functions related to Queue
+    // Send to Server
     public void ServerQueue()
     {
-        MatchingPacket setData = new MatchingPacket(TribeSetManager.PData.TribeName, TribeSetManager.PData.Spell, 0);//마지막 파라미터는 teamflag 그냥 0 으로 보냄 
-
+        MatchingInfo setData = new MatchingInfo(TribeSetManager.PData.TribeName, TribeSetManager.PData.Spell, 0);//마지막 파라미터는 teamflag 그냥 0 으로 보냄 
         ClientNetworkManager.Send("OnMatchingRequest", setData);
     }
-
-
+    // QueuePanel Ins
     public void QueueButton()
     {
-        _settingPanel.SetActive(false);//참여와 함께 셋팅패널 사라짐
+        _settingPanel.SetActive(false);//Queue 참여 후 셋팅패널 false
         _queuePanel = Instantiate(QueuePanelPrefab);//버튼 클릭시 queue panel prefab생성
         _queuePanel.transform.SetParent(GameObject.Find("QueueSetPanel").gameObject.transform);
         _queuePanel.transform.localPosition = Vector2.zero;
         _queuePanel.transform.SetAsLastSibling();
-
-
-        _queueText = GameObject.Find("QueueText");//queueText
+        _queueText = GameObject.Find("QueueText");
         _queueText.GetComponent<Text>().text = "Searching..";
 
-        GameObject QueueCancelButton = GameObject.Find("Queue cancel Button");//queuecancel button
-        QueueCancelButton.GetComponent<Button>().onClick.AddListener(() => CancelButtonInvoke());
+        var queueCancelButton = GameObject.Find("Queue cancel Button");//queuecancel button
+        queueCancelButton.GetComponent<Button>().onClick.AddListener(() => CancelButtonInvoke());
 
-        StartCoroutine(queueTimeCounter());
+        StartCoroutine(QueueTimeCounter());
 
         _gameStartButton.GetComponent<Button>().interactable = false; //매칭대기열 시작시 매칭버튼 interactable;
         ServerQueue();//데이터와 함께 queue
-
     }
 
-    //생성되는 queue panel버튼의 cancel버튼에 들어갈 함수
+    //QueuePanel's CancelButton
     public void CancelButtonInvoke()
     {
         ClientNetworkManager.Send("OnMatchingCancelRequest", " ");
@@ -166,14 +157,8 @@ public class MainButtonController : MonoBehaviour
     }
     #endregion
 
-#region Credit 관련
-    //creditpanel의 backbutton
-    public void CreditsBackButtonInvoke()
-    {
-        _creditPanel.SetActive(false);
-    }
-    
-    #region SettingPanel 관련 함수들
+#region Functions related to Game Tribe and Spell Seelct 
+    //SettingBack Invoke
     public void SettingBackButtonInvoke()
     {
         _tribeViewText.text = " ";
@@ -182,9 +167,8 @@ public class MainButtonController : MonoBehaviour
         TribeSetManager.PData.Spell = -1;
         _settingPanel.SetActive(false);
     }
-    #endregion
 
-    //종족선택 버튼 4개
+    //Tribe 4 Button
     public void Trbie1ButtonInvoke()
     {
      
@@ -193,7 +177,6 @@ public class MainButtonController : MonoBehaviour
         _tribeViewText.text = TribeSetManager.PData.TribeName;
         _queueButton.interactable = true;//선택이 되면 queue버튼 클릭가능
     }
-
     public void Trbie2ButtonInvoke()
     {
 
@@ -217,6 +200,7 @@ public class MainButtonController : MonoBehaviour
         _tribeViewText.text = TribeSetManager.PData.TribeName;
     }
     
+    //Spell Button
     public void Spell1ButtonInvoke()
     {
         TribeSetManager.PData.Spell = 1;
@@ -228,7 +212,8 @@ public class MainButtonController : MonoBehaviour
         TribeSetManager.PData.Spell = 2;
         _spellViewText.text = "Two";
     }
-    //종족과 스펠선택시 queue버튼 활성화
+
+    //종족과 스펠 선택시 Queue버튼 intercatble True
     void QueueSelectCheck() 
     {
         if (_settingPanel.activeSelf)
@@ -241,7 +226,8 @@ public class MainButtonController : MonoBehaviour
     }
     #endregion
 
-#region profile 관련
+#region Functions related to Profile
+    //Profile
     public void ProfileNameSetInvoke()
     {
         if (_profileNameInputField.interactable == false)
@@ -267,9 +253,9 @@ public class MainButtonController : MonoBehaviour
     }
     #endregion
 
-#region 카운터관련
+#region Counter
     //매칭 카운터
-    IEnumerator queueTimeCounter()
+    IEnumerator QueueTimeCounter()
     {
         _currentQueueTime = 0;
         while (true)
@@ -289,7 +275,7 @@ public class MainButtonController : MonoBehaviour
         }
     }
 
-    //매칭잡힌후 로딩시간 // 매칭 카운터 완료후 2초후 시작
+    //매칭 성공 후 count 시간 후 씬 전환
     IEnumerator MatchStart(float count)
     {
         _queueText.GetComponent<Text>().text = "매칭을 찾았습니다.";

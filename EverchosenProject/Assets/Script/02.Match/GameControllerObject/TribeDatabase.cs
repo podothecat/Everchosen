@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 
 public class TribeDatabase : MonoBehaviour {
-    private List<List<Tribe>> _database = new List<List<Tribe>>();
+    private readonly List<List<Tribe>> _database = new List<List<Tribe>>();
     private JsonData _tribeData;
     
 	// Use this for initialization

@@ -1,8 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using JetBrains.Annotations;
 
 public class EmptyBuildingScript : MonoBehaviour {
     private GameObject _player1BuildingPrefab;
@@ -12,7 +8,6 @@ public class EmptyBuildingScript : MonoBehaviour {
 
     public int NodeNumber;
     
-
     private GameControllScript _gamecontroll;
     
     // Use this for initialization
@@ -22,17 +17,11 @@ public class EmptyBuildingScript : MonoBehaviour {
         _player1BuildingPrefab = Resources.Load<GameObject>("Player1building");
         _player2BuildingPrefab = Resources.Load<GameObject>("Player2building");
     }
-
-    // Update is called once per frame
-    void Update()
-    {
-    }
-
+    
     void OnTriggerEnter(Collider other)
     {
         if (other.tag == "unit")
         {
-
             Debug.Log(other.gameObject.GetComponent<UnitControllScript>().Team);
             if (other.gameObject.GetComponent<UnitControllScript>().Team == 1)
             {
@@ -48,7 +37,6 @@ public class EmptyBuildingScript : MonoBehaviour {
 
                     _gamecontroll.BuildingNode[NodeNumber] = null;
                     _gamecontroll.BuildingNode[NodeNumber] = _player1Building;
-                 
                 }
             }
             else if (other.gameObject.GetComponent<UnitControllScript>().Team==2)

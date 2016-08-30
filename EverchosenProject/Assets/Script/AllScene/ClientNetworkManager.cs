@@ -2,70 +2,56 @@
 using System;
 using System.Text;
 using Newtonsoft.Json;
-using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
-using LitJson;
-using System.Runtime.CompilerServices;
-using JetBrains.Annotations;
-using UnityEngine;
 using Debug = UnityEngine.Debug;
 
 //2.0만사용가능 3.5이후로는 호환이 안됨 유니티
 
-
 namespace Client
 {
-
-    static class ClientNetworkManager 
+    static class ClientNetworkManager
     {
         public static Socket ClientSocket = null;
         private static Socket _serverSocket = null;
         private static readonly byte[] Buffer = new byte[1024];
-
-        // Save device unique id.
+        
         public static string ClientDeviceId;
-
         public static bool Connected = false;
 
         public static ProfileData EnemyProfileData;
         public static ProfileData ProfileData;
-        public static MatchingPacket PacketData;
+        public static MatchingInfo EnemyMatchingData;
         public static MapData MapData;
-           
+
         //인게임
         public static MoveData MyMoveData;
         public static MoveData EnemyMoveData;
         public static BuildingChangeData MyChangeData;
         public static BuildingChangeData EnemyChangeData;
-        
+
         public static string ReceiveMsg = null; //유니티쪽에서 사용할 메시지를 담을 변수
+
+        #region Connect / Close Function  
+
         public static void ConnectToServer(string hostName, int hostPort)
         {
-
-           
             ClientSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            
             try
             {
-                //연결성공
                 ClientSocket.BeginConnect(hostName, hostPort, ConnectCallback, ClientSocket);
             }
             catch (Exception e)
             {
-                Debug.Log(e);
-                //연결실패
-               Debug.Log("연결에 실패했습니다.");
+                Debug.Log("ConnectToServer 연결 실패 관련 e :" + e);
             }
         }
-        
 
         //beginReceive 콜백함수
         private static void ConnectCallback(IAsyncResult ar)
         {
             try
             {
-                var tempSocket = (Socket)ar.AsyncState;
+                var tempSocket = (Socket) ar.AsyncState;
                 tempSocket.EndConnect(ar);
                 _serverSocket = tempSocket;
 
@@ -73,60 +59,59 @@ namespace Client
                 {
                     Debug.Log("연결됨");
                 }
-                
                 Receive();
                 Connected = true;
-
             }
             catch (Exception e)
             {
-                Debug.Log(e);
-               Debug.Log("연결에 실패했습니다.2");
+                Debug.Log("ConnectCallback 연결 실패 관련 e :"+e);
             }
 
         }
-        
-        //매칭된시간 알려주고 3초뒤에시작한다 . 
-        //지금이 19분인데 19분 30초에 매칭시작 33초에 게임시작해 패킷을 보낸다음에 
+
+
+        public static void SocketClose()
+        {
+            if (!ClientSocket.Connected) return;
+            ClientSocket.Shutdown(SocketShutdown.Both);
+            ClientSocket.Close();
+        }
+
+        #endregion
+
+        #region Send Function
+
         //데이터 전송
         public static void Send(string msg, object data)
         {
             try
             {
-                if (ClientSocket.Connected)
-                {
                     var setData = data;
                     Packet sample = new Packet
                     {
                         MsgName = msg,
                         Data = JsonConvert.SerializeObject(setData)
                     };
-
-                   // Debug.Log();
                     var json = JsonConvert.SerializeObject(sample);
                     var sendData = Encoding.UTF8.GetBytes(json);
                     ClientSocket.BeginSend(sendData, 0, sendData.Length, SocketFlags.None, SendCallBack, ClientSocket);
-                    
-                }
-                else
-                {
-                    //소켓이 연결되어있지않음
-                }
+                
             }
             catch (Exception e)
             {
-                Debug.Log(e);
-                Debug.Log("전송에러");
+                Debug.Log("Send Fail 관련 e : "+e);
             }
         }
 
         private static void SendCallBack(IAsyncResult ar)
         {
-            string message = (string)ar.AsyncState; //완료메시지 같은거 보내기..
+            string message = (string) ar.AsyncState; //완료메시지 같은거 보내기..
         }
-        
 
-#region receive
+        #endregion
+
+        #region Receive Function
+
         public static void Receive()
         {
             Array.Clear(Buffer, 0, Buffer.Length);
@@ -136,20 +121,20 @@ namespace Client
             }
             catch (Exception e)
             {
-               Debug.Log("Receive Exeption : "+e);
+                Debug.Log("Receive Exeption : " + e);
             }
         }
-        
+
         //수신콜백함수
         private static void ReceiveCallBack(IAsyncResult ar)
         {
             try
             {
                 //var tempSocket = (Socket)ar.AsyncState;
-               // int readSize = tempSocket.EndReceive(ar);//버퍼 사이즈 받아옴
+                // int readSize = tempSocket.EndReceive(ar);//버퍼 사이즈 받아옴
                 if (Buffer[0] == 0)
                 {
-                    Debug.Log("버퍼에 아무것도 안들어왓음");
+                    Debug.Log("Buffer null");
                     return;
                 }
                 var receiveJson = new UTF8Encoding().GetString(Buffer);
@@ -157,35 +142,35 @@ namespace Client
                 var receiveData = JsonConvert.DeserializeObject<Packet>(receiveJson);
                 ReceiveMsg = receiveData.MsgName;
 
-              
+
 
                 switch (ReceiveMsg)
                 {
-                        //로딩씬
+                    //로딩씬
                     case "OnSucceedLogin":
                         ProfileData = JsonConvert.DeserializeObject<ProfileData>(receiveData.Data);
                         break;
 
-                        //메인메뉴
-                    case "OnChangedProfile" :
+                    //메인메뉴
+                    case "OnChangedProfile":
                         ProfileData.NickName = JsonConvert.DeserializeObject<string>(receiveData.Data);
                         break;
                     case "OnSucceedMatching1": //종족 스펠
-                        PacketData = JsonConvert.DeserializeObject<MatchingPacket>(receiveData.Data);
+                        EnemyMatchingData = JsonConvert.DeserializeObject<MatchingInfo>(receiveData.Data);
                         break;
-                    case "OnSucceedMatching2"://닉네임, 승패
+                    case "OnSucceedMatching2": //닉네임, 승패
                         EnemyProfileData = JsonConvert.DeserializeObject<ProfileData>(receiveData.Data);
-                        Send("MapReq",null);
+                        Send("MapReq", null);
                         break;
-                    case "MapInfo"://맵데이터 
+                    case "MapInfo": //맵데이터 
                         MapData = JsonConvert.DeserializeObject<MapData>(receiveData.Data);
-                       
+
                         Debug.Log(MapData.MapNodes.Count);
-                   
-                        
+
+
                         break;
 
-                        //ingame
+                    //ingame
                     case "MoveMine":
                         MyMoveData = JsonConvert.DeserializeObject<MoveData>(receiveData.Data);
                         break;
@@ -193,11 +178,9 @@ namespace Client
                         EnemyMoveData = JsonConvert.DeserializeObject<MoveData>(receiveData.Data);
                         break;
                     case "ChangeMine":
-                        Debug.Log("My:" + receiveData.Data);
                         MyChangeData = JsonConvert.DeserializeObject<BuildingChangeData>(receiveData.Data);
                         break;
                     case "ChangeOppo":
-                        Debug.Log("Oppo:" + receiveData.Data);
                         EnemyChangeData = JsonConvert.DeserializeObject<BuildingChangeData>(receiveData.Data);
                         break;
                 }
@@ -205,28 +188,20 @@ namespace Client
                 {
                     Receive();
                 }
-                    
+
             }
-            catch (SocketException e)
-            {
-                Debug.Log("Socket error : " + e);
-                //데이저 수신 에러
-            }
+         
             catch (Exception e)
             {
-                Debug.Log("exeption 에러 : "+e);
+                Debug.Log("ReceiveCallBack Function Exeption : " + e);
             }
         }
-        
-        public static void SocketClose()
-        {
-            if (!ClientSocket.Connected) return;
-            ClientSocket.Shutdown(SocketShutdown.Both);
-            ClientSocket.Close();
-        }
     }
+}
+
 #endregion
-    
+
+        #region PacketClass
     public class Packet
     {
         public string MsgName { get; set; }
@@ -240,13 +215,13 @@ namespace Client
         public int Loses { get; set; }
     }
 
-    public class MatchingPacket
+    public class MatchingInfo
     {
         public string Tribe { get; set;}
         public int Spell { get; set; }
         public int TeamColor { get; set;}
       
-        public MatchingPacket(string tribe, int spell, int teamColor)
+        public MatchingInfo(string tribe, int spell, int teamColor)
         {
             this.Tribe = tribe;
             this.Spell = spell;
@@ -274,8 +249,6 @@ namespace Client
         public List<Building> MapNodes { get; set; }
     }
 
-    
-
     public class Building
     {
         public int Owner { get; set; }
@@ -284,7 +257,7 @@ namespace Client
         public double ZPos { get; set; }
         //public int UnitCount { get; set; }
     }
+#endregion
 
-}
 
 
