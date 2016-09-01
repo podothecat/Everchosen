@@ -7,11 +7,14 @@ public class BuildingControllScript : MonoBehaviour
 {
     private GameObject _gameController;
     //Unit Variable
-    public GameObject UnitPrefab;
+    public GameObject UnitsPrefab;
+    private GameObject _unitTroop;
+    public GameObject UnitsSpritePrefab;
     private GameObject _unit;
-    private GameObject _unitNumberPanelPrefab;
-    private GameObject _unitNumberPanel;
-    public float UnitNumber = 1;
+    private GameObject _buildingUnitNumberPanelPrefab;
+    private GameObject _buildingUnitNumberPanel;
+    public float UnitNumber;
+    private int _unitSpawnId;
     public int SendUnitCount;
 
     public bool PlayerCastle;
@@ -24,16 +27,17 @@ public class BuildingControllScript : MonoBehaviour
     private float _unitCreateCounter;//유닛 숫자가 1 올라가는데 걸리는 시간
     public float BuildingValue;//빌딩 value는 그 빌딩의 유닛이 생산하는 유닛의 체력값 
     public float UnitPower;
-    public int PlayerTeam;//생성할 유닛의 색상설정을 알기위한 변수 
+    public string UnitKind;
+    public string PlayerTeam;//생성할 유닛의 색상설정을 알기위한 변수 
     public Sprite UnitSprite;
 
     public int NodeNumber;
 
-
     void Awake()
     {
         _gameController = GameObject.Find("GameControllerObject");
-        UnitPrefab = Resources.Load<GameObject>("Unit");
+        UnitsPrefab = Resources.Load<GameObject>("Units");
+        UnitsSpritePrefab = Resources.Load<GameObject>("UnitSprite");
         // 빌딩레벨 설정 오브젝트
         BuildingSettingObject = this.transform.FindChild("BuildingSetting").gameObject;
         BuildingSettingObject.SetActive(false);
@@ -51,9 +55,9 @@ public class BuildingControllScript : MonoBehaviour
             _buildingDataList = _gameController.GetComponent<TeamSettingScript>().EnemytribeDataToAdd;
         }
 
-        UnitNumberViewPanelIns();
+        BuildingUnitNumberViewPanelIns();
 
-        BuildingId = PlayerCastle ? 0 : 1;//본진확인 playercastle이 true면 building id = 0
+        BuildingId = (PlayerCastle ? 0 : 1);//본진확인 playercastle이 true면 building id = 0
         BuildingDataSet(BuildingId); //빌딩 데이터 설정
 
 
@@ -61,95 +65,95 @@ public class BuildingControllScript : MonoBehaviour
     
     void Update()
     {
-        //유닛 카운터
-        UnitCreateCounterFunction();
+            BuildingUnitCreateCounterFunction();
     }
    
  
     #region Functions to related Unit
     //Unit Creation Function
-    public void UnitSpawn(Vector3 des) //유닛 생성
+    public void UnitSpawn(Vector3 des, int unitcount) //유닛 생성
     {
-        if (UnitNumber >= 5)
-        {
-            for (int i = 0; i < 5; i++) //유닛 생성
-            {
-                UnitIns(des,i);
-            }
-        }
-        else if (UnitNumber > 0 && UnitNumber < 5)
-        {
-            int createUnitnumber = (int)UnitNumber;
-            for (int i = 0; i < createUnitnumber; i++) //유닛 생성
-            {
-                UnitIns(des, i);
-            }
-        }
-        else
-        {
-            Debug.Log("유닛이 업성");
-        }
-        UnitNumbersetText();
-
+        unitcount = Random.Range(0, 20);
+        Debug.Log(unitcount);
+        UnitTroopIns(des, unitcount);
+        BuildingUnitNumbersetText();
     }
+
     //Unit Ins 
-    void UnitIns(Vector3 endDesPosition, int i)//목적지와 유닛수
+    void UnitTroopIns(Vector3 endDesPosition, int unitcount)//목적지와 유닛수
     {
-        _unit = Instantiate(UnitPrefab);
-        _unit.transform.SetParent(this.gameObject.transform);
-        _unit.transform.position = this.gameObject.transform.position;
-        _unit.transform.rotation = Quaternion.Euler(Vector3.zero);
-        _unit.transform.localScale = Vector3.one;
+        _unitTroop = Instantiate(UnitsPrefab);
+        _unitTroop.transform.SetParent(this.gameObject.transform);
+        _unitTroop.transform.position = this.gameObject.transform.position;
+        _unitTroop.transform.rotation = Quaternion.Euler(Vector3.zero);
+        _unitTroop.transform.localScale = Vector3.one;
         //생성할 유닛 스폰 아이디 설정
-        _unit.GetComponent<NavMeshAgent>().SetDestination(endDesPosition); //목적지설정
-        _unit.GetComponent<NavMeshAgent>().updateRotation = false;
+        _unitTroop.GetComponent<NavMeshAgent>().SetDestination(endDesPosition); //목적지설정
+        _unitTroop.GetComponent<NavMeshAgent>().updateRotation = false;
         // 유닛이 목적지가 아닌곳에서 trigger가 시작되지 않게하기위함
-        _unit.GetComponent<UnitControllScript>().Destination = endDesPosition;//목적지에 도착하면 trigger가 켜지게하기위함
-        _unit.GetComponent<BoxCollider>().enabled = false;
+        _unitTroop.GetComponent<UnitControllScript>().Destination = endDesPosition;//목적지에 도착하면 trigger가 켜지게하기위함
+        _unitTroop.GetComponent<BoxCollider>().enabled = false;
         //유닛 공격력 및 sprite설정
-        _unit.GetComponent<UnitControllScript>().UnitPower = UnitPower;
-        _unit.GetComponent<UnitControllScript>().UnitSprite = UnitSprite;
-        _unit.GetComponent<UnitControllScript>().Team = PlayerTeam;
-        Debug.Log(PlayerTeam);
-
-        SendUnitCount = i;
-        UnitNumber--;
+        _unitTroop.GetComponent<UnitControllScript>().UnitPower = UnitPower;
+        _unitTroop.GetComponent<UnitControllScript>().UnitNumber = unitcount;
+        _unitTroop.GetComponent<UnitControllScript>().UnitKind = UnitKind;
+        _unitTroop.GetComponent<UnitControllScript>().UnitId = _unitSpawnId;
+        _unitTroop.GetComponent<UnitControllScript>().Team = PlayerTeam;
+        
+        UnitNumber -= unitcount;
+        UnitSpriteIns(unitcount,endDesPosition);
         //sprite 좌우반전
-        if (_unit.transform.position.x > endDesPosition.x)
-        {
-            _unit.GetComponentInChildren<SpriteRenderer>().flipX = true;
-        }
+        
 
     }
-    //Unit Number Counter
-    public void UnitCreateCounterFunction()//유닛 생성 카운트 함수
+
+    void UnitSpriteIns(int unitCount, Vector3 endDes)
+    {
+        for (int i = 0; i < (unitCount/5)+1; i++)
+        {
+            _unit = Instantiate(UnitsSpritePrefab);
+            _unit.transform.SetParent(_unitTroop.transform);
+            _unit.transform.localPosition = new Vector3(-(float)i/5,1, -(float)i / 5);
+            _unit.GetComponentInChildren<SpriteRenderer>().sprite = UnitSprite;
+            if (_unitTroop.transform.position.x > endDes.x)
+            {
+                Debug.Log("hihihi");
+                _unit.GetComponentInChildren<SpriteRenderer>().flipX = true;
+            }
+        }
+    }
+
+    //Building Unit Number Counter
+    public void BuildingUnitCreateCounterFunction()//유닛 생성 카운트 함수
     {
         _unitCreateCounter += Time.deltaTime;
         if (_unitCreateCounter > _delayCreateCount)
         {
             UnitNumber++;
-            UnitNumbersetText();
+            BuildingUnitNumbersetText();
             _unitCreateCounter = 0;
         }
     }
-    //Unit Number panel Text set
-    public void UnitNumbersetText() // 유닛number text생성
+    //Building Unit Number panel Text set
+    public void BuildingUnitNumbersetText() // 유닛number text생성
     {
-        _unitNumberPanel.GetComponentInChildren<Text>().text = "" + UnitNumber;
+        _buildingUnitNumberPanel.GetComponentInChildren<Text>().text = "" + UnitNumber;
     }
-    //UnitNumberPanel
-    void UnitNumberViewPanelIns()
+    //Building UnitNumberPanel
+    void BuildingUnitNumberViewPanelIns()
     {
-        _unitNumberPanelPrefab = Resources.Load<GameObject>("UnitNumberPanel");
+        _buildingUnitNumberPanelPrefab = Resources.Load<GameObject>("BuildingNumberPanel");
         //UNITNUMBER UI 생성
-        _unitNumberPanel = Instantiate(_unitNumberPanelPrefab);
-        _unitNumberPanel.transform.SetParent(GameObject.Find("UnitNumberUIObject").gameObject.transform);
-        _unitNumberPanel.transform.position =
+        _buildingUnitNumberPanel = Instantiate(_buildingUnitNumberPanelPrefab);
+        _buildingUnitNumberPanel.transform.SetParent(GameObject.Find("UnitNumberUIObject").gameObject.transform);
+        _buildingUnitNumberPanel.transform.position =
             Camera.main.WorldToScreenPoint(new Vector3(this.gameObject.transform.position.x,
                 this.gameObject.transform.position.y, this.gameObject.transform.position.z + 1f));
-        _unitNumberPanel.GetComponentInChildren<Text>().text = "" + UnitNumber;
+        _buildingUnitNumberPanel.GetComponentInChildren<Text>().text = "" + UnitNumber;
 
     }
+
+       
     #endregion
     
     #region Functions to related Building
@@ -160,6 +164,7 @@ public class BuildingControllScript : MonoBehaviour
         BuildingId = level;
         if (BuildingId != _buildingDataList[offsetbuildingId].BuildingId)
         {
+            UnitNumber = 0;
             BuildingDataSet(BuildingId);//data set
         }
         else
@@ -177,20 +182,21 @@ public class BuildingControllScript : MonoBehaviour
         _delayCreateCount = _buildingDataList[buildingId].CreateCount;//건물에 따라 유닛수증가 딜레이 설정
         BuildingValue = _buildingDataList[buildingId].Value;
         //유닛관련
-        if (PlayerTeam == 1)
+        if (PlayerTeam == "Blue")
         {
             UnitSprite = _buildingDataList[buildingId].BUnitSprite;
         }
-        else if (PlayerTeam == 2)
+        else if (PlayerTeam == "Red")
         {
             UnitSprite = _buildingDataList[buildingId].RUnitSprite;
         }
         
         UnitPower = _buildingDataList[buildingId].UnitPower;
-        UnitNumber = 0; // 건물레벨업시 유닛숫자 초기화
+        _unitSpawnId = _buildingDataList[buildingId].SpawnUnitId;
+        UnitKind = _buildingDataList[buildingId].UnitKind;
         _unitCreateCounter = 0;
 
-        UnitNumbersetText();
+        BuildingUnitNumbersetText();
     }
 
     //Destroy building
@@ -212,7 +218,7 @@ public class BuildingControllScript : MonoBehaviour
                 _gameController.GetComponent<GameControllScript>().BuildingNode[NodeNumber]
                     .GetComponent<BuildingControllScript>().NodeNumber = NodeNumber;
                 _gameController.GetComponent<GameControllScript>().BuildingNode[NodeNumber]
-                    .GetComponent<BuildingControllScript>().PlayerTeam = 2;
+                    .GetComponent<BuildingControllScript>().PlayerTeam = "Red";
                 break;
             case "Player2building":
                 buildingPrefab = Resources.Load<GameObject>("Player1building");
@@ -226,35 +232,39 @@ public class BuildingControllScript : MonoBehaviour
                 _gameController.GetComponent<GameControllScript>().BuildingNode[NodeNumber]
                   .GetComponent<BuildingControllScript>().NodeNumber = NodeNumber;
                 _gameController.GetComponent<GameControllScript>().BuildingNode[NodeNumber]
-                    .GetComponent<BuildingControllScript>().PlayerTeam = 1;
+                    .GetComponent<BuildingControllScript>().PlayerTeam = "Blue";
                 break;
         }
 
         Destroy(this.gameObject);
-        Destroy(_unitNumberPanel);
+        Destroy(_buildingUnitNumberPanel);
     }
     #endregion
 
+    
     void OnTriggerEnter(Collider other)
     {
         if (other.tag == "unit")
         {
             if (other.gameObject.GetComponent<UnitControllScript>().Team == PlayerTeam)
             {
-                UnitNumber++;
-                UnitNumbersetText();
+              
+                    UnitNumber+= other.GetComponent<UnitControllScript>().UnitNumber;
+                    BuildingUnitNumbersetText();
             }
             else if (other.gameObject.GetComponent<UnitControllScript>().Team != PlayerTeam)
             {
-                UnitNumber--;
-                UnitNumbersetText();
+
+
+                UnitNumber -= other.GetComponent<UnitControllScript>().UnitNumber;
+                BuildingUnitNumbersetText();
                 if (UnitNumber <= 0)
-                {
-                    DestroythisBuilding();
-                   
-                }
+                  {
+                       DestroythisBuilding();
+                   }
             }
             Destroy(other.gameObject);
+           
         }
     }
 }

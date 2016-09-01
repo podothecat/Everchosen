@@ -164,10 +164,6 @@ namespace Client
                         break;
                     case "MapInfo": //맵데이터 
                         MapData = JsonConvert.DeserializeObject<MapData>(receiveData.Data);
-
-                        Debug.Log(MapData.MapNodes.Count);
-
-
                         break;
 
                     //ingame
@@ -242,7 +238,6 @@ namespace Client
         public int Kinds { get; set; }
     }
 
-    
     public class MapData
     {
         public string MapName { get; set; }
@@ -257,6 +252,8 @@ namespace Client
         public double ZPos { get; set; }
         //public int UnitCount { get; set; }
     }
+
+
 #endregion
 
 

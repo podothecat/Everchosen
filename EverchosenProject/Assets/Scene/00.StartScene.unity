@@ -4428,6 +4428,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   LoadingComplete: 0
   AccountValid: 0
+  Send: 0
 --- !u!4 &1771712229
 Transform:
   m_ObjectHideFlags: 0
