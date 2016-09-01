@@ -27,7 +27,8 @@ namespace EverChosenServer
         private void Start()
         {
             DatabaseManager.Initialize();
-            
+            var dd = 10;
+            var d = dd /= 2;
             _serverSocket.Bind(new IPEndPoint(IPAddress.Any, 23000));
             _serverSocket.Listen(10);
 

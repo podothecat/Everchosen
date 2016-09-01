@@ -70,8 +70,6 @@ namespace EverChosenServer
             IngameManager.AddRoom(room);
             client.InGameRequest += room.IngameCommand;
             oppoClient.InGameRequest += room.IngameCommand;
-            //oppoClient.BeginSend("MapInfo", map);
-            //client.BeginSend("MapInfo", map);
         }
 
         /// <summary>

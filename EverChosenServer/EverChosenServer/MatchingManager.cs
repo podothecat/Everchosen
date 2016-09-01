@@ -9,18 +9,23 @@ namespace EverChosenServer
         // Clients wait matching.
         public static List<Client> Clients = new List<Client>();
 
+        private enum TeamColor
+        {
+            BLUE,
+            RED
+        };
+
         internal static Client MatchProcess(Client client)
         {
             if (Clients.Any())
             {
-                var r = new Random();
-                var idx = r.Next(0, Clients.Count);
-
-                var opponent = Clients[idx];
+                var randomNumber = new Random();
+                
+                var opponent = Clients[randomNumber.Next(0, Clients.Count)];
                 Clients.Remove(opponent);
                 
-                opponent.MatchingData.TeamColor = 1;
-                client.MatchingData.TeamColor = 2;
+                opponent.MatchingData.TeamColor = (int) TeamColor.BLUE;
+                client.MatchingData.TeamColor = (int) TeamColor.RED;
 
                 return opponent;
             }

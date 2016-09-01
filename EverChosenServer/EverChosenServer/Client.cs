@@ -10,6 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using MongoDB.Driver.Core.WireProtocol.Messages;
 using Newtonsoft.Json;
+using EverChosenPacketLib;
 
 namespace EverChosenServer
 {
@@ -39,7 +40,7 @@ namespace EverChosenServer
         /// </summary>
         public void BeginSend(string msg, dynamic data)
         {
-            var p = new Packet(msg, data);
+            var p = new Packet(msg, JsonConvert.SerializeObject(data));
             var sendBuf = new UTF8Encoding().GetBytes(
                 JsonConvert.SerializeObject(p, Formatting.Indented));
 
@@ -98,7 +99,7 @@ namespace EverChosenServer
             
             // Refine received packet.
             x.Data = x.Data.Replace("\\\"", "\"");
-            x.Data = x.Data.Substring(1, x.Data.Length - 2);
+            //x.Data = x.Data.Substring(0, x.Data.Length - 1);
 
             // To distinguish whether client is ingame or not.
             if (!IsIngame)
@@ -134,6 +135,7 @@ namespace EverChosenServer
             {
                 case "OnLoginRequest":
                     Console.WriteLine("Request : Login");
+                    Console.WriteLine(req.Data);
                     _uniqueId = JsonConvert.DeserializeObject<string>(req.Data);
                     LoginData = DatabaseManager.GetClientInfo(_uniqueId);
                     Console.WriteLine(_uniqueId);

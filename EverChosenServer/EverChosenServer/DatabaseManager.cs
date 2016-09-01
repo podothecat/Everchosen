@@ -8,6 +8,7 @@ using MongoDB.Driver;
 using MongoDB.Bson;
 using MongoDB.Driver.Linq;
 using Newtonsoft.Json;
+using EverChosenPacketLib;
 
 namespace EverChosenServer
 {
@@ -21,11 +22,10 @@ namespace EverChosenServer
 
         internal static void Initialize()
         {
-            //_connectString = "mongodb://52.78.94.58";
             _mongoClient = new MongoClient("mongodb://52.78.94.58:23001");
             _database = _mongoClient.GetDatabase("EverChosen");
             _users = _database.GetCollection<BsonDocument>("users");
-            _maps = _database.GetCollection<BsonDocument>("maps");
+            _maps = _database.GetCollection<BsonDocument>("maps_copy");
         }
 
         /// <summary>
@@ -53,7 +53,7 @@ namespace EverChosenServer
                 Console.WriteLine("New user was added.");
                 result.Add(newProfile);
             }
-
+            
             var userProfile = new ProfileInfo
             {
                 NickName = result[0]["nickname"].AsString,
@@ -76,7 +76,7 @@ namespace EverChosenServer
             var filter = Builders<BsonDocument>.Filter.Eq("_id", clientUniqueId);
             var update = Builders<BsonDocument>.Update.Set("nickname", nickName)
                 .CurrentDate("lastModified");
-            var result = _users.UpdateOneAsync(filter, update);
+            _users.UpdateOneAsync(filter, update);
 
             return nickName;
         }
@@ -85,7 +85,7 @@ namespace EverChosenServer
         /// Get map data when matching was succeed.
         /// </summary>
         /// <returns> Map data </returns>
-        internal static GameRoom.MapInfo GetMapInfo()
+        internal static MapInfo GetMapInfo()
         {
             var mapName = string.Empty;
 
@@ -95,40 +95,9 @@ namespace EverChosenServer
             if (result.Count != 1)
                 return null;
 
-            mapName = result[0]["mapname"].AsString;
-            var nodeCount = result[0]["nodes"].AsInt32;
-            var positions = result[0]["positions"];
+            var map = JsonConvert.DeserializeObject<MapInfo>(result[0].ToString());
 
-            var nodes = new List<GameRoom.Building>();
-            for (int i = 0; i < nodeCount; ++i)
-            {
-                var x = positions[i]["x"].AsDouble;
-                var z = positions[i]["z"].AsDouble;
-                var o = 0;
-                var k = 0;
-                var b = new GameRoom.Building
-                {
-                    Owner = o,
-                    //Kinds = k,
-                    XPos = x,
-                    ZPos = z,
-                    //UnitCount = 0
-                };
-                nodes.Add(b);
-            }
-            
-            var mapInfo = new GameRoom.MapInfo
-            {
-                MapName = mapName,
-                MapNodes = nodes
-            };
-
-            return mapInfo;
-        }
-
-        internal static void PrintClients()
-        {
-            
+            return map;
         }
     }
 }
