@@ -29,7 +29,7 @@ public class GameControllScript : MonoBehaviour
     
     private Sprite _mapSpriteData;
     private SpriteRenderer _backGroundObject;
-
+    
     void Awake()
     {
         _player1BuildingPrefab = Resources.Load<GameObject>("Player1building");
@@ -56,9 +56,7 @@ public class GameControllScript : MonoBehaviour
     {
         if (ClientNetworkManager.EnemyMatchingData != null && ClientNetworkManager.EnemyProfileData != null && ClientNetworkManager.MapData != null)
         {
-            Debug.Log(ClientNetworkManager.MapData.MapName);
             _mapSpriteData = Resources.Load<Sprite>("Sprite/MapData/" + ClientNetworkManager.MapData.MapName);
-            Debug.Log(_mapSpriteData);
             _backGroundObject.sprite = _mapSpriteData;
             
             _enemyViewPanelSetdata = ClientNetworkManager.EnemyMatchingData;
@@ -83,6 +81,8 @@ public class GameControllScript : MonoBehaviour
         _matchingDataViewPanel.transform.SetParent(Canvas.transform);
         _matchingDataViewPanel.transform.SetAsLastSibling(); //가장 앞에서 보여주기위해
         _matchingDataViewPanel.transform.position = Camera.main.WorldToScreenPoint(Vector3.zero);
+        _matchingDataViewPanel.transform.FindChild("MapName").GetComponent<Text>().text =
+            ClientNetworkManager.MapData.MapName;
         StartCoroutine(GameStartCounter());
         MatchingDataSetting();//데이터셋팅
     }
@@ -101,7 +101,6 @@ public class GameControllScript : MonoBehaviour
             _matchingDataViewPanel.transform.FindChild("Player1Panel").transform.FindChild("Player1Team").GetComponent<Text>().text = "Red Team";
             _matchingDataViewPanel.transform.FindChild("Player2Panel").transform.FindChild("Player2Team").GetComponent<Text>().text = "Blue Team";
         }
-        
             _matchingDataViewPanel.transform.FindChild("Player1Panel").transform.FindChild("Player1ID").GetComponent<Text>().text = "아이디 : " + TribeSetManager.PData.NickName;
             _matchingDataViewPanel.transform.FindChild("Player1Panel").transform.FindChild("Player1Tribe").GetComponent<Text>().text = "종족 : " + TribeSetManager.PData.TribeName;
             _matchingDataViewPanel.transform.FindChild("Player1Panel").transform.FindChild("Player1Spell").GetComponent<Text>().text = "스펠 : " + TribeSetManager.PData.Spell;
@@ -109,7 +108,7 @@ public class GameControllScript : MonoBehaviour
             _matchingDataViewPanel.transform.FindChild("Player2Panel").transform.FindChild("Player2ID").GetComponent<Text>().text = "아이디 : " + _enemyViewPanelProfileData.NickName;
             _matchingDataViewPanel.transform.FindChild("Player2Panel").transform.FindChild("Player2Tribe").GetComponent<Text>().text = "종족 : " + _enemyViewPanelSetdata.Tribe;
             _matchingDataViewPanel.transform.FindChild("Player2Panel").transform.FindChild("Player2Spell").GetComponent<Text>().text = "스펠 : " + _enemyViewPanelSetdata.Spell;
-    }
+        }
 #endregion
     
 #region Creation Node
@@ -121,7 +120,7 @@ public class GameControllScript : MonoBehaviour
         _player1Building.transform.localScale = Vector3.one;
         _player1Building.transform.localRotation = Quaternion.Euler(Vector3.zero);
         _player1Building.GetComponent<BuildingControllScript>().PlayerCastle = true;//본진
-        _player1Building.GetComponent<BuildingControllScript>().PlayerTeam = 1;
+        _player1Building.GetComponent<BuildingControllScript>().PlayerTeam = "Blue";
         _player1Building.GetComponent<BuildingControllScript>().NodeNumber = node;
 
         BuildingNode.Add(_player1Building);
@@ -136,7 +135,7 @@ public class GameControllScript : MonoBehaviour
         _player2Building.transform.localScale = Vector3.one;
         _player2Building.transform.localRotation = Quaternion.Euler(Vector3.zero);
         _player2Building.GetComponent<BuildingControllScript>().PlayerCastle = true;//본진
-        _player2Building.GetComponent<BuildingControllScript>().PlayerTeam = 2;
+        _player2Building.GetComponent<BuildingControllScript>().PlayerTeam = "Red";
         _player2Building.GetComponent<BuildingControllScript>().NodeNumber = node;
 
         BuildingNode.Add(_player2Building);
@@ -182,11 +181,14 @@ public class GameControllScript : MonoBehaviour
             BuildingNode[ClientNetworkManager.MyChangeData.Node].GetComponent<BuildingControllScript>().BuildingDataSet(ClientNetworkManager.MyChangeData.Kinds);
             ClientNetworkManager.MyChangeData = null;
         }
+
+        //건물인원수
+
     }
     //유닛이동관련
     private void UnitMove(int unitCount, int stNode, int endNode)
     {
-        BuildingNode[stNode].GetComponent<BuildingControllScript>().UnitSpawn(BuildingNode[endNode].transform.position);
+        BuildingNode[stNode].GetComponent<BuildingControllScript>().UnitSpawn(BuildingNode[endNode].transform.position,unitCount);
     }
     #endregion
 
@@ -250,5 +252,6 @@ public class GameControllScript : MonoBehaviour
 
 
 }
+
 
 

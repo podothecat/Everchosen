@@ -138,7 +138,7 @@ public class MapTouchScript : MonoBehaviour
                             }
                            // _startSelectedbuilding.GetComponent<BuildingControllScript>().UnitSpawn(EndDesPosition);//클라 유닛생성
                             
-                            MoveDataset(_startSelectedbuilding.GetComponent<BuildingControllScript>().SendUnitCount,StartNode,EndNode);
+                            MoveDataset((int)(_startSelectedbuilding.GetComponent<BuildingControllScript>().UnitNumber/2),StartNode,EndNode);
                         }
                     }
 

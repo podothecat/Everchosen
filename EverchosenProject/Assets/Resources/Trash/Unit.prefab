@@ -119,8 +119,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Team: 0
+  UnitNumber: 0
   UnitId: 0
-  destination: {x: 0, y: 0, z: 0}
+  UnitKind: 
+  UnitPower: 0
+  UnitDamageAmount: 0
+  UnitSupportAmount: 0
+  Destination: {x: 0, y: 0, z: 0}
 --- !u!195 &19548832
 NavMeshAgent:
   m_ObjectHideFlags: 1

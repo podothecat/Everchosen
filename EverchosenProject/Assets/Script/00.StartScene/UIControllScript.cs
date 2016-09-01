@@ -11,7 +11,7 @@ public class UIControllScript : MonoBehaviour
     void Awake()
     {
         ClientNetworkManager.ClientDeviceId = SystemInfo.deviceUniqueIdentifier;
-        ClientNetworkManager.ConnectToServer("211.245.70.35", 23000);
+        ClientNetworkManager.ConnectToServer("219.254.17.66", 23000);//219.254.17.66 , 211.245.70.35
     }
 
 	void Start () {
