@@ -1,8 +1,6 @@
 ﻿using UnityEngine;
-using System.Collections;
-using System.Reflection.Emit;
 using Client;
-using JetBrains.Annotations;
+using EverChosenPacketLib;
 
 public class MapTouchScript : MonoBehaviour
 {
@@ -31,15 +29,15 @@ public class MapTouchScript : MonoBehaviour
     GameObject _buildingLevel2;
     GameObject _buildingLevel3;
     
-    private readonly MoveData _ingamePacket = new MoveData();
-    private readonly BuildingChangeData _sendLevelData = new BuildingChangeData();
-
-
-    // Use this for initialization
+    private readonly MoveUnitInfo _ingamePacket = new MoveUnitInfo();
+    private readonly ChangeBuildingInfo _sendLevelData = new ChangeBuildingInfo();
+    
     void Start ()
     {
         _gameControllerObject = GameObject.Find("GameControllerObject");
         _data= _gameControllerObject.GetComponent<TeamSettingScript>().PlayerTeamSetting();
+        Debug.Log(_data[0]);
+        Debug.Log(_data[1]);
         Playerbuilding = _data[0];
         Enemybuilding = _data[1];
         DragCirclePrefab = Resources.Load<GameObject>("DragCircleObject");
@@ -57,8 +55,7 @@ public class MapTouchScript : MonoBehaviour
         if (Input.GetMouseButtonDown(0))//Mouse Down
         {
             Ray startray = Camera.main.ScreenPointToRay(Input.mousePosition);
-
-
+            
             if (Physics.Raycast(startray, out _hit)) //collider
             {
                 if (_hit.collider.tag == Playerbuilding) //플레이어의 빌딩을 클릭했을시에 DragCircle 생성 
@@ -138,7 +135,7 @@ public class MapTouchScript : MonoBehaviour
                             }
                            // _startSelectedbuilding.GetComponent<BuildingControllScript>().UnitSpawn(EndDesPosition);//클라 유닛생성
                             
-                            MoveDataset((int)(_startSelectedbuilding.GetComponent<BuildingControllScript>().UnitNumber/2),StartNode,EndNode);
+                            MoveDataset(StartNode,EndNode);
                         }
                     }
 
@@ -165,11 +162,10 @@ public class MapTouchScript : MonoBehaviour
         ClientNetworkManager.Send("Change", _sendLevelData);
     }
     
-    void MoveDataset(int unitCount, int st, int end)
+    void MoveDataset(int st, int end)
     {
         _ingamePacket.StartNode = st;
         _ingamePacket.EndNode = end;
-        _ingamePacket.UnitCount = unitCount;
         ClientNetworkManager.Send("Move", _ingamePacket);
     }
 

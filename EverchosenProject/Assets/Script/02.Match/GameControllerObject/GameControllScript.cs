@@ -3,6 +3,7 @@ using System.Collections;
 using Client;
 using UnityEngine.UI;
 using System.Collections.Generic;
+using EverChosenPacketLib;
 
 public class GameControllScript : MonoBehaviour
 {
@@ -22,7 +23,7 @@ public class GameControllScript : MonoBehaviour
     public GameObject ParentObject;
 
     private MatchingInfo _enemyViewPanelSetdata;
-    private ProfileData _enemyViewPanelProfileData;
+    private ProfileInfo _enemyViewPanelProfileData;
     
     public List<GameObject> NodePosition;
     public List<GameObject> BuildingNode;
@@ -54,9 +55,9 @@ public class GameControllScript : MonoBehaviour
 //Server's receive Data reraltion
     void DataSetting()
     {
-        if (ClientNetworkManager.EnemyMatchingData != null && ClientNetworkManager.EnemyProfileData != null && ClientNetworkManager.MapData != null)
+        if (ClientNetworkManager.EnemyMatchingData != null && ClientNetworkManager.EnemyProfileData != null && ClientNetworkManager.MapInfo != null)
         {
-            _mapSpriteData = Resources.Load<Sprite>("Sprite/MapData/" + ClientNetworkManager.MapData.MapName);
+            _mapSpriteData = Resources.Load<Sprite>("Sprite/MapData/" + ClientNetworkManager.MapInfo.MapName);
             _backGroundObject.sprite = _mapSpriteData;
             
             _enemyViewPanelSetdata = ClientNetworkManager.EnemyMatchingData;
@@ -70,7 +71,7 @@ public class GameControllScript : MonoBehaviour
             Debug.Log("데이터 관련이 존재하지 않습니다.");
             Debug.Log("EnemyMatchingData : " + ClientNetworkManager.EnemyMatchingData);
             Debug.Log("EnemyProfileData :" + ClientNetworkManager.EnemyProfileData);
-            Debug.Log("MapData : " + ClientNetworkManager.MapData);
+            Debug.Log("MapInfo : " + ClientNetworkManager.MapInfo);
         }
     }
 
@@ -82,7 +83,7 @@ public class GameControllScript : MonoBehaviour
         _matchingDataViewPanel.transform.SetAsLastSibling(); //가장 앞에서 보여주기위해
         _matchingDataViewPanel.transform.position = Camera.main.WorldToScreenPoint(Vector3.zero);
         _matchingDataViewPanel.transform.FindChild("MapName").GetComponent<Text>().text =
-            ClientNetworkManager.MapData.MapName;
+            ClientNetworkManager.MapInfo.MapName;
         StartCoroutine(GameStartCounter());
         MatchingDataSetting();//데이터셋팅
     }
@@ -158,37 +159,37 @@ public class GameControllScript : MonoBehaviour
 #region Ingame Data 
     private void IngameFunction()
     {
-        if (ClientNetworkManager.EnemyMoveData != null)//적유닛이동
+        if (ClientNetworkManager.EnemyMoveUnitInfo != null)//적유닛이동
         {
-            UnitMove(ClientNetworkManager.EnemyMoveData.UnitCount, ClientNetworkManager.EnemyMoveData.StartNode, ClientNetworkManager.EnemyMoveData.EndNode);
-            ClientNetworkManager.EnemyMoveData = null;
+            UnitMove(ClientNetworkManager.EnemyMoveUnitInfo.StartNode, ClientNetworkManager.EnemyMoveUnitInfo.EndNode);
+            ClientNetworkManager.EnemyMoveUnitInfo = null;
         }
 
-        if (ClientNetworkManager.MyMoveData != null)//내유닛이동 
+        if (ClientNetworkManager.MyMoveUnitInfo != null)//내유닛이동 
         {
-            UnitMove(ClientNetworkManager.MyMoveData.UnitCount, ClientNetworkManager.MyMoveData.StartNode, ClientNetworkManager.MyMoveData.EndNode);
-            ClientNetworkManager.MyMoveData = null;
+            UnitMove(ClientNetworkManager.MyMoveUnitInfo.StartNode, ClientNetworkManager.MyMoveUnitInfo.EndNode);//카운트도 원래 같이보냇었음
+            ClientNetworkManager.MyMoveUnitInfo = null;
         }
 
         //빌딩 변경
-        if (ClientNetworkManager.EnemyChangeData != null)
+        if (ClientNetworkManager.EnemyInfo != null)
         {
-            BuildingNode[ClientNetworkManager.EnemyChangeData.Node].GetComponent<BuildingControllScript>().BuildingDataSet(ClientNetworkManager.EnemyChangeData.Kinds);
-            ClientNetworkManager.EnemyChangeData = null;
+            BuildingNode[ClientNetworkManager.EnemyInfo.Node].GetComponent<BuildingControllScript>().BuildingDataSet(ClientNetworkManager.EnemyInfo.Kinds);
+            ClientNetworkManager.EnemyInfo = null;
         }
-        if (ClientNetworkManager.MyChangeData != null)
+        if (ClientNetworkManager.MyInfo != null)
         {
-            BuildingNode[ClientNetworkManager.MyChangeData.Node].GetComponent<BuildingControllScript>().BuildingDataSet(ClientNetworkManager.MyChangeData.Kinds);
-            ClientNetworkManager.MyChangeData = null;
+            BuildingNode[ClientNetworkManager.MyInfo.Node].GetComponent<BuildingControllScript>().BuildingDataSet(ClientNetworkManager.MyInfo.Kinds);
+            ClientNetworkManager.MyInfo = null;
         }
 
         //건물인원수
 
     }
     //유닛이동관련
-    private void UnitMove(int unitCount, int stNode, int endNode)
+    private void UnitMove(int stNode, int endNode)
     {
-        BuildingNode[stNode].GetComponent<BuildingControllScript>().UnitSpawn(BuildingNode[endNode].transform.position,unitCount);
+        BuildingNode[stNode].GetComponent<BuildingControllScript>().UnitSpawn(BuildingNode[endNode].transform.position);
     }
     #endregion
 
@@ -215,24 +216,24 @@ public class GameControllScript : MonoBehaviour
     IEnumerator GameStart()
     {
         yield return new WaitForSeconds(1f);
-        if (ClientNetworkManager.MapData != null)
+        if (ClientNetworkManager.MapInfo != null)
         {
-            for (int i = 0; i < ClientNetworkManager.MapData.MapNodes.Count; i++)
+            for (int i = 0; i < ClientNetworkManager.MapInfo.MapNodes.Count; i++)
             {
-                if (ClientNetworkManager.MapData.MapNodes[i].Owner == 1)
+                if (ClientNetworkManager.MapInfo.MapNodes[i].Owner == 1)
                 {
-                    Player1Creation((float)ClientNetworkManager.MapData.MapNodes[i].XPos,
-                        (float)ClientNetworkManager.MapData.MapNodes[i].ZPos, i);
+                    Player1Creation((float)ClientNetworkManager.MapInfo.MapNodes[i].XPos,
+                        (float)ClientNetworkManager.MapInfo.MapNodes[i].ZPos, i);
                 }
-                else if (ClientNetworkManager.MapData.MapNodes[i].Owner == 2)
+                else if (ClientNetworkManager.MapInfo.MapNodes[i].Owner == 2)
                 {
-                    Player2Creation((float)ClientNetworkManager.MapData.MapNodes[i].XPos,
-                        (float)ClientNetworkManager.MapData.MapNodes[i].ZPos, i);
+                    Player2Creation((float)ClientNetworkManager.MapInfo.MapNodes[i].XPos,
+                        (float)ClientNetworkManager.MapInfo.MapNodes[i].ZPos, i);
                 }
                 else
                 {
-                    EmptyNodeCreation((float)ClientNetworkManager.MapData.MapNodes[i].XPos,
-                        (float)ClientNetworkManager.MapData.MapNodes[i].ZPos, i);
+                    EmptyNodeCreation((float)ClientNetworkManager.MapInfo.MapNodes[i].XPos,
+                        (float)ClientNetworkManager.MapInfo.MapNodes[i].ZPos, i);
                 }
             }
         }

@@ -67,6 +67,9 @@
     <Reference Include="Newtonsoft.Json">
       <HintPath>Assets\Plugins\Newtonsoft.Json.dll</HintPath>
     </Reference>
+    <Reference Include="EverChosenPacketLib">
+      <HintPath>Assets\Plugins\EverChosenPacketLib.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Script\00.StartScene\UIControllScript.cs" />

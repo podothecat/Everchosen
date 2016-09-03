@@ -38,6 +38,7 @@ public class TeamSettingScript : MonoBehaviour
         {
             _enemytribeid = 3;
         }
+        Debug.Log("TeamColor Mine : " + ClientNetworkManager.EnemyMatchingData.TeamColor);
 
         if (ClientNetworkManager.EnemyMatchingData.TeamColor == 2)
         {

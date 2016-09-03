@@ -11,6 +11,7 @@ namespace EverChosenServer
 
         private enum TeamColor
         {
+            None,
             BLUE,
             RED
         };

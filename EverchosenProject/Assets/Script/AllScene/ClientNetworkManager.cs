@@ -4,13 +4,14 @@ using System.Text;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using Debug = UnityEngine.Debug;
-
+using EverChosenPacketLib;
 //2.0만사용가능 3.5이후로는 호환이 안됨 유니티
 
 namespace Client
 {
     static class ClientNetworkManager
     {
+       
         public static Socket ClientSocket = null;
         private static Socket _serverSocket = null;
         private static readonly byte[] Buffer = new byte[1024];
@@ -18,16 +19,16 @@ namespace Client
         public static string ClientDeviceId;
         public static bool Connected = false;
 
-        public static ProfileData EnemyProfileData;
-        public static ProfileData ProfileData;
+        public static ProfileInfo EnemyProfileData;
+        public static ProfileInfo ProfileData;
         public static MatchingInfo EnemyMatchingData;
-        public static MapData MapData;
+        public static MapInfo MapInfo;
 
         //인게임
-        public static MoveData MyMoveData;
-        public static MoveData EnemyMoveData;
-        public static BuildingChangeData MyChangeData;
-        public static BuildingChangeData EnemyChangeData;
+        public static MoveUnitInfo MyMoveUnitInfo;
+        public static MoveUnitInfo EnemyMoveUnitInfo;
+        public static ChangeBuildingInfo MyInfo;
+        public static ChangeBuildingInfo EnemyInfo;
 
         public static string ReceiveMsg = null; //유니티쪽에서 사용할 메시지를 담을 변수
 
@@ -69,7 +70,6 @@ namespace Client
 
         }
 
-
         public static void SocketClose()
         {
             if (!ClientSocket.Connected) return;
@@ -87,11 +87,7 @@ namespace Client
             try
             {
                     var setData = data;
-                    Packet sample = new Packet
-                    {
-                        MsgName = msg,
-                        Data = JsonConvert.SerializeObject(setData)
-                    };
+                    Packet sample = new Packet(msg, JsonConvert.SerializeObject(setData));
                     var json = JsonConvert.SerializeObject(sample);
                     var sendData = Encoding.UTF8.GetBytes(json);
                     ClientSocket.BeginSend(sendData, 0, sendData.Length, SocketFlags.None, SendCallBack, ClientSocket);
@@ -105,7 +101,7 @@ namespace Client
 
         private static void SendCallBack(IAsyncResult ar)
         {
-            string message = (string) ar.AsyncState; //완료메시지 같은거 보내기..
+            string message = (string) ar.AsyncState; 
         }
 
         #endregion
@@ -148,7 +144,7 @@ namespace Client
                 {
                     //로딩씬
                     case "OnSucceedLogin":
-                        ProfileData = JsonConvert.DeserializeObject<ProfileData>(receiveData.Data);
+                        ProfileData = JsonConvert.DeserializeObject<ProfileInfo>(receiveData.Data);
                         break;
 
                     //메인메뉴
@@ -159,25 +155,25 @@ namespace Client
                         EnemyMatchingData = JsonConvert.DeserializeObject<MatchingInfo>(receiveData.Data);
                         break;
                     case "OnSucceedMatching2": //닉네임, 승패
-                        EnemyProfileData = JsonConvert.DeserializeObject<ProfileData>(receiveData.Data);
+                        EnemyProfileData = JsonConvert.DeserializeObject<ProfileInfo>(receiveData.Data);
                         Send("MapReq", null);
                         break;
                     case "MapInfo": //맵데이터 
-                        MapData = JsonConvert.DeserializeObject<MapData>(receiveData.Data);
+                        MapInfo = JsonConvert.DeserializeObject<MapInfo>(receiveData.Data);
                         break;
 
                     //ingame
                     case "MoveMine":
-                        MyMoveData = JsonConvert.DeserializeObject<MoveData>(receiveData.Data);
+                        MyMoveUnitInfo = JsonConvert.DeserializeObject<MoveUnitInfo>(receiveData.Data);
                         break;
                     case "MoveOppo":
-                        EnemyMoveData = JsonConvert.DeserializeObject<MoveData>(receiveData.Data);
+                        EnemyMoveUnitInfo = JsonConvert.DeserializeObject<MoveUnitInfo>(receiveData.Data);
                         break;
                     case "ChangeMine":
-                        MyChangeData = JsonConvert.DeserializeObject<BuildingChangeData>(receiveData.Data);
+                        MyInfo = JsonConvert.DeserializeObject<ChangeBuildingInfo>(receiveData.Data);
                         break;
                     case "ChangeOppo":
-                        EnemyChangeData = JsonConvert.DeserializeObject<BuildingChangeData>(receiveData.Data);
+                        EnemyInfo = JsonConvert.DeserializeObject<ChangeBuildingInfo>(receiveData.Data);
                         break;
                 }
                 if (_serverSocket.Connected == true)
@@ -194,65 +190,6 @@ namespace Client
         }
     }
 }
-
-#endregion
-
-        #region PacketClass
-    public class Packet
-    {
-        public string MsgName { get; set; }
-        public string Data { get; set; }
-    }
-
-    public class ProfileData
-    {
-        public string NickName { get; set; }
-        public int Wins { get; set; }
-        public int Loses { get; set; }
-    }
-
-    public class MatchingInfo
-    {
-        public string Tribe { get; set;}
-        public int Spell { get; set; }
-        public int TeamColor { get; set;}
-      
-        public MatchingInfo(string tribe, int spell, int teamColor)
-        {
-            this.Tribe = tribe;
-            this.Spell = spell;
-            this.TeamColor = teamColor;
-        }
-    }
-
-    public class MoveData
-    {
-        public int StartNode { get; set; }
-        public int EndNode { get; set; }
-        public int UnitCount { get; set; }
-    }
-
-    public class BuildingChangeData
-    {
-        public int Node { get; set; }
-        public int Kinds { get; set; }
-    }
-
-    public class MapData
-    {
-        public string MapName { get; set; }
-        public List<Building> MapNodes { get; set; }
-    }
-
-    public class Building
-    {
-        public int Owner { get; set; }
-        //public int Kinds { get; set; }
-        public double XPos { get; set; }
-        public double ZPos { get; set; }
-        //public int UnitCount { get; set; }
-    }
-
 
 #endregion
 

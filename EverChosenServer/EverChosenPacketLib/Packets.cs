@@ -74,6 +74,7 @@ namespace EverChosenPacketLib
     public class Unit
     {
         public Building Units { get; set; }
+        public int StartNode { get; set; }
         public int EndNode { get; set; }
     }
 

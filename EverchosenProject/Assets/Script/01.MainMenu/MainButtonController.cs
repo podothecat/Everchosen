@@ -3,6 +3,7 @@ using System.Collections;
 using Client;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using EverChosenPacketLib;
 
 public class MainButtonController : MonoBehaviour
 {
@@ -79,7 +80,7 @@ public class MainButtonController : MonoBehaviour
         //매칭 관련
         if (_queuePanel)
         {
-            if (ClientNetworkManager.EnemyMatchingData != null&&ClientNetworkManager.EnemyProfileData != null&&ClientNetworkManager.MapData!=null)
+            if (ClientNetworkManager.EnemyMatchingData != null&&ClientNetworkManager.EnemyProfileData != null&&ClientNetworkManager.MapInfo!=null)
             {
                 StartCoroutine(MatchStart(2));
             }

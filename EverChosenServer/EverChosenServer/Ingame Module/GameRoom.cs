@@ -99,6 +99,7 @@ namespace EverChosenServer.Ingame_Module
             var info = new Unit
             {
                 Units = unitNode,
+               // StartNode = startNode,
                 EndNode = endNode
             };
 
