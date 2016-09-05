@@ -13,11 +13,13 @@ namespace EverChosenServer.Ingame_Module
 
         public static void AddRoom(GameRoom room)
         {
+            Console.WriteLine("Ingame Manager : Add game room.");
             _rooms.Add(room);
         }
 
         public static void DelRoom(GameRoom room)
         {
+            Console.WriteLine("Ingame Manager : Del game room.");
             _rooms.Remove(room);
         }
     }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using EverChosenServer.Ingame_Module;
 
 namespace EverChosenServer
 {
@@ -9,12 +10,7 @@ namespace EverChosenServer
         // Clients wait matching.
         public static List<Client> Clients = new List<Client>();
 
-        private enum TeamColor
-        {
-            None,
-            BLUE,
-            RED
-        };
+        
 
         internal static Client MatchProcess(Client client)
         {
@@ -25,8 +21,8 @@ namespace EverChosenServer
                 var opponent = Clients[randomNumber.Next(0, Clients.Count)];
                 Clients.Remove(opponent);
                 
-                opponent.MatchingData.TeamColor = (int) TeamColor.BLUE;
-                client.MatchingData.TeamColor = (int) TeamColor.RED;
+                opponent.MatchingData.TeamColor = (int) GameRoom.TeamColor.BLUE;
+                client.MatchingData.TeamColor = (int) GameRoom.TeamColor.RED;
 
                 return opponent;
             }

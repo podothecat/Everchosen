@@ -66,10 +66,7 @@ namespace EverChosenServer
             client.IsIngame = true;
 
             var map = DatabaseManager.GetMapInfo();
-            var room = new GameRoom(oppoClient, client, map);
-            IngameManager.AddRoom(room);
-            client.InGameRequest += room.IngameCommand;
-            oppoClient.InGameRequest += room.IngameCommand;
+            IngameManager.AddRoom(new GameRoom(oppoClient, client, map));
         }
 
         /// <summary>

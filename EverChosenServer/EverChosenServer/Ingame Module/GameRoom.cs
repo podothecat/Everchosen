@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Timers;
 using MongoDB.Driver.Core.Operations;
 using Newtonsoft.Json;
 using EverChosenPacketLib;
+using MongoDB.Driver.Core.Events;
 
 namespace EverChosenServer.Ingame_Module
 {
@@ -24,17 +26,67 @@ namespace EverChosenServer.Ingame_Module
          * 7. Win or lose game.
         ----------------------------*/
 
+        public enum TeamColor
+        {
+            NONE,
+            BLUE,
+            RED
+        };
+        
         private Client _player1;
         private Client _player2;
         private MapInfo _map;
+        private Timer _checkConnection;
+        private Timer[] _timers;
+        private bool _gameProgress;
 
-        public GameRoom(Client a1, Client a2, MapInfo map)
+        public GameRoom(Client p1, Client p2, MapInfo map)
         {
-            _player1 = a1;
-            _player2 = a2;
+            p1.InGameRequest += IngameCommand;
+            p2.InGameRequest += IngameCommand;
+            _player1 = p1;
+            _player2 = p2;
+            
             _map = map;
+            _gameProgress = true;
+            _checkConnection = new Timer(10000);
+            _checkConnection.Elapsed += CheckConnection;
+            _checkConnection.Start();
+
+            _timers = new Timer[_map.MapNodes.Count];
+
             Console.WriteLine("Game room was constructed.");
             Console.WriteLine(_map.MapName);
+
+            ConscriptUnit(0, 1000.0);
+            ConscriptUnit(1, 1000.0);
+        }
+
+        public void CheckConnection(object s, ElapsedEventArgs e)
+        {
+            Console.Write("Check Connection : ");
+            if (_player1.Sock.Connected && _player2.Sock.Connected)
+            {
+                Console.WriteLine("Matching connection is smooth.");
+                _gameProgress = true;
+            }
+            else if (!_player1.Sock.Connected)
+            {
+                Console.WriteLine("Player 1 was Disconnected.");
+                _player2.BeginSend("Win", null);
+                _gameProgress = false;
+                Release();
+                IngameManager.DelRoom(this);
+                
+            }
+            else if (!_player2.Sock.Connected)
+            {
+                Console.WriteLine("Player 2 was Disconnected.");
+                _player1.BeginSend("Win", null);
+                _gameProgress = false;
+                Release();
+                IngameManager.DelRoom(this);
+            }
         }
 
         /// <summary>
@@ -88,10 +140,17 @@ namespace EverChosenServer.Ingame_Module
             }
         }
 
+        /// <summary>
+        /// Process to move units node to node.
+        /// </summary>
+        /// <param name="c"> Client who wants to move units. </param>
+        /// <param name="startNode"> Start node of building. </param>
+        /// <param name="endNode"> Destination node of building. </param>
+        /// <returns> Information of units. </returns>
         private Unit Move(Client c, int startNode, int endNode)
         {
             var units = _map.MapNodes[startNode].UnitCount /= 2;
-
+            Console.WriteLine(units);
             var unitNode = _map.MapNodes[startNode];
             unitNode.UnitCount = units;
             unitNode.Owner = c.MatchingData.TeamColor;
@@ -99,34 +158,85 @@ namespace EverChosenServer.Ingame_Module
             var info = new Unit
             {
                 Units = unitNode,
-               // StartNode = startNode,
+                StartNode = startNode,
                 EndNode = endNode
             };
-
+            
             return info;
         }
 
+        /// <summary>
+        /// Process to change building of player.
+        /// </summary>
+        /// <param name="idx"> Node index of building. </param>
+        /// <param name="kinds"> Unit kinds to change. </param>
+        /// <returns> Information of building. </returns>
         private Building ChangeUnit(int idx, int kinds)
         {
             _map.MapNodes[idx].Kinds = kinds;
             _map.MapNodes[idx].UnitCount = 0;
 
+            ConscriptUnit(idx, 2000);
             return _map.MapNodes[idx];
         }
-        
+
+        private void Fight(Building attacker, int fightBuildingIdx)
+        {
+            var defender = _map.MapNodes[fightBuildingIdx];
+
+            CheckSynastry(attacker.Kinds, defender.Kinds);
+        }
+
+        private void CheckSynastry(int kind, int kind2)
+        {
+            
+        }
+
+        /// <summary>
+        /// Process to conscript units in building. 
+        /// </summary>
+        /// <param name="buildingIdx"> Building index of map for conscription. </param>
+        /// <param name="conscriptionTime"> Unit spawn time frequency. </param>
+        private void ConscriptUnit(int buildingIdx, double conscriptionTime)
+        {
+            _timers[buildingIdx] = new Timer(conscriptionTime);
+
+            _timers[buildingIdx].Elapsed += (s, e) => OnCreateUnit(s, e, buildingIdx);
+            _timers[buildingIdx].Start();
+        }
+
+        /// <summary>
+        /// Timer function of conscription units.
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="e"></param>
+        /// <param name="buildingIdx"> Building index of map for conscription. </param>
+        private void OnCreateUnit(object source, ElapsedEventArgs e, int buildingIdx)
+        {
+            _map.MapNodes[buildingIdx].UnitCount += 1;
+            Console.WriteLine("Building " + buildingIdx + " : " + _map.MapNodes[buildingIdx].UnitCount);
+        }
+
+
         private void UseSpell()
         {
             // Need to discuss.
         }
 
-        private void Fight()
-        {
-            // Need to discuss.
-        }
+        
 
         private void Result()
         {
             
+        }
+
+        private void Release()
+        {
+            foreach (var t in _timers)
+            {
+                if(t.Enabled)
+                    t.Close();
+            }
         }
     }
 }

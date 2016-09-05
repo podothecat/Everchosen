@@ -35,6 +35,7 @@ namespace EverChosenServer
             _serverSocket.BeginAccept(OnAcceptCallback, _serverSocket);
 
             Console.WriteLine("Server On\n");
+            
             while (true)
             {                
                 Thread.Sleep(1);
