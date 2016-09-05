@@ -1,12 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Sockets;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
-using Newtonsoft.Json;
 
 namespace EverChosenServer
 {
@@ -27,8 +22,7 @@ namespace EverChosenServer
         private void Start()
         {
             DatabaseManager.Initialize();
-            var dd = 10;
-            var d = dd /= 2;
+            
             _serverSocket.Bind(new IPEndPoint(IPAddress.Any, 23000));
             _serverSocket.Listen(10);
 

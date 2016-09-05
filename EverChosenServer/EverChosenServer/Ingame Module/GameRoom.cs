@@ -1,13 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Timers;
-using MongoDB.Driver.Core.Operations;
 using Newtonsoft.Json;
 using EverChosenPacketLib;
-using MongoDB.Driver.Core.Events;
 
 namespace EverChosenServer.Ingame_Module
 {
@@ -39,7 +33,14 @@ namespace EverChosenServer.Ingame_Module
         private Timer _checkConnection;
         private Timer[] _timers;
         private bool _gameProgress;
+        private double[,] _synatry;
 
+        /// <summary>
+        /// Constructor of GameRoom class.
+        /// </summary>
+        /// <param name="p1"> Client of player 1. </param>
+        /// <param name="p2"> Client of player 2. </param>
+        /// <param name="map"> Map that both players will fight. </param>
         public GameRoom(Client p1, Client p2, MapInfo map)
         {
             p1.InGameRequest += IngameCommand;
@@ -55,6 +56,8 @@ namespace EverChosenServer.Ingame_Module
 
             _timers = new Timer[_map.MapNodes.Count];
 
+            _synatry = DatabaseManager.GetSynastry();
+
             Console.WriteLine("Game room was constructed.");
             Console.WriteLine(_map.MapName);
 
@@ -62,6 +65,11 @@ namespace EverChosenServer.Ingame_Module
             ConscriptUnit(1, 1000.0);
         }
 
+        /// <summary>
+        /// Timer function for check disconnection.
+        /// </summary>
+        /// <param name="s"></param>
+        /// <param name="e"></param>
         public void CheckConnection(object s, ElapsedEventArgs e)
         {
             Console.Write("Check Connection : ");
@@ -97,6 +105,13 @@ namespace EverChosenServer.Ingame_Module
         public void IngameCommand(object sender, Packet e)
         {
             var client = sender as Client;
+
+            if (client == null)
+            {
+                Console.Write("IngameCommand : Sender is null.");
+                return;
+            }
+
             Client target;
             
             if (client == _player1)
@@ -180,16 +195,23 @@ namespace EverChosenServer.Ingame_Module
             return _map.MapNodes[idx];
         }
 
+        /// <summary>
+        /// Process to fight between players' units.
+        /// </summary>
+        /// <param name="attacker"></param>
+        /// <param name="fightBuildingIdx"></param>
         private void Fight(Building attacker, int fightBuildingIdx)
         {
             var defender = _map.MapNodes[fightBuildingIdx];
 
-            CheckSynastry(attacker.Kinds, defender.Kinds);
-        }
+            while (attacker.UnitCount != 0 && defender.UnitCount != 0)
+            {
+                var result1 = attacker.UnitCount*_synatry[attacker.Kinds, defender.Kinds];
+                var result2 = defender.UnitCount*_synatry[defender.Kinds, attacker.Kinds];
 
-        private void CheckSynastry(int kind, int kind2)
-        {
-            
+                defender.UnitCount -= (int)Math.Round(result1);
+                attacker.UnitCount -= (int)Math.Round(result2);
+            }
         }
 
         /// <summary>
@@ -220,16 +242,19 @@ namespace EverChosenServer.Ingame_Module
 
         private void UseSpell()
         {
-            // Need to discuss.
+            // Need to design.
         }
 
         
 
         private void Result()
         {
-            
+            // Need to design.
         }
 
+        /// <summary>
+        /// Release timers.
+        /// </summary>
         private void Release()
         {
             foreach (var t in _timers)

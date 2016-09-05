@@ -11,18 +11,24 @@ namespace EverChosenServer.Ingame_Module
     {
         private static List<GameRoom> _rooms = new List<GameRoom>();
 
+        /// <summary>
+        /// Add game when matching was started.
+        /// </summary>
+        /// <param name="room"></param>
         public static void AddRoom(GameRoom room)
         {
             Console.WriteLine("Ingame Manager : Add game room.");
             _rooms.Add(room);
         }
 
+        /// <summary>
+        /// Delete game when matching was done or disconnection was occured.
+        /// </summary>
+        /// <param name="room"></param>
         public static void DelRoom(GameRoom room)
         {
             Console.WriteLine("Ingame Manager : Del game room.");
             _rooms.Remove(room);
         }
     }
-
-    
 }

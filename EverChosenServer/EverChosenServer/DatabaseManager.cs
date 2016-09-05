@@ -19,7 +19,17 @@ namespace EverChosenServer
         private static IMongoDatabase _database { get; set; }
         private static IMongoCollection<BsonDocument> _users { get; set; }
         private static IMongoCollection<BsonDocument> _maps { get; set; }
+        private static double[,] _synastry =
+            {
+                { 1.0, 1.2, 0.7, 0.2},
+                { 0.8, 1.0, 1.5, 0.4},
+                { 1.3, 0.5, 1.0, 1.7},
+                { 1.8, 1.6, 0.3, 1.0}
+            };
 
+        /// <summary>
+        /// Initialize information variables from database for game.
+        /// </summary>
         internal static void Initialize()
         {
             _mongoClient = new MongoClient("mongodb://52.78.94.58:23001");
@@ -98,6 +108,11 @@ namespace EverChosenServer
             var map = JsonConvert.DeserializeObject<MapInfo>(result[0].ToString());
 
             return map;
+        }
+
+        internal static double[,] GetSynastry()
+        {
+            return _synastry;
         }
     }
 }

@@ -19,11 +19,16 @@ namespace EverChosenServer
         public Socket Sock { get; set; }
         public ProfileInfo LoginData;
         public MatchingInfo MatchingData;
-
         public bool IsIngame;
 
         private readonly byte[] _buffer = new byte[1024];
         private string _uniqueId { get; set; }
+
+        /// <summary>
+        /// Ingame Event Handler.
+        /// When request is arrived, then call attached method.
+        /// </summary>
+        public event EventHandler<Packet> InGameRequest;
 
         /// <summary>
         /// Constructor
@@ -170,11 +175,5 @@ namespace EverChosenServer
                     break;
             }
         }
-
-        /// <summary>
-        /// Ingame Event Handler.
-        /// When request is arrived, then call attached method.
-        /// </summary>
-        public event EventHandler<Packet> InGameRequest;
     }
 }
