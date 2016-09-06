@@ -20,6 +20,7 @@ namespace EverChosenPacketLib
         }
     }
 
+
     /// <summary>
     /// Data for client information.
     /// </summary>
@@ -46,6 +47,7 @@ namespace EverChosenPacketLib
             TeamColor = teamColor;
         }
     }
+
 
     /// <summary>
     /// Map data from server to client.
