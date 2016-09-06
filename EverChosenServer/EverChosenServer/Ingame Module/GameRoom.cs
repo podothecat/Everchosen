@@ -33,7 +33,7 @@ namespace EverChosenServer.Ingame_Module
         private Timer _checkConnection;
         private Timer[] _timers;
         private bool _gameProgress;
-        private double[,] _synatry;
+        private double[,] _synastry;
 
         /// <summary>
         /// Constructor of GameRoom class.
@@ -56,7 +56,7 @@ namespace EverChosenServer.Ingame_Module
 
             _timers = new Timer[_map.MapNodes.Count];
 
-            _synatry = DatabaseManager.GetSynastry();
+            _synastry = DatabaseManager.GetSynastry();
 
             Console.WriteLine("Game room was constructed.");
             Console.WriteLine(_map.MapName);
@@ -147,6 +147,7 @@ namespace EverChosenServer.Ingame_Module
                     break;
 
                 case "Fight":
+
                     break;
 
                 default:
@@ -206,11 +207,11 @@ namespace EverChosenServer.Ingame_Module
 
             while (attacker.UnitCount != 0 && defender.UnitCount != 0)
             {
-                var result1 = attacker.UnitCount*_synatry[attacker.Kinds, defender.Kinds];
-                var result2 = defender.UnitCount*_synatry[defender.Kinds, attacker.Kinds];
+                var damageOfAtkr = attacker.UnitCount*_synastry[attacker.Kinds, defender.Kinds];
+                var damageOfDfnr = defender.UnitCount*_synastry[defender.Kinds, attacker.Kinds];
 
-                defender.UnitCount -= (int)Math.Round(result1);
-                attacker.UnitCount -= (int)Math.Round(result2);
+                defender.UnitCount -= (int)Math.Round(damageOfAtkr);
+                attacker.UnitCount -= (int)Math.Round(damageOfDfnr);
             }
         }
 

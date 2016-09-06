@@ -110,6 +110,10 @@ namespace EverChosenServer
             return map;
         }
 
+        /// <summary>
+        /// Get synastry of units.
+        /// </summary>
+        /// <returns> Synastry data. </returns>
         internal static double[,] GetSynastry()
         {
             return _synastry;
