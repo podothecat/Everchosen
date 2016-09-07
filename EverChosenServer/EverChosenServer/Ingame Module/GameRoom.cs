@@ -26,13 +26,19 @@ namespace EverChosenServer.Ingame_Module
             BLUE,
             RED
         };
+
+        public enum Outcome
+        {
+            DRAW,
+            WIN,
+            LOSE
+        };
         
         private Client _player1;
         private Client _player2;
         private MapInfo _map;
         private Timer _checkConnection;
         private Timer[] _timers;
-        private bool _gameProgress;
         private double[,] _synastry;
 
         /// <summary>
@@ -49,7 +55,6 @@ namespace EverChosenServer.Ingame_Module
             _player2 = p2;
             
             _map = map;
-            _gameProgress = true;
             _checkConnection = new Timer(10000);
             _checkConnection.Elapsed += CheckConnection;
             _checkConnection.Start();
@@ -76,13 +81,13 @@ namespace EverChosenServer.Ingame_Module
             if (_player1.Sock.Connected && _player2.Sock.Connected)
             {
                 Console.WriteLine("Matching connection is smooth.");
-                _gameProgress = true;
             }
             else if (!_player1.Sock.Connected)
             {
                 Console.WriteLine("Player 1 was Disconnected.");
-                _player2.BeginSend("Win", null);
-                _gameProgress = false;
+
+                // Need to define.
+                _player2.BeginSend(new OutcomeInfo { Outcome = (int)Outcome.WIN});
                 Release();
                 IngameManager.DelRoom(this);
                 
@@ -90,8 +95,9 @@ namespace EverChosenServer.Ingame_Module
             else if (!_player2.Sock.Connected)
             {
                 Console.WriteLine("Player 2 was Disconnected.");
-                _player1.BeginSend("Win", null);
-                _gameProgress = false;
+
+                // Need to define.
+                _player1.BeginSend(new OutcomeInfo { Outcome = (int)Outcome.WIN });
                 Release();
                 IngameManager.DelRoom(this);
             }
@@ -127,23 +133,23 @@ namespace EverChosenServer.Ingame_Module
             switch (e.MsgName)
             {
                 case "MapReq":
-                    client.BeginSend("MapInfo", _map);
+                    client.BeginSend(_map);
                     break;
 
                 case "Move":
                     var nodes = JsonConvert.DeserializeObject<MoveUnitInfo>(e.Data);
                     var moveInfo = Move(client, nodes.StartNode, nodes.EndNode);
 
-                    client.BeginSend(e.MsgName + "Mine", moveInfo);
-                    target.BeginSend(e.MsgName + "Oppo", moveInfo);
+                    client.BeginSend(moveInfo);
+                    target.BeginSend(moveInfo);
                     break;
 
                 case "Change":
                     var option = JsonConvert.DeserializeObject<ChangeBuildingInfo>(e.Data);
                     var buildinfo = ChangeUnit(option.Node, option.Kinds);
 
-                    client.BeginSend(e.MsgName + "Mine", buildinfo);
-                    target.BeginSend(e.MsgName + "Oppo", buildinfo);
+                    client.BeginSend(buildinfo);
+                    target.BeginSend(buildinfo);
                     break;
 
                 case "Fight":
@@ -245,9 +251,7 @@ namespace EverChosenServer.Ingame_Module
         {
             // Need to design.
         }
-
         
-
         private void Result()
         {
             // Need to design.

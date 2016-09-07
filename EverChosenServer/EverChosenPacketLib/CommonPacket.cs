@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Remoting.Messaging;
 using System.Text;
+using Newtonsoft.Json;
 
 namespace EverChosenPacketLib
 {
@@ -10,21 +12,30 @@ namespace EverChosenPacketLib
     /// </summary>
     public class Packet
     {
-        public string MsgName { get; set; }
-        public string Data { get; set; }
-
-        public Packet(string msgName, string data)
+        [JsonIgnore]
+        public string MsgName => GetType().Name;
+        [JsonIgnore]
+        public string Data 
         {
-            MsgName = msgName;
-            Data = data;
+            get { return JsonConvert.SerializeObject(this); }
+            set { throw new NotImplementedException(); }
         }
     }
 
+    /// <summary>
+    /// Profile data of self.
+    /// </summary>
+    public class MyProfileInfo : Packet
+    {
+        public string NickName { get; set; }
+        public int Wins { get; set; }
+        public int Loses { get; set; }
+    }
 
     /// <summary>
-    /// Data for client information.
+    /// Profile data of enemy.
     /// </summary>
-    public class ProfileInfo
+    public class EnemyProfileInfo : Packet
     {
         public string NickName { get; set; }
         public int Wins { get; set; }
@@ -34,7 +45,7 @@ namespace EverChosenPacketLib
     /// <summary>
     /// Data for matching clients.
     /// </summary>
-    public class MatchingInfo
+    public class MatchingInfo : Packet
     {
         public string Tribe { get; set; }
         public int Spell { get; set; }
@@ -48,53 +59,23 @@ namespace EverChosenPacketLib
         }
     }
 
-
     /// <summary>
-    /// Map data from server to client.
+    /// Nickname of client.
     /// </summary>
-    public class MapInfo
+    public class NickNameInfo : Packet
     {
-        public string MapName { get; set; }
-        public List<Building> MapNodes { get; set; }
+        public string NickName { get; set; }
     }
 
     /// <summary>
     /// Building data which is used in server and client.
     /// </summary>
-    public class Building
+    public class Building : Packet
     {
         public int Owner { get; set; }
         public int Kinds { get; set; }
         public double XPos { get; set; }
         public double ZPos { get; set; }
         public int UnitCount { get; set; }
-    }
-
-    /// <summary>
-    /// Unit data from server to client.
-    /// </summary>
-    public class Unit
-    {
-        public Building Units { get; set; }
-        public int StartNode { get; set; }
-        public int EndNode { get; set; }
-    }
-
-    /// <summary>
-    /// To move unit data from client to server.
-    /// </summary>
-    public class MoveUnitInfo
-    {
-        public int StartNode { get; set; }
-        public int EndNode { get; set; }
-    }
-
-    /// <summary>
-    /// To change building data from client to server.
-    /// </summary>
-    public class ChangeBuildingInfo
-    {
-        public int Node { get; set; }
-        public int Kinds { get; set; }
     }
 }

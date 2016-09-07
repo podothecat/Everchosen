@@ -43,7 +43,7 @@ namespace EverChosenServer
         /// </summary>
         /// <param name="clientUniqueId"></param>
         /// <returns> Client's profile </returns>
-        internal static ProfileInfo GetClientInfo(string clientUniqueId)
+        internal static MyProfileInfo GetClientInfo(string clientUniqueId)
         {
             // Get ProfileInfo from DB           
             var filter = Builders<BsonDocument>.Filter.Eq("_id", clientUniqueId);
@@ -64,7 +64,7 @@ namespace EverChosenServer
                 result.Add(newProfile);
             }
             
-            var userProfile = new ProfileInfo
+            var userProfile = new MyProfileInfo
             {
                 NickName = result[0]["nickname"].AsString,
                 Wins = int.Parse(result[0]["wins"].AsString),

@@ -6,6 +6,7 @@ using System.Runtime.Remoting.Channels;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using EverChosenPacketLib;
 using EverChosenServer.Ingame_Module;
 
 namespace EverChosenServer
@@ -55,13 +56,31 @@ namespace EverChosenServer
         {
             var oppoClient = MatchingManager.MatchProcess(client);
 
+            // There is no user waiting queue.
             if (oppoClient == null)
                 return;
             
-            oppoClient.BeginSend("OnSucceedMatching1", client.MatchingData);
-            client.BeginSend("OnSucceedMatching1", oppoClient.MatchingData);
-            oppoClient.BeginSend("OnSucceedMatching2", client.LoginData);
-            client.BeginSend("OnSucceedMatching2", oppoClient.LoginData);
+            var clientProfile = new EnemyProfileInfo
+            {
+                NickName = client.ProfileData.NickName,
+                Wins = client.ProfileData.Wins,
+                Loses = client.ProfileData.Loses
+            };
+
+            var opponentProfile = new EnemyProfileInfo
+            {
+                NickName = oppoClient.ProfileData.NickName,
+                Wins = oppoClient.ProfileData.Wins,
+                Loses = oppoClient.ProfileData.Loses
+            };
+
+            // Matching Data : Tribe, Spell, Team color
+            oppoClient.BeginSend(client.MatchingData);
+            client.BeginSend(oppoClient.MatchingData);
+
+            // Profile : Nickname, Wins, Loses
+            oppoClient.BeginSend(clientProfile);
+            client.BeginSend(opponentProfile);
             oppoClient.IsIngame = true;
             client.IsIngame = true;
 

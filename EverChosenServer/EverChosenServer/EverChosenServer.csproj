@@ -35,7 +35,7 @@
   <ItemGroup>
     <Reference Include="EverChosenPacketLib, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\EverChosenPacketLib.dll</HintPath>
+      <HintPath>..\EverChosenPacketLib\bin\Debug\EverChosenPacketLib.dll</HintPath>
     </Reference>
     <Reference Include="MongoDB.Bson, Version=2.2.4.26, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\MongoDB.Bson.2.2.4\lib\net45\MongoDB.Bson.dll</HintPath>
