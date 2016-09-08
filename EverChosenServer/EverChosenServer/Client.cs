@@ -61,7 +61,10 @@ namespace EverChosenServer
         public void BeginSend(Packet packet)
         {
             var sendBuf = new UTF8Encoding().GetBytes(
-                JsonConvert.SerializeObject(packet, Formatting.Indented));
+                JsonConvert.SerializeObject(packet, Formatting.Indented, new JsonSerializerSettings
+                {
+                    TypeNameHandling = TypeNameHandling.Objects
+                }));
 
             Sock.BeginSend(sendBuf, 0, sendBuf.Length, SocketFlags.None, OnSendCallback, Sock);
             Console.WriteLine("Send : " + packet.MsgName + ", " + packet.Data);
@@ -114,10 +117,13 @@ namespace EverChosenServer
 
             var packetStr = Encoding.UTF8.GetString(_buffer);
             
-            var receivedPacket = JsonConvert.DeserializeObject<Packet>(packetStr);
+            var receivedPacket = JsonConvert.DeserializeObject<Packet>(packetStr, new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.Objects
+            });
 
             // Refine received packet.
-            receivedPacket.Data = receivedPacket.Data.Replace("\\\"", "\"");
+            //receivedPacket.Data = receivedPacket.Data.Replace("\\\"", "\"");
             //x.Data = x.Data.Substring(0, x.Data.Length - 1);
 
             // To distinguish whether client is ingame or not.
@@ -151,6 +157,7 @@ namespace EverChosenServer
         /// <param name="req"></param>
         private void ProcessRequest(Packet req)
         {
+            Console.WriteLine(req.MsgName);
             switch (req.MsgName)
             {
                 case "DeviceIdInfo":

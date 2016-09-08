@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,6 +10,7 @@ using MongoDB.Bson;
 using MongoDB.Driver.Linq;
 using Newtonsoft.Json;
 using EverChosenPacketLib;
+using MongoDB.Driver.Core.Connections;
 
 namespace EverChosenServer
 {
@@ -32,10 +34,14 @@ namespace EverChosenServer
         /// </summary>
         internal static void Initialize()
         {
-            _mongoClient = new MongoClient("mongodb://52.78.94.58:23001");
-            _database = _mongoClient.GetDatabase("EverChosen");
-            _users = _database.GetCollection<BsonDocument>("users");
-            _maps = _database.GetCollection<BsonDocument>("maps_copy");
+            _mongoClient = new MongoClient(
+                ConfigurationManager.ConnectionStrings["DatabaseConnection"].ConnectionString);
+            _database = _mongoClient.GetDatabase(
+                ConfigurationManager.ConnectionStrings["DatabaseName"].ConnectionString);
+            _users = _database.GetCollection<BsonDocument>(
+                ConfigurationManager.ConnectionStrings["DBUsersCollection"].ConnectionString);
+            _maps = _database.GetCollection<BsonDocument>(
+                ConfigurationManager.ConnectionStrings["DBMapsCollections"].ConnectionString);
         }
 
         /// <summary>
