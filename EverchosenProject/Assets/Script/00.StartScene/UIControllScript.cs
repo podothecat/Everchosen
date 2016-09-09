@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using Client;
+using EverChosenPacketLib;
 using UnityEngine.SceneManagement;
 
 public class UIControllScript : MonoBehaviour
@@ -11,7 +12,7 @@ public class UIControllScript : MonoBehaviour
     void Awake()
     {
         ClientNetworkManager.ClientDeviceId = SystemInfo.deviceUniqueIdentifier;
-        ClientNetworkManager.ConnectToServer("219.254.17.66", 23000);//219.254.17.66 , 211.245.70.35
+        ClientNetworkManager.ConnectToServer("211.245.70.35", 23000);//219.254.17.66 , 211.245.70.35
     }
 
 	void Start () {
@@ -21,7 +22,10 @@ public class UIControllScript : MonoBehaviour
 	void Update () {
 	    if (ClientNetworkManager.Connected==true&&Send==false)//소켓이 연결되고 아이디를 받아올때 다음씬으로 넘어감 
 	    {
-            ClientNetworkManager.Send("OnLoginRequest", ClientNetworkManager.ClientDeviceId);
+	        ClientNetworkManager.Send(new LoginInfo
+	        {
+	            DeviceId = ClientNetworkManager.ClientDeviceId
+	        });
 	        Send = true;
 	    }
 

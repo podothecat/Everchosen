@@ -14,13 +14,13 @@ namespace Client
        
         public static Socket ClientSocket = null;
         private static Socket _serverSocket = null;
-        private static readonly byte[] Buffer = new byte[1024];
+        private static readonly byte[] Buffer = new byte[2048];
         
         public static string ClientDeviceId;
         public static bool Connected = false;
 
-        public static ProfileInfo EnemyProfileData;
-        public static ProfileInfo ProfileData;
+        public static EnemyProfileInfo EnemyProfileData;
+        public static MyProfileInfo ProfileData;
         public static MatchingInfo EnemyMatchingData;
         public static MapInfo MapInfo;
 
@@ -82,15 +82,17 @@ namespace Client
         #region Send Function
 
         //데이터 전송
-        public static void Send(string msg, object data)
+        public static void Send(Packet packet) 
         {
             try
             {
-                    var setData = data;
-                    Packet sample = new Packet(msg, JsonConvert.SerializeObject(setData));
-                    var json = JsonConvert.SerializeObject(sample);
-                    var sendData = Encoding.UTF8.GetBytes(json);
-                    ClientSocket.BeginSend(sendData, 0, sendData.Length, SocketFlags.None, SendCallBack, ClientSocket);
+                var json = JsonConvert.SerializeObject(packet, Formatting.Indented, new JsonSerializerSettings
+                {
+                    TypeNameHandling = TypeNameHandling.Objects
+                });
+                Debug.Log("--Send Packet--\n" + json);
+                var sendData = Encoding.UTF8.GetBytes(json);
+                ClientSocket.BeginSend(sendData, 0, sendData.Length, SocketFlags.None, SendCallBack, ClientSocket);
                 
             }
             catch (Exception e)
@@ -134,8 +136,11 @@ namespace Client
                     return;
                 }
                 var receiveJson = new UTF8Encoding().GetString(Buffer);
-                Debug.Log(receiveJson);
-                var receiveData = JsonConvert.DeserializeObject<Packet>(receiveJson);
+                Debug.Log("--Receive Packet--\n" + receiveJson);
+                var receiveData = JsonConvert.DeserializeObject<Packet>(receiveJson, new JsonSerializerSettings
+                {
+                    TypeNameHandling = TypeNameHandling.Objects
+                });
                 ReceiveMsg = receiveData.MsgName;
 
 
@@ -143,20 +148,21 @@ namespace Client
                 switch (ReceiveMsg)
                 {
                     //로딩씬
-                    case "OnSucceedLogin":
-                        ProfileData = JsonConvert.DeserializeObject<ProfileInfo>(receiveData.Data);
+                    case "MyProfileInfo":
+                        ProfileData = JsonConvert.DeserializeObject<MyProfileInfo>(receiveData.Data);
                         break;
 
                     //메인메뉴
-                    case "OnChangedProfile":
-                        ProfileData.NickName = JsonConvert.DeserializeObject<string>(receiveData.Data);
+                    case "NickNameInfo":
+                        var nickName = JsonConvert.DeserializeObject<NickNameInfo>(receiveData.Data);
+                        ProfileData.NickName = nickName.NickName;
                         break;
-                    case "OnSucceedMatching1": //종족 스펠
+                    case "MatchingInfo": //종족 스펠
                         EnemyMatchingData = JsonConvert.DeserializeObject<MatchingInfo>(receiveData.Data);
                         break;
-                    case "OnSucceedMatching2": //닉네임, 승패
-                        EnemyProfileData = JsonConvert.DeserializeObject<ProfileInfo>(receiveData.Data);
-                        Send("MapReq", null);
+                    case "EnemyProfileInfo": //닉네임, 승패
+                        EnemyProfileData = JsonConvert.DeserializeObject<EnemyProfileInfo>(receiveData.Data);
+                        Send(new MapReq { Req = "Map" } );
                         break;
                     case "MapInfo": //맵데이터 
                         MapInfo = JsonConvert.DeserializeObject<MapInfo>(receiveData.Data);

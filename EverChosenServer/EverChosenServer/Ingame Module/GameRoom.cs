@@ -82,6 +82,10 @@ namespace EverChosenServer.Ingame_Module
             {
                 Console.WriteLine("Matching connection is smooth.");
             }
+            else if (!_player1.Sock.Connected && !_player2.Sock.Connected)
+            {
+                Console.WriteLine("Both players were Disconnected.");
+            }
             else if (!_player1.Sock.Connected)
             {
                 Console.WriteLine("Player 1 was Disconnected.");
@@ -118,6 +122,7 @@ namespace EverChosenServer.Ingame_Module
                 return;
             }
 
+            // Opponent player of client who requested.
             Client target;
             
             if (client == _player1)
@@ -136,7 +141,7 @@ namespace EverChosenServer.Ingame_Module
                     client.BeginSend(_map);
                     break;
 
-                case "Move":
+                case "MoveUnitInfo":
                     var nodes = JsonConvert.DeserializeObject<MoveUnitInfo>(e.Data);
                     var moveInfo = Move(client, nodes.StartNode, nodes.EndNode);
 
@@ -144,7 +149,7 @@ namespace EverChosenServer.Ingame_Module
                     target.BeginSend(moveInfo);
                     break;
 
-                case "Change":
+                case "ChangeBuildingInfo":
                     var option = JsonConvert.DeserializeObject<ChangeBuildingInfo>(e.Data);
                     var buildinfo = ChangeUnit(option.Node, option.Kinds);
 
@@ -153,7 +158,6 @@ namespace EverChosenServer.Ingame_Module
                     break;
 
                 case "Fight":
-
                     break;
 
                 default:

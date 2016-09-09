@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using Client;
+using EverChosenPacketLib;
 
 public class BackUIScript : MonoBehaviour
 {
@@ -80,7 +81,7 @@ public class BackUIScript : MonoBehaviour
     //exit panel 오픈시 yes 버튼 함수
     public void ExitYesButtonInvoke() 
     {
-        ClientNetworkManager.Send("OnExitRequest", null);
+        ClientNetworkManager.Send(new ExitReq { Req = "Exit" });
         Debug.Log(ClientNetworkManager.ClientSocket.Connected);
         Application.Quit();
     }

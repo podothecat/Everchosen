@@ -128,15 +128,19 @@ namespace EverChosenServer
 
             // To distinguish whether client is ingame or not.
             if (!IsIngame)
+            {
+                Console.WriteLine("Request : Lobby [" + receivedPacket.MsgName + "], ["
+                                  + receivedPacket.Data + "]");
                 ProcessRequest(receivedPacket);
+            }
             else
             {
                 Console.WriteLine("Request : Ingame [" + receivedPacket.MsgName + "], ["
-                    + receivedPacket.Data + "]");
-                
+                                  + receivedPacket.Data + "]");
+
                 InGameRequest(this, receivedPacket);
             }
-                
+
             BeginReceive();
         }
 
@@ -157,13 +161,13 @@ namespace EverChosenServer
         /// <param name="req"></param>
         private void ProcessRequest(Packet req)
         {
-            Console.WriteLine(req.MsgName);
             switch (req.MsgName)
             {
-                case "DeviceIdInfo":
+                case "LoginInfo":
                     Console.WriteLine("Request : Login");
                     Console.WriteLine(req.Data);
-                    _uniqueId = JsonConvert.DeserializeObject<string>(req.Data);
+                    var uniqueId = JsonConvert.DeserializeObject<LoginInfo>(req.Data);
+                    _uniqueId = uniqueId.DeviceId;
                     ProfileData = DatabaseManager.GetClientInfo(_uniqueId);
                     Console.WriteLine(_uniqueId);
                     BeginSend(ProfileData);
@@ -171,8 +175,12 @@ namespace EverChosenServer
 
                 case "NickNameInfo":
                     Console.WriteLine("Request : Setting");
-                    var nickName = JsonConvert.DeserializeObject<string>(req.Data);
-                    ProfileData.NickName = DatabaseManager.SetClientInfo(nickName, _uniqueId);
+                    var nickName = JsonConvert.DeserializeObject<NickNameInfo>(req.Data);
+                    ProfileData.NickName = DatabaseManager.SetClientInfo(nickName.NickName, _uniqueId);
+                    BeginSend(new NickNameInfo
+                    {
+                        NickName = ProfileData.NickName
+                    });
                     break;
 
                 case "MatchingInfo":

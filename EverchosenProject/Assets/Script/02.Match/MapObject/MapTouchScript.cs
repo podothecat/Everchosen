@@ -159,14 +159,14 @@ public class MapTouchScript : MonoBehaviour
     {
         _sendLevelData.Node = node;
         _sendLevelData.Kinds = lv;
-        ClientNetworkManager.Send("Change", _sendLevelData);
+        ClientNetworkManager.Send(_sendLevelData);
     }
     
     void MoveDataset(int st, int end)
     {
         _ingamePacket.StartNode = st;
         _ingamePacket.EndNode = end;
-        ClientNetworkManager.Send("Move", _ingamePacket);
+        ClientNetworkManager.Send(_ingamePacket);
     }
 
     void BuildingSettingFunction(int node)//빌딩함수

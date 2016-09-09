@@ -125,8 +125,8 @@ public class MainButtonController : MonoBehaviour
     // Send to Server
     public void ServerQueue()
     {
-        MatchingInfo setData = new MatchingInfo(TribeSetManager.PData.TribeName, TribeSetManager.PData.Spell, 0);//마지막 파라미터는 teamflag 그냥 0 으로 보냄 
-        ClientNetworkManager.Send("OnMatchingRequest", setData);
+        var setData = new MatchingInfo(TribeSetManager.PData.TribeName, TribeSetManager.PData.Spell, 0);//마지막 파라미터는 teamflag 그냥 0 으로 보냄 
+        ClientNetworkManager.Send(setData);
     }
     // QueuePanel Ins
     public void QueueButton()
@@ -151,7 +151,7 @@ public class MainButtonController : MonoBehaviour
     //QueuePanel's CancelButton
     public void CancelButtonInvoke()
     {
-        ClientNetworkManager.Send("OnMatchingCancelRequest", " ");
+        ClientNetworkManager.Send(new QueueCancelReq { Req = "Cancel"} );
         Destroy(_queuePanel);
         _gameStartButton.GetComponent<Button>().interactable = true;
 
@@ -239,7 +239,10 @@ public class MainButtonController : MonoBehaviour
         }
         else
         {
-            ClientNetworkManager.Send("OnNickChangeRequest", _profileInputFieldText.text);
+            ClientNetworkManager.Send(new NickNameInfo
+            {
+                NickName = _profileInputFieldText.text
+            } );
             _profileNameInputField.interactable = false;
             _profileSetButton.GetComponentInChildren<Text>().text = "변경";
         }

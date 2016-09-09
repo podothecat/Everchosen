@@ -6,7 +6,6 @@ using Newtonsoft.Json;
 
 namespace EverChosenPacketLib
 {
-    
     /// <summary>
     /// Map data from server to client.
     /// </summary>

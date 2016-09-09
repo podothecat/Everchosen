@@ -23,4 +23,42 @@ namespace EverChosenPacketLib
         public int Node { get; set; }
         public int Kinds { get; set; }
     }
+
+    /// <summary>
+    /// To fight between units.
+    /// </summary>
+    public class FightInfo : Packet
+    {
+        public Building Units { get; set; }
+        public int FightBuildingIdx { get; set; }
+    }
+
+    /// <summary>
+    /// To use spell to building or units.
+    /// </summary>
+    public class SpellInfo : Packet
+    {
+        public int Spell { get; set; }
+        public int SpellBuildingIdx { get; set; }
+    }
+
+    public class LoginInfo : Packet
+    {
+        public string DeviceId { get; set; }
+    }
+
+    public class MapReq : Packet
+    {
+        public string Req { get; set; }
+    }
+
+    public class ExitReq : Packet
+    {
+        public string Req { get; set; }
+    }
+
+    public class QueueCancelReq : Packet
+    {
+        public string Req { get; set; }
+    }
 }

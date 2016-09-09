@@ -23,7 +23,7 @@ public class GameControllScript : MonoBehaviour
     public GameObject ParentObject;
 
     private MatchingInfo _enemyViewPanelSetdata;
-    private ProfileInfo _enemyViewPanelProfileData;
+    private EnemyProfileInfo _enemyViewPanelProfileData;
     
     public List<GameObject> NodePosition;
     public List<GameObject> BuildingNode;
