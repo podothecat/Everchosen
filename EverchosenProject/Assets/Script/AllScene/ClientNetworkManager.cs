@@ -29,6 +29,7 @@ namespace Client
         public static UnitInfo EnemyMoveUnitInfo;
         public static ChangeBuildingInfo MyInfo;
         public static ChangeBuildingInfo EnemyInfo;
+        public static ChangeBuildingInfo BuildingInfo;
 
         public static string ReceiveMsg = null; //유니티쪽에서 사용할 메시지를 담을 변수
 
@@ -177,14 +178,18 @@ namespace Client
                         else if (units.Units.Owner == 2)
                             MyMoveUnitInfo = units;
                         break;
+                    case "ChangeBuildingInfo":
+                        var building = JsonConvert.DeserializeObject<ChangeBuildingInfo>(receiveData.Data);
+                        BuildingInfo = building;
+                        break;
                     case "MoveOppo":
                         //EnemyMoveUnitInfo = JsonConvert.DeserializeObject<MoveUnitInfo>(receiveData.Data);
                         break;
                     case "ChangeMine":
-                        MyInfo = JsonConvert.DeserializeObject<ChangeBuildingInfo>(receiveData.Data);
+                        //MyInfo = JsonConvert.DeserializeObject<ChangeBuildingInfo>(receiveData.Data);
                         break;
                     case "ChangeOppo":
-                        EnemyInfo = JsonConvert.DeserializeObject<ChangeBuildingInfo>(receiveData.Data);
+                        //EnemyInfo = JsonConvert.DeserializeObject<ChangeBuildingInfo>(receiveData.Data);
                         break;
                 }
                 if (_serverSocket.Connected == true)

@@ -196,13 +196,21 @@ namespace EverChosenServer.Ingame_Module
         /// <param name="idx"> Node index of building. </param>
         /// <param name="kinds"> Unit kinds to change. </param>
         /// <returns> Information of building. </returns>
-        private Building ChangeUnit(int idx, int kinds)
+        private ChangeBuildingInfo ChangeUnit(int idx, int kinds)
         {
             _map.MapNodes[idx].Kinds = kinds;
             _map.MapNodes[idx].UnitCount = 0;
 
             ConscriptUnit(idx, 2000);
-            return _map.MapNodes[idx];
+            var building = new ChangeBuildingInfo
+            {
+                Node = idx,
+                Kinds = kinds,
+                UnitCount = 0
+            };
+
+            return building;
+            //return _map.MapNodes[idx];
         }
 
         /// <summary>

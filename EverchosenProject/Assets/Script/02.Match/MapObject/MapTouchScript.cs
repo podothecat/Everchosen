@@ -159,6 +159,7 @@ public class MapTouchScript : MonoBehaviour
     {
         _sendLevelData.Node = node;
         _sendLevelData.Kinds = lv;
+        _sendLevelData.UnitCount = 0;
         ClientNetworkManager.Send(_sendLevelData);
     }
     

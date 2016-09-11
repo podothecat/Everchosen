@@ -22,6 +22,7 @@ namespace EverChosenPacketLib
     {
         public int Node { get; set; }
         public int Kinds { get; set; }
+        public int UnitCount { get; set; }
     }
 
     /// <summary>

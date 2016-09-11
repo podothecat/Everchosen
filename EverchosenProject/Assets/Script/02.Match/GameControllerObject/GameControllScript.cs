@@ -174,15 +174,20 @@ public class GameControllScript : MonoBehaviour
         }
 
         //빌딩 변경
-        if (ClientNetworkManager.EnemyInfo != null)
+        //if (ClientNetworkManager.EnemyInfo != null)
+        //{
+        //    BuildingNode[ClientNetworkManager.EnemyInfo.Node].GetComponent<BuildingControllScript>().BuildingDataSet(ClientNetworkManager.EnemyInfo.Kinds);
+        //    ClientNetworkManager.EnemyInfo = null;
+        //}
+        //if (ClientNetworkManager.MyInfo != null)
+        //{
+        //    BuildingNode[ClientNetworkManager.MyInfo.Node].GetComponent<BuildingControllScript>().BuildingDataSet(ClientNetworkManager.MyInfo.Kinds);
+        //    ClientNetworkManager.MyInfo = null;
+        //}
+
+        if (ClientNetworkManager.BuildingInfo != null)
         {
-            BuildingNode[ClientNetworkManager.EnemyInfo.Node].GetComponent<BuildingControllScript>().BuildingDataSet(ClientNetworkManager.EnemyInfo.Kinds);
-            ClientNetworkManager.EnemyInfo = null;
-        }
-        if (ClientNetworkManager.MyInfo != null)
-        {
-            BuildingNode[ClientNetworkManager.MyInfo.Node].GetComponent<BuildingControllScript>().BuildingDataSet(ClientNetworkManager.MyInfo.Kinds);
-            ClientNetworkManager.MyInfo = null;
+            BuildingNode[ClientNetworkManager.BuildingInfo.Node].GetComponent<BuildingControllScript>().BuildingDataSet(ClientNetworkManager.BuildingInfo.Kinds);
         }
 
         //건물인원수
