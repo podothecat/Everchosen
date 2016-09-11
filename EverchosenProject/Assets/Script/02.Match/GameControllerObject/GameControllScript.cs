@@ -161,13 +161,15 @@ public class GameControllScript : MonoBehaviour
     {
         if (ClientNetworkManager.EnemyMoveUnitInfo != null)//적유닛이동
         {
-            UnitMove(ClientNetworkManager.EnemyMoveUnitInfo.StartNode, ClientNetworkManager.EnemyMoveUnitInfo.EndNode);
+            //UnitMove(ClientNetworkManager.EnemyMoveUnitInfo.StartNode, ClientNetworkManager.EnemyMoveUnitInfo.EndNode);
+            UnitMove(ClientNetworkManager.EnemyMoveUnitInfo);
             ClientNetworkManager.EnemyMoveUnitInfo = null;
         }
 
         if (ClientNetworkManager.MyMoveUnitInfo != null)//내유닛이동 
         {
-            UnitMove(ClientNetworkManager.MyMoveUnitInfo.StartNode, ClientNetworkManager.MyMoveUnitInfo.EndNode);//카운트도 원래 같이보냇었음
+            //UnitMove(ClientNetworkManager.MyMoveUnitInfo.StartNode, ClientNetworkManager.MyMoveUnitInfo.EndNode);//카운트도 원래 같이보냇었음
+            UnitMove(ClientNetworkManager.MyMoveUnitInfo);
             ClientNetworkManager.MyMoveUnitInfo = null;
         }
 
@@ -187,9 +189,10 @@ public class GameControllScript : MonoBehaviour
 
     }
     //유닛이동관련
-    private void UnitMove(int stNode, int endNode)
+    private void UnitMove(UnitInfo unit)
     {
-        BuildingNode[stNode].GetComponent<BuildingControllScript>().UnitSpawn(BuildingNode[endNode].transform.position);
+        BuildingNode[unit.StartNode].GetComponent<BuildingControllScript>()
+            .UnitSpawn(BuildingNode[unit.EndNode].transform.position, unit.Units.UnitCount);
     }
     #endregion
 

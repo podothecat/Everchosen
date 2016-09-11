@@ -14,7 +14,7 @@ namespace EverChosenPacketLib
         public int StartNode { get; set; }
         public int EndNode { get; set; }
     }
-
+    
     /// <summary>
     /// To change building data from client to server.
     /// </summary>
@@ -42,21 +42,33 @@ namespace EverChosenPacketLib
         public int SpellBuildingIdx { get; set; }
     }
 
+    /// <summary>
+    /// To login the game.
+    /// </summary>
     public class LoginInfo : Packet
     {
         public string DeviceId { get; set; }
     }
 
+    /// <summary>
+    /// To set the map when in match.
+    /// </summary>
     public class MapReq : Packet
     {
         public string Req { get; set; }
     }
 
+    /// <summary>
+    /// To exit the game.
+    /// </summary>
     public class ExitReq : Packet
     {
         public string Req { get; set; }
     }
 
+    /// <summary>
+    /// To cancel waiting the match.
+    /// </summary>
     public class QueueCancelReq : Packet
     {
         public string Req { get; set; }

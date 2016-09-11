@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+using EverChosenPacketLib;
 using UnityEngine.UI;
 
 
@@ -71,10 +72,8 @@ public class BuildingControllScript : MonoBehaviour
  
     #region Functions to related Unit
     //Unit Creation Function
-    public void UnitSpawn(Vector3 des) //유닛 생성
+    public void UnitSpawn(Vector3 des, int unitcount)
     {
-        var unitcount = Random.Range(0, 20);//테스트겸 임의로 설정
-        Debug.Log(unitcount);
         UnitTroopIns(des, unitcount);
         BuildingUnitNumbersetText();
     }
@@ -134,11 +133,13 @@ public class BuildingControllScript : MonoBehaviour
             _unitCreateCounter = 0;
         }
     }
+
     //Building Unit Number panel Text set
     public void BuildingUnitNumbersetText() // 유닛number text생성
     {
         _buildingUnitNumberPanel.GetComponentInChildren<Text>().text = "" + UnitNumber;
     }
+
     //Building UnitNumberPanel
     void BuildingUnitNumberViewPanelIns()
     {

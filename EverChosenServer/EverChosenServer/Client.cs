@@ -41,20 +41,7 @@ namespace EverChosenServer
             Sock = socket;
             IsIngame = false;
         }
-
-        /// <summary>
-        /// Send data to client.
-        /// </summary>
-        //public void BeginSend(string msg, dynamic data)
-        //{
-        //    var p = new Packet(msg, JsonConvert.SerializeObject(data));
-        //    var sendBuf = new UTF8Encoding().GetBytes(
-        //        JsonConvert.SerializeObject(p, Formatting.Indented));
-
-        //    Sock.BeginSend(sendBuf, 0, sendBuf.Length, SocketFlags.None, OnSendCallback, Sock);
-        //    Console.WriteLine("Send : " + p.MsgName + ", " + p.Data);
-        //}
-
+        
         /// <summary>
         /// Send data to client.
         /// </summary>
@@ -189,12 +176,12 @@ namespace EverChosenServer
                     GameManager.MatchingRequest(this);
                     break;
 
-                case "QueueCancel":
+                case "QueueCancelReq":
                     Console.WriteLine("Request : Matching Cancel");
                     GameManager.MatchingCancelRequest(this);
                     break;
 
-                case "ExitProgram":
+                case "ExitProgramReq":
                     Console.WriteLine("Request : Exit");
                     Close();
                     break;

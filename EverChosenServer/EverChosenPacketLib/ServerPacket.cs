@@ -18,7 +18,7 @@ namespace EverChosenPacketLib
     /// <summary>
     /// Unit data from server to client.
     /// </summary>
-    public class Unit : Packet
+    public class UnitInfo : Packet
     {
         public Building Units { get; set; }
         public int StartNode { get; set; }

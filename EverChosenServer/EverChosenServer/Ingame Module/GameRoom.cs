@@ -85,12 +85,12 @@ namespace EverChosenServer.Ingame_Module
             else if (!_player1.Sock.Connected && !_player2.Sock.Connected)
             {
                 Console.WriteLine("Both players were Disconnected.");
+                Release();
             }
             else if (!_player1.Sock.Connected)
             {
                 Console.WriteLine("Player 1 was Disconnected.");
-
-                // Need to define.
+                
                 _player2.BeginSend(new OutcomeInfo { Outcome = (int)Outcome.WIN});
                 Release();
                 IngameManager.DelRoom(this);
@@ -99,8 +99,7 @@ namespace EverChosenServer.Ingame_Module
             else if (!_player2.Sock.Connected)
             {
                 Console.WriteLine("Player 2 was Disconnected.");
-
-                // Need to define.
+                
                 _player1.BeginSend(new OutcomeInfo { Outcome = (int)Outcome.WIN });
                 Release();
                 IngameManager.DelRoom(this);
@@ -173,7 +172,7 @@ namespace EverChosenServer.Ingame_Module
         /// <param name="startNode"> Start node of building. </param>
         /// <param name="endNode"> Destination node of building. </param>
         /// <returns> Information of units. </returns>
-        private Unit Move(Client c, int startNode, int endNode)
+        private UnitInfo Move(Client c, int startNode, int endNode)
         {
             var units = _map.MapNodes[startNode].UnitCount /= 2;
             Console.WriteLine(units);
@@ -181,7 +180,7 @@ namespace EverChosenServer.Ingame_Module
             unitNode.UnitCount = units;
             unitNode.Owner = c.MatchingData.TeamColor;
 
-            var info = new Unit
+            var info = new UnitInfo
             {
                 Units = unitNode,
                 StartNode = startNode,
@@ -266,6 +265,7 @@ namespace EverChosenServer.Ingame_Module
         /// </summary>
         private void Release()
         {
+            Console.WriteLine("Release Timer of each building.");
             foreach (var t in _timers)
             {
                 if(t.Enabled)

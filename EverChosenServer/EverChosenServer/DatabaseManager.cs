@@ -71,7 +71,7 @@ namespace EverChosenServer
             }
             
             var userProfile = new MyProfileInfo
-            {
+            { 
                 NickName = result[0]["nickname"].AsString,
                 Wins = int.Parse(result[0]["wins"].AsString),
                 Loses = int.Parse(result[0]["loses"].AsString)

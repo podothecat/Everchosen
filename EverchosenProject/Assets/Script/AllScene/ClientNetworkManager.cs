@@ -14,7 +14,7 @@ namespace Client
        
         public static Socket ClientSocket = null;
         private static Socket _serverSocket = null;
-        private static readonly byte[] Buffer = new byte[2048];
+        private static readonly byte[] Buffer = new byte[4096];
         
         public static string ClientDeviceId;
         public static bool Connected = false;
@@ -25,8 +25,8 @@ namespace Client
         public static MapInfo MapInfo;
 
         //인게임
-        public static MoveUnitInfo MyMoveUnitInfo;
-        public static MoveUnitInfo EnemyMoveUnitInfo;
+        public static UnitInfo MyMoveUnitInfo;
+        public static UnitInfo EnemyMoveUnitInfo;
         public static ChangeBuildingInfo MyInfo;
         public static ChangeBuildingInfo EnemyInfo;
 
@@ -142,8 +142,7 @@ namespace Client
                     TypeNameHandling = TypeNameHandling.Objects
                 });
                 ReceiveMsg = receiveData.MsgName;
-
-
+                Debug.Log(ReceiveMsg);
 
                 switch (ReceiveMsg)
                 {
@@ -169,11 +168,17 @@ namespace Client
                         break;
 
                     //ingame
-                    case "MoveMine":
-                        MyMoveUnitInfo = JsonConvert.DeserializeObject<MoveUnitInfo>(receiveData.Data);
+                    case "UnitInfo":
+                        Debug.Log(receiveData.Data);
+                        var units = JsonConvert.DeserializeObject<UnitInfo>(receiveData.Data);
+                        
+                        if (units.Units.Owner == 1)
+                            EnemyMoveUnitInfo = units;
+                        else if (units.Units.Owner == 2)
+                            MyMoveUnitInfo = units;
                         break;
                     case "MoveOppo":
-                        EnemyMoveUnitInfo = JsonConvert.DeserializeObject<MoveUnitInfo>(receiveData.Data);
+                        //EnemyMoveUnitInfo = JsonConvert.DeserializeObject<MoveUnitInfo>(receiveData.Data);
                         break;
                     case "ChangeMine":
                         MyInfo = JsonConvert.DeserializeObject<ChangeBuildingInfo>(receiveData.Data);
