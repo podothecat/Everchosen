@@ -74,4 +74,12 @@ namespace EverChosenPacketLib
     {
         public string Req { get; set; }
     }
+
+    /// <summary>
+    /// To start ingame.
+    /// </summary>
+    public class StartGameReq : Packet
+    {
+        public string Req { get; set; }
+    }
 }

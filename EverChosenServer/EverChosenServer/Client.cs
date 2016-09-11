@@ -22,6 +22,7 @@ namespace EverChosenServer
         public MyProfileInfo ProfileData;
         public MatchingInfo MatchingData;
         public bool IsIngame;
+        public bool IsReadyToBattle;
 
         private readonly byte[] _buffer = new byte[1024];
         private string _uniqueId { get; set; }

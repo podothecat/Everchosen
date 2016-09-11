@@ -30,6 +30,7 @@ namespace Client
         public static ChangeBuildingInfo MyInfo;
         public static ChangeBuildingInfo EnemyInfo;
         public static ChangeBuildingInfo BuildingInfo;
+        public static CreateUnitInfo IncrementeUnitInfo;
 
         public static string ReceiveMsg = null; //유니티쪽에서 사용할 메시지를 담을 변수
 
@@ -142,8 +143,7 @@ namespace Client
                 {
                     TypeNameHandling = TypeNameHandling.Objects
                 });
-                ReceiveMsg = receiveData.MsgName;
-                Debug.Log(ReceiveMsg);
+                ReceiveMsg = receiveData.MsgName;                
 
                 switch (ReceiveMsg)
                 {
@@ -181,6 +181,11 @@ namespace Client
                     case "ChangeBuildingInfo":
                         var building = JsonConvert.DeserializeObject<ChangeBuildingInfo>(receiveData.Data);
                         BuildingInfo = building;
+                        break;
+                    case "CreateUnitInfo" :
+                        Debug.Log("CreateUnitInfo Message.");
+                        var createInfo = JsonConvert.DeserializeObject<CreateUnitInfo>(receiveData.Data);
+                        IncrementeUnitInfo = createInfo;
                         break;
                     case "MoveOppo":
                         //EnemyMoveUnitInfo = JsonConvert.DeserializeObject<MoveUnitInfo>(receiveData.Data);

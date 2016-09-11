@@ -66,7 +66,7 @@ public class BuildingControllScript : MonoBehaviour
     
     void Update()
     {
-            BuildingUnitCreateCounterFunction();
+            //BuildingUnitCreateCounterFunction();
     }
    
  
@@ -123,15 +123,21 @@ public class BuildingControllScript : MonoBehaviour
     }
 
     //Building Unit Number Counter
-    public void BuildingUnitCreateCounterFunction()//유닛 생성 카운트 함수
+    //public void BuildingUnitCreateCounterFunction()//유닛 생성 카운트 함수
+    //{
+    //    _unitCreateCounter += Time.deltaTime;
+    //    if (_unitCreateCounter > _delayCreateCount)
+    //    {
+    //        UnitNumber++;
+    //        BuildingUnitNumbersetText();
+    //        _unitCreateCounter = 0;
+    //    }
+    //}
+
+    public void BuildingUnitCreateCounterFunction(int increment)
     {
-        _unitCreateCounter += Time.deltaTime;
-        if (_unitCreateCounter > _delayCreateCount)
-        {
-            UnitNumber++;
-            BuildingUnitNumbersetText();
-            _unitCreateCounter = 0;
-        }
+        UnitNumber = increment;
+        BuildingUnitNumbersetText();
     }
 
     //Building Unit Number panel Text set

@@ -66,8 +66,7 @@ namespace EverChosenServer.Ingame_Module
             Console.WriteLine("Game room was constructed.");
             Console.WriteLine(_map.MapName);
 
-            ConscriptUnit(0, 1000.0);
-            ConscriptUnit(1, 1000.0);
+          
         }
 
         /// <summary>
@@ -138,6 +137,15 @@ namespace EverChosenServer.Ingame_Module
             {
                 case "MapReq":
                     client.BeginSend(_map);
+                    break;
+
+                case "StartGameReq":
+                    client.IsReadyToBattle = true;
+                    if (client.IsReadyToBattle && target.IsReadyToBattle)
+                    {
+                        ConscriptUnit(0, 1000);
+                        ConscriptUnit(1, 1000);
+                    }
                     break;
 
                 case "MoveUnitInfo":
@@ -255,6 +263,15 @@ namespace EverChosenServer.Ingame_Module
         {
             _map.MapNodes[buildingIdx].UnitCount += 1;
             Console.WriteLine("Building " + buildingIdx + " : " + _map.MapNodes[buildingIdx].UnitCount);
+
+            var createUnit = new CreateUnitInfo
+            {
+                Node = buildingIdx,
+                Increment = _map.MapNodes[buildingIdx].UnitCount
+            };
+
+            _player1.BeginSend(createUnit);
+            _player2.BeginSend(createUnit);
         }
 
 

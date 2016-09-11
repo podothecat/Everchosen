@@ -32,4 +32,13 @@ namespace EverChosenPacketLib
     {
         public int Outcome { get; set; }
     }
+
+    /// <summary>
+    /// Increment data of unit count in building.
+    /// </summary>
+    public class CreateUnitInfo : Packet
+    {
+        public int Node { get; set; }
+        public int Increment { get; set; }
+    }
 }

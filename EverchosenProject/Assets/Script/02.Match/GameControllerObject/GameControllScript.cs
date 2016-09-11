@@ -172,7 +172,7 @@ public class GameControllScript : MonoBehaviour
             UnitMove(ClientNetworkManager.MyMoveUnitInfo);
             ClientNetworkManager.MyMoveUnitInfo = null;
         }
-
+        
         //빌딩 변경
         //if (ClientNetworkManager.EnemyInfo != null)
         //{
@@ -187,11 +187,20 @@ public class GameControllScript : MonoBehaviour
 
         if (ClientNetworkManager.BuildingInfo != null)
         {
-            BuildingNode[ClientNetworkManager.BuildingInfo.Node].GetComponent<BuildingControllScript>().BuildingDataSet(ClientNetworkManager.BuildingInfo.Kinds);
+            BuildingNode[ClientNetworkManager.BuildingInfo.Node]
+                .GetComponent<BuildingControllScript>()
+                .BuildingDataSet(ClientNetworkManager.BuildingInfo.Kinds);
+            ClientNetworkManager.BuildingInfo = null;
         }
 
         //건물인원수
-
+        if (ClientNetworkManager.IncrementeUnitInfo != null)
+        {
+            BuildingNode[ClientNetworkManager.IncrementeUnitInfo.Node]
+                .GetComponent<BuildingControllScript>()
+                .BuildingUnitCreateCounterFunction(ClientNetworkManager.IncrementeUnitInfo.Increment);
+            ClientNetworkManager.IncrementeUnitInfo = null;
+        }
     }
     //유닛이동관련
     private void UnitMove(UnitInfo unit)
@@ -244,6 +253,8 @@ public class GameControllScript : MonoBehaviour
                         (float)ClientNetworkManager.MapInfo.MapNodes[i].ZPos, i);
                 }
             }
+
+            ClientNetworkManager.Send(new StartGameReq { Req = "Start" });
         }
         else
         {
