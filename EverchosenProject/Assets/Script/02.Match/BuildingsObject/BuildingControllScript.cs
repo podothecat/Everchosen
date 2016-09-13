@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+using Client;
 using EverChosenPacketLib;
 using UnityEngine.UI;
 
@@ -116,7 +117,7 @@ public class BuildingControllScript : MonoBehaviour
             _unit.GetComponentInChildren<SpriteRenderer>().sprite = UnitSprite;
             if (_unitTroop.transform.position.x > endDes.x)
             {
-                Debug.Log("hihihi");
+               
                 _unit.GetComponentInChildren<SpriteRenderer>().flipX = true;
             }
         }
@@ -199,6 +200,7 @@ public class BuildingControllScript : MonoBehaviour
         }
         
         UnitPower = _buildingDataList[buildingId].UnitPower;
+        Debug.Log(_buildingDataList[buildingId].SpawnUnitId);
         _unitSpawnId = _buildingDataList[buildingId].SpawnUnitId;
         UnitKind = _buildingDataList[buildingId].UnitKind;
         _unitCreateCounter = 0;
@@ -207,7 +209,7 @@ public class BuildingControllScript : MonoBehaviour
     }
 
     //Destroy building
-    public void DestroythisBuilding() //침공당해서 숫자가 적어졌을경우 모두파괴
+    public void DestroythisBuilding(int unitcount) //침공당해서 숫자가 적어졌을경우 모두파괴
     {
         GameObject buildingPrefab;
         GameObject building;
@@ -226,6 +228,8 @@ public class BuildingControllScript : MonoBehaviour
                     .GetComponent<BuildingControllScript>().NodeNumber = NodeNumber;
                 _gameController.GetComponent<GameControllScript>().BuildingNode[NodeNumber]
                     .GetComponent<BuildingControllScript>().PlayerTeam = "Red";
+                _gameController.GetComponent<GameControllScript>().BuildingNode[NodeNumber]
+                    .GetComponent<BuildingControllScript>().UnitNumber = unitcount;
                 break;
             case "Player2building":
                 buildingPrefab = Resources.Load<GameObject>("Player1building");
@@ -240,6 +244,8 @@ public class BuildingControllScript : MonoBehaviour
                   .GetComponent<BuildingControllScript>().NodeNumber = NodeNumber;
                 _gameController.GetComponent<GameControllScript>().BuildingNode[NodeNumber]
                     .GetComponent<BuildingControllScript>().PlayerTeam = "Blue";
+                _gameController.GetComponent<GameControllScript>().BuildingNode[NodeNumber]
+                  .GetComponent<BuildingControllScript>().UnitNumber = unitcount;
                 break;
         }
 
@@ -252,6 +258,30 @@ public class BuildingControllScript : MonoBehaviour
     void OnTriggerEnter(Collider other)
     {
         if (other.tag == "unit")
+        {
+            var unit = new Building
+            {
+                Owner = other.GetComponent<UnitControllScript>().Team == "Blue" ? 1 : 2,
+                Kinds = other.GetComponent<UnitControllScript>().UnitId,
+                XPos = other.transform.position.x,
+                ZPos = other.transform.position.z,
+                UnitCount = other.GetComponent<UnitControllScript>().UnitNumber
+            };
+            var fightinfo = new FightInfo
+            {
+                Units = unit,
+                FightBuildingIdx = NodeNumber
+            };
+            Debug.Log("test-----------------" + other.GetComponent<UnitControllScript>().UnitId);
+            Debug.Log("test++++++++++++++++++++++" + unit.Kinds);
+            ClientNetworkManager.Send(fightinfo);
+            Destroy(other.gameObject);
+        }
+    }
+}
+
+/*
+  if (other.tag == "unit")
         {
             if (other.gameObject.GetComponent<UnitControllScript>().Team == PlayerTeam)
             {
@@ -273,5 +303,5 @@ public class BuildingControllScript : MonoBehaviour
             Destroy(other.gameObject);
            
         }
-    }
-}
+
+    */
