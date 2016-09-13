@@ -201,6 +201,56 @@ public class GameControllScript : MonoBehaviour
                 .BuildingUnitCreateCounterFunction(ClientNetworkManager.IncrementeUnitInfo.Increment);
             ClientNetworkManager.IncrementeUnitInfo = null;
         }
+
+        if (ClientNetworkManager.FightResultinfo != null)
+        {
+            if (BuildingNode[ClientNetworkManager.FightResultinfo.Node].tag == "EmptyBuilding")
+            {
+                var Team = ClientNetworkManager.FightResultinfo.Owner == 1 ? "Blue" : "Red";
+                
+                BuildingNode[ClientNetworkManager.FightResultinfo.Node].GetComponent<EmptyBuildingScript>().BuildingSpawn(Team, ClientNetworkManager.FightResultinfo.Node,ClientNetworkManager.FightResultinfo.UnitCount);
+                
+            }
+            else if(BuildingNode[ClientNetworkManager.FightResultinfo.Node].tag == "Player1building")
+            {
+                var Team =
+                    BuildingNode[ClientNetworkManager.FightResultinfo.Node].GetComponent<BuildingControllScript>()
+                        .PlayerTeam == "Blue"
+                        ? 1
+                        : 2;
+                if (Team == ClientNetworkManager.FightResultinfo.Owner)
+                {
+                    //..건물 유지
+                    BuildingNode[ClientNetworkManager.FightResultinfo.Node].GetComponent<BuildingControllScript>()
+                        .UnitNumber = ClientNetworkManager.FightResultinfo.UnitCount;
+                }
+                else
+                  {
+                    //건물 변경
+                    BuildingNode[ClientNetworkManager.FightResultinfo.Node].GetComponent<BuildingControllScript>().DestroythisBuilding(ClientNetworkManager.FightResultinfo.UnitCount);
+                  }
+            }
+            else if (BuildingNode[ClientNetworkManager.FightResultinfo.Node].tag == "Player2building")
+            {
+                var Team =
+                   BuildingNode[ClientNetworkManager.FightResultinfo.Node].GetComponent<BuildingControllScript>()
+                       .PlayerTeam == "Blue"
+                       ? 1
+                       : 2;
+                if (Team == ClientNetworkManager.FightResultinfo.Owner)
+                {
+                    //..건물 유지
+                    BuildingNode[ClientNetworkManager.FightResultinfo.Node].GetComponent<BuildingControllScript>()
+                      .UnitNumber = ClientNetworkManager.FightResultinfo.UnitCount;
+                }
+                else
+                {
+                    //건물 변경
+                    BuildingNode[ClientNetworkManager.FightResultinfo.Node].GetComponent<BuildingControllScript>().DestroythisBuilding(ClientNetworkManager.FightResultinfo.UnitCount);
+                }
+            }
+            ClientNetworkManager.FightResultinfo = null;
+        }
     }
     //유닛이동관련
     private void UnitMove(UnitInfo unit)

@@ -33,6 +33,8 @@ namespace Client
         public static ChangeBuildingInfo EnemyInfo;
         public static ChangeBuildingInfo BuildingInfo;
         public static CreateUnitInfo IncrementeUnitInfo;
+        public static FightResultInfo FightResultinfo;
+        
 
         public static string ReceiveMsg = null; //유니티쪽에서 사용할 메시지를 담을 변수
 
@@ -147,7 +149,7 @@ namespace Client
                 var tempSocket = (Socket)ar.AsyncState;
                 int size = tempSocket.EndReceive(ar);//버퍼 사이즈 받아옴
 
-                Debug.Log("Receive " + size + " bytes from server.");
+               // Debug.Log("Receive " + size + " bytes from server.");
 
                 _buffer.AddRange(Buffer.ToArray().Take(size));
 
@@ -161,7 +163,7 @@ namespace Client
 
         private static void ProcessData()
         {
-            Debug.Log("Buffer size : " + _buffer.Count);
+            //Debug.Log("Buffer size : " + _buffer.Count);
             
             if (_buffer.Count < 4)
                 Receive();
@@ -170,7 +172,7 @@ namespace Client
                 if (_currentPacketLength < 0)
                 {
                     _currentPacketLength = BitConverter.ToInt32(_buffer.Take(4).ToArray(), 0);
-                    Debug.Log("Payload length " + _currentPacketLength);
+                  //  Debug.Log("Payload length " + _currentPacketLength);
                 }
 
                 if (_buffer.Count < _currentPacketLength + 4)
@@ -185,7 +187,7 @@ namespace Client
                     _buffer.RemoveRange(0, _currentPacketLength + 4);
                     _currentPacketLength = int.MinValue;
 
-                    Debug.Log(receiveJson.Length + "\n" + receiveJson);
+                 //   Debug.Log(receiveJson.Length + "\n" + receiveJson);
 
                     var receiveData = JsonConvert.DeserializeObject<Packet>(receiveJson, new JsonSerializerSettings
                     {
@@ -230,9 +232,12 @@ namespace Client
                             BuildingInfo = building;
                             break;
                         case "CreateUnitInfo":
-                            Debug.Log("CreateUnitInfo Message.");
+                        //    Debug.Log("CreateUnitInfo Message.");
                             var createInfo = JsonConvert.DeserializeObject<CreateUnitInfo>(receiveData.Data);
                             IncrementeUnitInfo = createInfo;
+                            break;
+                        case "FightResultInfo":
+                            FightResultinfo = JsonConvert.DeserializeObject<FightResultInfo>(receiveData.Data);
                             break;
                         case "MoveOppo":
                             //EnemyMoveUnitInfo = JsonConvert.DeserializeObject<MoveUnitInfo>(receiveData.Data);
@@ -248,7 +253,7 @@ namespace Client
                     if (_buffer.Count > 0)
                         ProcessData();
 
-                    Debug.Log("Buffer size after process : " + _buffer.Count);
+                    //Debug.Log("Buffer size after process : " + _buffer.Count);
                     Receive();
                 }
             }
@@ -259,6 +264,4 @@ namespace Client
 }
 
 #endregion
-
-
 

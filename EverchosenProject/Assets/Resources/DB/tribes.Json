@@ -40,7 +40,7 @@
                 "buildingresourceName": "EmpireLevel2",
                 "cost": 20,
                 "createCount": 1,
-                "spawnUnitID": 0,
+                "spawnUnitID": 2,
                 "unitpower": 1,
                 "unitKind": "horseMan",
                 "unitresourceName": "chaos-knight"
@@ -51,7 +51,7 @@
                 "buildingresourceName": "EmpireLevel3",
                 "cost": 10,
                 "createCount": 1,
-                "spawnUnitID": 1,
+                "spawnUnitID": 3,
                 "unitpower": 2,
                 "unitKind": "skyMan",
                 "unitresourceName": "chaos-shadow"
@@ -100,7 +100,7 @@
                     "buildingresourceName": "EmpireLevel2",
                     "cost": 20,
                     "createCount": 1,
-                    "spawnUnitID": 0,
+                    "spawnUnitID": 2,
                     "unitpower": 1,
                     "unitKind": "horseMan",
                     "unitresourceName": "dwarf-griffon"
@@ -111,7 +111,7 @@
                     "buildingresourceName": "EmpireLevel3",
                     "cost": 10,
                     "createCount": 1,
-                    "spawnUnitID": 1,
+                    "spawnUnitID": 3,
                     "unitpower": 2,
                     "unitKind": "skyMan",
                     "unitresourceName": "dwarf-knight"
@@ -159,7 +159,7 @@
                     "buildingresourceName": "EmpireLevel2",
                     "cost": 20,
                     "createCount": 1,
-                    "spawnUnitID": 0,
+                    "spawnUnitID": 2,
                     "unitpower": 1,
                     "unitKind": "horseMan",
                     "unitresourceName": "green-wyvern"
@@ -170,7 +170,7 @@
                     "buildingresourceName": "EmpireLevel3",
                     "cost": 10,
                     "createCount": 1,
-                    "spawnUnitID": 1,
+                    "spawnUnitID": 3,
                     "unitpower": 2,
                     "unitKind": "skyMan",
                     "unitresourceName": "green-rider"
@@ -218,7 +218,7 @@
                 "buildingresourceName": "EmpireLevel2",
                 "cost": 20,
                 "createCount": 1,
-                "spawnUnitID": 0,
+                "spawnUnitID": 2,
                 "unitpower": 1,
                 "unitKind": "horseMan",
                 "unitresourceName": "human-dragonhawk"
@@ -229,7 +229,7 @@
                 "buildingresourceName": "EmpireLevel3",
                 "cost": 10,
                 "createCount": 1,
-                "spawnUnitID": 1,
+                "spawnUnitID": 3,
                 "unitpower": 2,
                 "unitKind": "skyMan",
                 "unitresourceName": "human-knight"
@@ -239,28 +239,28 @@
     {
         "correction": [
             {//footman
-                "footMan": 1,
-                "bowMan": 2,
-                "horseMan": 3,
-                "skyMan": 4
+                "footMan": 0,
+                "bowMan": 1,
+                "horseMan": 2,
+                "skyMan": 3
             },
             {//bowman
-                "footMan": 1,
-                "bowMan": 2,
-                "horseMan": 3,
-                "skyMan": 4
+                "footMan": 0,
+                "bowMan": 1,
+                "horseMan": 2,
+                "skyMan": 3
             },
             {//horseman
-                "footMan": 1,
-                "bowMan": 2,
-                "horseMan": 3,
-                "skyMan": 4
+                "footMan": 0,
+                "bowMan": 1,
+                "horseMan": 2,
+                "skyMan": 3
             },
             {//skyman
-                "footMan": 1,
-                "bowMan": 2,
-                "horseMan": 3,
-                "skyMan": 4
+                "footMan": 0,
+                "bowMan": 1,
+                "horseMan": 2,
+                "skyMan": 3
             }
         ]
     }

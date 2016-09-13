@@ -24,6 +24,7 @@ public class UnitControllScript : MonoBehaviour
     // Use this for initialization
     void Start ()
     {
+        Debug.Log("유닛아이디잼"+ UnitId);
         _gameControllerObject = GameObject.Find("GameControllerObject");
         UnitNumberTextPanelIns(UnitNumber);
         // UnitDataSet(); //생성될 유닛 데이터 설정 unitid는 buildingControllerScript에서 unit을 spawn할시 값 초기화
