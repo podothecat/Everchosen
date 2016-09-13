@@ -23,10 +23,11 @@ namespace EverChosenServer
         private static IMongoCollection<BsonDocument> _maps { get; set; }
         private static double[,] _synastry =
             {
-                { 1.0, 1.2, 0.7, 0.2},
-                { 0.8, 1.0, 1.5, 0.4},
-                { 1.3, 0.5, 1.0, 1.7},
-                { 1.8, 1.6, 0.3, 1.0}
+                { 0.0, 0.0, 0.0, 0.0, 0.0 },
+                { 2.0, 1.0, 1.2, 0.7, 0.2 },
+                { 2.0, 0.8, 1.0, 1.5, 0.4 },
+                { 2.0, 1.3, 0.5, 1.0, 1.7 },
+                { 2.0, 1.8, 1.6, 0.3, 1.0 }
             };
 
         /// <summary>
@@ -61,12 +62,12 @@ namespace EverChosenServer
                 var newProfile = new BsonDocument
                 {
                     {"_id", clientUniqueId},
-                    {"nickname", "닉네임을 변경해 주세요."},
+                    {"nickname", "Change your nickname."},
                     {"wins", "0"},
                     {"loses", "0"}
                 };
                 _users.InsertOneAsync(newProfile);
-                Console.WriteLine("New user was added.");
+                //Console.WriteLine("New user was added.");
                 result.Add(newProfile);
             }
             

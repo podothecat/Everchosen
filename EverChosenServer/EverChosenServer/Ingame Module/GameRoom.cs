@@ -33,7 +33,9 @@ namespace EverChosenServer.Ingame_Module
             WIN,
             LOSE
         };
-        
+
+        private readonly double _spawnTime = 1000; 
+
         private Client _player1;
         private Client _player2;
         private MapInfo _map;
@@ -141,8 +143,8 @@ namespace EverChosenServer.Ingame_Module
                     client.IsReadyToBattle = true;
                     if (client.IsReadyToBattle && target.IsReadyToBattle)
                     {
-                        ConscriptUnit(0, 1000);
-                        ConscriptUnit(1, 1000);
+                        ConscriptUnit(0, _spawnTime);
+                        ConscriptUnit(1, _spawnTime);
                     }
                     break;
 
@@ -162,7 +164,13 @@ namespace EverChosenServer.Ingame_Module
                     target.BeginSend(buildinfo);
                     break;
 
-                case "Fight":
+                case "FightInfo":
+                    var battleInfo = JsonConvert.DeserializeObject<FightInfo>(e.Data);
+
+                    var result = Fight(battleInfo.Units, battleInfo.FightBuildingIdx);
+                    
+                    client.BeginSend(result);
+                    target.BeginSend(result);
                     break;
 
                 default:
@@ -181,7 +189,7 @@ namespace EverChosenServer.Ingame_Module
         private UnitInfo Move(Client c, int startNode, int endNode)
         {
             var units = _map.MapNodes[startNode].UnitCount /= 2;
-            Console.WriteLine(units);
+            
             var unitNode = _map.MapNodes[startNode];
             unitNode.UnitCount = units;
             unitNode.Owner = c.MatchingData.TeamColor;
@@ -207,7 +215,8 @@ namespace EverChosenServer.Ingame_Module
             _map.MapNodes[idx].Kinds = kinds;
             _map.MapNodes[idx].UnitCount = 0;
 
-            ConscriptUnit(idx, 2000);
+            ConscriptUnit(idx, _spawnTime);
+            
             var building = new ChangeBuildingInfo
             {
                 Node = idx,
@@ -216,7 +225,6 @@ namespace EverChosenServer.Ingame_Module
             };
 
             return building;
-            //return _map.MapNodes[idx];
         }
 
         /// <summary>
@@ -224,18 +232,50 @@ namespace EverChosenServer.Ingame_Module
         /// </summary>
         /// <param name="attacker"></param>
         /// <param name="fightBuildingIdx"></param>
-        private void Fight(Building attacker, int fightBuildingIdx)
+        private FightResultInfo Fight(Building attacker, int fightBuildingIdx)
         {
+
             var defender = _map.MapNodes[fightBuildingIdx];
-
-            while (attacker.UnitCount != 0 && defender.UnitCount != 0)
+            Console.WriteLine(attacker.Kinds-1 + ", " + defender.Kinds);
+            if (attacker.Owner == defender.Owner)
             {
-                var damageOfAtkr = attacker.UnitCount*_synastry[attacker.Kinds, defender.Kinds];
-                var damageOfDfnr = defender.UnitCount*_synastry[defender.Kinds, attacker.Kinds];
-
-                defender.UnitCount -= (int)Math.Round(damageOfAtkr);
-                attacker.UnitCount -= (int)Math.Round(damageOfDfnr);
+                _map.MapNodes[fightBuildingIdx].UnitCount += defender.UnitCount;
             }
+            else
+            {
+                while (attacker.UnitCount > 0 && defender.UnitCount > 0)
+                {
+                    var damageOfAtkr = attacker.UnitCount*_synastry[attacker.Kinds, defender.Kinds];
+                    var damageOfDfnr = defender.UnitCount*_synastry[defender.Kinds, attacker.Kinds];
+
+                    defender.UnitCount -= (int) Math.Round(damageOfAtkr);
+                    attacker.UnitCount -= (int) Math.Round(damageOfDfnr);
+                }
+
+                if (defender.UnitCount <= 0)
+                    defender.UnitCount = 0;
+                if (attacker.UnitCount <= 0)
+                    attacker.UnitCount = 0;
+
+                if (defender.UnitCount >= attacker.UnitCount)
+                    _map.MapNodes[fightBuildingIdx].UnitCount = defender.UnitCount;
+                else
+                {
+                    _map.MapNodes[fightBuildingIdx].Owner = attacker.Owner;
+                    _map.MapNodes[fightBuildingIdx].Kinds = attacker.Kinds;
+                    _map.MapNodes[fightBuildingIdx].UnitCount = attacker.UnitCount;
+                }
+            }
+
+            ConscriptUnit(fightBuildingIdx, _spawnTime);
+            
+            return new FightResultInfo
+            {
+                Node = fightBuildingIdx,
+                Owner = _map.MapNodes[fightBuildingIdx].Owner,
+                Kinds = _map.MapNodes[fightBuildingIdx].Kinds,
+                UnitCount = _map.MapNodes[fightBuildingIdx].UnitCount
+            };
         }
 
         /// <summary>

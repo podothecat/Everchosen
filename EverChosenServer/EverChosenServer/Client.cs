@@ -23,6 +23,7 @@ namespace EverChosenServer
         public MatchingInfo MatchingData;
         public bool IsIngame;
         public bool IsReadyToBattle;
+        public bool IsReadyToFight;
 
         private readonly byte[] _tempBuffer = new byte[4096];
         private string _uniqueId { get; set; }
@@ -60,9 +61,8 @@ namespace EverChosenServer
             Buffer.BlockCopy(sendBufSize, 0, totalBuf, 0, 4);
             Buffer.BlockCopy(sendBuf, 0, totalBuf, 4, sendBuf.Length);
 
-            //Sock.BeginSend(sendBufSize, 0, 4, SocketFlags.None, OnSendCallback, Sock);
             Sock.BeginSend(totalBuf, 0, totalBuf.Length, SocketFlags.None, OnSendCallback, Sock);
-            Console.WriteLine("Send : [" + packet.MsgName + "]");
+            //Console.WriteLine("Send : [" + packet.MsgName + "]");
         }
 
         /// <summary>
@@ -71,10 +71,9 @@ namespace EverChosenServer
         /// <param name="ar"> Async State </param>
         private void OnSendCallback(IAsyncResult ar)
         {
-            //Console.WriteLine("OnSend..");
             var sock = (Socket)ar.AsyncState;
             var size = sock.EndSend(ar);
-            Console.WriteLine("Sent {0} bytes to client", size);
+            //Console.WriteLine("Sent {0} bytes to client", size);
         }
 
         /// <summary>
@@ -117,10 +116,19 @@ namespace EverChosenServer
                 return;
             }
 
-            Console.WriteLine("Receive {0} bytes from client", size);
+            //Console.WriteLine("Receive {0} bytes from client", size);
 
             _buffer.AddRange(_tempBuffer.ToArray().Take(size));
             
+            ProcessData();
+            
+        }
+
+        /// <summary>
+        /// Process received packet.
+        /// </summary>
+        private void ProcessData()
+        {
             if (_buffer.Count < 4)
                 BeginReceive();
             else
@@ -128,60 +136,46 @@ namespace EverChosenServer
                 if (_currentPacketLength < 0)
                 {
                     _currentPacketLength = BitConverter.ToInt32(_buffer.Take(4).ToArray(), 0);
-                    Console.WriteLine("Parse {0} payload length.", _currentPacketLength);
+                    //Console.WriteLine("Parse {0} payload length.", _currentPacketLength);
                 }
 
                 if (_buffer.Count < _currentPacketLength + 4)
                     BeginReceive();
                 else
-                    ProcessData();
+                {
+                    var packetStr = Encoding.UTF8.GetString(_buffer.Skip(4).Take(_currentPacketLength).ToArray());
+
+                    _buffer.RemoveRange(0, _currentPacketLength + 4);
+                    _currentPacketLength = int.MinValue;
+
+                    var receivedPacket = JsonConvert.DeserializeObject<Packet>(packetStr, new JsonSerializerSettings
+                    {
+                        TypeNameHandling = TypeNameHandling.Objects
+                    });
+
+                    // To distinguish whether client is ingame or not.
+                    if (!IsIngame)
+                    {
+                        Console.WriteLine("Request : Lobby [" + receivedPacket.MsgName + "]");
+                        ProcessRequest(receivedPacket);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Request : Ingame [" + receivedPacket.MsgName + "]");
+
+                        InGameRequest(this, receivedPacket);
+                    }
+
+                    if(_buffer.Count > 0)
+                        ProcessData();
+
+                    BeginReceive();
+                }
             }
-        }
-
-        private void ProcessData()
-        {            
-            var packetStr = Encoding.UTF8.GetString
-            (
-                _buffer.Skip(4).Take(_currentPacketLength).ToArray()
-            );
-
-            _buffer.RemoveRange(0, _currentPacketLength + 4);
-            _currentPacketLength = int.MinValue;
-            
-            var receivedPacket = JsonConvert.DeserializeObject<Packet>(packetStr, new JsonSerializerSettings
-            {
-                TypeNameHandling = TypeNameHandling.Objects
-            });
-
-            // To distinguish whether client is ingame or not.
-            if (!IsIngame)
-            {
-                Console.WriteLine("Request : Lobby [" + receivedPacket.MsgName + "]");
-                ProcessRequest(receivedPacket);
-            }
-            else
-            {
-                Console.WriteLine("Request : Ingame [" + receivedPacket.MsgName + "]");
-
-                InGameRequest(this, receivedPacket);
-            }
-
-            BeginReceive();
         }
 
         /// <summary>
-        /// Close client socket
-        /// </summary>
-        private void Close()
-        {
-            Console.WriteLine("Close");
-            Sock.Shutdown(SocketShutdown.Both);
-            Sock.Close();
-            GameManager.ReleaseClient(this);
-        }
-
-        /// <summary>
-        /// Processing requests of client.
+        /// Process requests of client.
         /// </summary>
         /// <param name="req"></param>
         private void ProcessRequest(Packet req)
@@ -222,5 +216,17 @@ namespace EverChosenServer
                     break;
             }
         }
+        
+        /// <summary>
+        /// Close client socket
+        /// </summary>
+        private void Close()
+        {
+            Console.WriteLine("Close");
+            Sock.Shutdown(SocketShutdown.Both);
+            Sock.Close();
+            GameManager.ReleaseClient(this);
+        }
+
     }
 }

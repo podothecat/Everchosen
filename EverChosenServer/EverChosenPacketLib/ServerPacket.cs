@@ -33,6 +33,14 @@ namespace EverChosenPacketLib
         public int Outcome { get; set; }
     }
 
+    public class FightResultInfo : Packet
+    {
+        public int Node { get; set; }
+        public int Owner { get; set; }
+        public int Kinds { get; set; }
+        public int UnitCount { get; set; }
+    }
+
     /// <summary>
     /// Increment data of unit count in building.
     /// </summary>
