@@ -24,7 +24,7 @@ namespace EverChosenServer
         public bool IsIngame;
         public bool IsReadyToBattle;
 
-        private readonly byte[] _buffer = new byte[1024];
+        private readonly byte[] _tempBuffer = new byte[4096];
         private string _uniqueId { get; set; }
 
         /// <summary>
@@ -48,14 +48,33 @@ namespace EverChosenServer
         /// </summary>
         public void BeginSend(Packet packet)
         {
-            var sendBuf = new UTF8Encoding().GetBytes(
-                JsonConvert.SerializeObject(packet, Formatting.Indented, new JsonSerializerSettings
-                {
-                    TypeNameHandling = TypeNameHandling.Objects
-                }));
+            var packetStr = JsonConvert.SerializeObject(packet, Formatting.Indented, new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.Objects
+            });
+               
+            var sendBuf = new UTF8Encoding().GetBytes(packetStr);
+            var sendBufSize = BitConverter.GetBytes(packetStr.Length);
 
-            Sock.BeginSend(sendBuf, 0, sendBuf.Length, SocketFlags.None, OnSendCallback, Sock);
-            Console.WriteLine("Send : " + packet.MsgName + ", " + packet.Data);
+            var totalBuf = new byte[sendBuf.Length + 4];
+            Buffer.BlockCopy(sendBufSize, 0, totalBuf, 0, 4);
+            Buffer.BlockCopy(sendBuf, 0, totalBuf, 4, sendBuf.Length);
+
+            //Sock.BeginSend(sendBufSize, 0, 4, SocketFlags.None, OnSendCallback, Sock);
+            Sock.BeginSend(totalBuf, 0, totalBuf.Length, SocketFlags.None, OnSendCallback, Sock);
+            Console.WriteLine("Send : [" + packet.MsgName + "]");
+        }
+
+        /// <summary>
+        /// Process packet to send.
+        /// </summary>
+        /// <param name="ar"> Async State </param>
+        private void OnSendCallback(IAsyncResult ar)
+        {
+            //Console.WriteLine("OnSend..");
+            var sock = (Socket)ar.AsyncState;
+            var size = sock.EndSend(ar);
+            Console.WriteLine("Sent {0} bytes to client", size);
         }
 
         /// <summary>
@@ -66,26 +85,20 @@ namespace EverChosenServer
             if (!Sock.Connected) return;
 
             // Initialize buffer when each time it receives packet.
-            Array.Clear(_buffer, 0, _buffer.Length);
+            Array.Clear(_tempBuffer, 0, _tempBuffer.Length);
 
             try
             {
-                Sock.BeginReceive(_buffer, 0, _buffer.Length, SocketFlags.None, OnReceiveCallback, Sock);
+                Sock.BeginReceive(_tempBuffer, 0, _tempBuffer.Length, SocketFlags.None, OnReceiveCallback, Sock);
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                Console.WriteLine(e.ToString());
             }
         }
-
-        /// <summary>
-        /// Process packet to send.
-        /// </summary>
-        /// <param name="ar"> Async State </param>
-        private void OnSendCallback(IAsyncResult ar)
-        {
-            //Console.WriteLine("OnSend..");
-        }
+        
+        private List<byte> _buffer = new List<byte>();
+        private int _currentPacketLength = int.MinValue;
 
         /// <summary>
         /// Process received packet.
@@ -94,37 +107,61 @@ namespace EverChosenServer
         private void OnReceiveCallback(IAsyncResult ar)
         {
             var clientSock = (Socket)ar.AsyncState;
-            
+            var size = clientSock.EndReceive(ar);
+
             // Unexpected request (ex : force quit)
-            if (_buffer[0] == 0)
+            if (size == 0)
             {
                 Console.WriteLine("Unexpected Request. Remove client.");
                 Close();
                 return;
             }
 
-            var packetStr = Encoding.UTF8.GetString(_buffer);
+            Console.WriteLine("Receive {0} bytes from client", size);
+
+            _buffer.AddRange(_tempBuffer.ToArray().Take(size));
+            
+            if (_buffer.Count < 4)
+                BeginReceive();
+            else
+            {
+                if (_currentPacketLength < 0)
+                {
+                    _currentPacketLength = BitConverter.ToInt32(_buffer.Take(4).ToArray(), 0);
+                    Console.WriteLine("Parse {0} payload length.", _currentPacketLength);
+                }
+
+                if (_buffer.Count < _currentPacketLength + 4)
+                    BeginReceive();
+                else
+                    ProcessData();
+            }
+        }
+
+        private void ProcessData()
+        {            
+            var packetStr = Encoding.UTF8.GetString
+            (
+                _buffer.Skip(4).Take(_currentPacketLength).ToArray()
+            );
+
+            _buffer.RemoveRange(0, _currentPacketLength + 4);
+            _currentPacketLength = int.MinValue;
             
             var receivedPacket = JsonConvert.DeserializeObject<Packet>(packetStr, new JsonSerializerSettings
             {
                 TypeNameHandling = TypeNameHandling.Objects
             });
 
-            // Refine received packet.
-            //receivedPacket.Data = receivedPacket.Data.Replace("\\\"", "\"");
-            //x.Data = x.Data.Substring(0, x.Data.Length - 1);
-
             // To distinguish whether client is ingame or not.
             if (!IsIngame)
             {
-                Console.WriteLine("Request : Lobby [" + receivedPacket.MsgName + "], ["
-                                  + receivedPacket.Data + "]");
+                Console.WriteLine("Request : Lobby [" + receivedPacket.MsgName + "]");
                 ProcessRequest(receivedPacket);
             }
             else
             {
-                Console.WriteLine("Request : Ingame [" + receivedPacket.MsgName + "], ["
-                                  + receivedPacket.Data + "]");
+                Console.WriteLine("Request : Ingame [" + receivedPacket.MsgName + "]");
 
                 InGameRequest(this, receivedPacket);
             }
@@ -152,17 +189,13 @@ namespace EverChosenServer
             switch (req.MsgName)
             {
                 case "LoginInfo":
-                    Console.WriteLine("Request : Login");
-                    Console.WriteLine(req.Data);
                     var uniqueId = JsonConvert.DeserializeObject<LoginInfo>(req.Data);
                     _uniqueId = uniqueId.DeviceId;
                     ProfileData = DatabaseManager.GetClientInfo(_uniqueId);
-                    Console.WriteLine(_uniqueId);
                     BeginSend(ProfileData);
                     break;
 
                 case "NickNameInfo":
-                    Console.WriteLine("Request : Setting");
                     var nickName = JsonConvert.DeserializeObject<NickNameInfo>(req.Data);
                     ProfileData.NickName = DatabaseManager.SetClientInfo(nickName.NickName, _uniqueId);
                     BeginSend(new NickNameInfo
@@ -172,18 +205,15 @@ namespace EverChosenServer
                     break;
 
                 case "MatchingInfo":
-                    Console.WriteLine("Request : Matching");
                     MatchingData = JsonConvert.DeserializeObject<MatchingInfo>(req.Data);
                     GameManager.MatchingRequest(this);
                     break;
 
                 case "QueueCancelReq":
-                    Console.WriteLine("Request : Matching Cancel");
                     GameManager.MatchingCancelRequest(this);
                     break;
 
                 case "ExitProgramReq":
-                    Console.WriteLine("Request : Exit");
                     Close();
                     break;
 

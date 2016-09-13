@@ -15,10 +15,7 @@ namespace EverChosenPacketLib
         [JsonIgnore]
         public string MsgName => GetType().Name;
         [JsonIgnore]
-        public string Data
-        {
-            get { return JsonConvert.SerializeObject(this); }
-        }
+        public string Data => JsonConvert.SerializeObject(this);
     }
 
     /// <summary>

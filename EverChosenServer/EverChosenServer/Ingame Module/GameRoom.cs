@@ -65,8 +65,6 @@ namespace EverChosenServer.Ingame_Module
 
             Console.WriteLine("Game room was constructed.");
             Console.WriteLine(_map.MapName);
-
-          
         }
 
         /// <summary>
@@ -262,7 +260,7 @@ namespace EverChosenServer.Ingame_Module
         private void OnCreateUnit(object source, ElapsedEventArgs e, int buildingIdx)
         {
             _map.MapNodes[buildingIdx].UnitCount += 1;
-            Console.WriteLine("Building " + buildingIdx + " : " + _map.MapNodes[buildingIdx].UnitCount);
+            //Console.WriteLine("Building " + buildingIdx + " : " + _map.MapNodes[buildingIdx].UnitCount);
 
             var createUnit = new CreateUnitInfo
             {
@@ -291,6 +289,7 @@ namespace EverChosenServer.Ingame_Module
         private void Release()
         {
             Console.WriteLine("Release Timer of each building.");
+            _checkConnection.Close();
             foreach (var t in _timers)
             {
                 if(t.Enabled)

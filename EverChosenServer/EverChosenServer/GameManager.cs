@@ -81,6 +81,7 @@ namespace EverChosenServer
             // Profile : Nickname, Wins, Loses
             oppoClient.BeginSend(clientProfile);
             client.BeginSend(opponentProfile);
+            
             oppoClient.IsIngame = true;
             client.IsIngame = true;
 

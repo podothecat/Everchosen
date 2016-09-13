@@ -25,12 +25,6 @@ namespace EverChosenServer
         {
             DatabaseManager.Initialize();
 
-            var d = new MoveUnitInfo
-            {
-                StartNode = 1,
-                EndNode = 3
-            };
-
             _serverSocket.Bind(new IPEndPoint(IPAddress.Any, 23000));
             _serverSocket.Listen(10);
 
