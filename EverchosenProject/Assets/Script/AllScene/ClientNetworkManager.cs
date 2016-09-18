@@ -232,11 +232,12 @@ namespace Client
                             BuildingInfo = building;
                             break;
                         case "CreateUnitInfo":
-                        //    Debug.Log("CreateUnitInfo Message.");
+                            Debug.Log("CreateUnitInfo Message.");
                             var createInfo = JsonConvert.DeserializeObject<CreateUnitInfo>(receiveData.Data);
                             IncrementeUnitInfo = createInfo;
                             break;
                         case "FightResultInfo":
+                            Debug.Log(receiveData.Data);
                             FightResultinfo = JsonConvert.DeserializeObject<FightResultInfo>(receiveData.Data);
                             break;
                         case "MoveOppo":

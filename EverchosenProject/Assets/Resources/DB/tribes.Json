@@ -7,7 +7,7 @@
                 "buildingresourceName": "EmpireCastle",
                 "cost": 0,
                 "createCount": 1,
-                "spawnUnitID": 0,
+                "spawnUnitID": 1,
                 "unitpower": 1,
                 "unitKind": "footMan",
                 "unitresourceName": "chaos-army"
@@ -18,7 +18,7 @@
                 "buildingresourceName": "EmpireLevel0",
                 "cost": 0,
                 "createCount": 1,
-                "spawnUnitID": 0,
+                "spawnUnitID": 1,
                 "unitpower": 1,
                 "unitKind": "footMan",
                 "unitresourceName": "chaos-army"
@@ -29,7 +29,7 @@
                 "buildingresourceName": "EmpireLevel1",
                 "cost": 10,
                 "createCount": 1,
-                "spawnUnitID": 1,
+                "spawnUnitID": 2,
                 "unitpower": 2,
                 "unitKind": "bowMan",
                 "unitresourceName": "chaos-javelin"
@@ -40,7 +40,7 @@
                 "buildingresourceName": "EmpireLevel2",
                 "cost": 20,
                 "createCount": 1,
-                "spawnUnitID": 2,
+                "spawnUnitID": 3,
                 "unitpower": 1,
                 "unitKind": "horseMan",
                 "unitresourceName": "chaos-knight"
@@ -51,7 +51,7 @@
                 "buildingresourceName": "EmpireLevel3",
                 "cost": 10,
                 "createCount": 1,
-                "spawnUnitID": 3,
+                "spawnUnitID": 4,
                 "unitpower": 2,
                 "unitKind": "skyMan",
                 "unitresourceName": "chaos-shadow"
@@ -67,7 +67,7 @@
                     "buildingresourceName": "EmpireCastle",
                     "cost": 0,
                     "createCount": 1,
-                    "spawnUnitID": 0,
+                    "spawnUnitID": 1,
                     "unitpower": 1,
                     "unitKind": "footMan",
                     "unitresourceName": "dwarf-army"
@@ -78,7 +78,7 @@
                     "buildingresourceName": "EmpireLevel0",
                     "cost": 0,
                     "createCount": 1,
-                    "spawnUnitID": 0,
+                    "spawnUnitID": 1,
                     "unitpower": 1,
                     "unitKind": "footMan",
                     "unitresourceName": "dwarf-army"
@@ -89,7 +89,7 @@
                     "buildingresourceName": "EmpireLevel1",
                     "cost": 10,
                     "createCount": 1,
-                    "spawnUnitID": 1,
+                    "spawnUnitID": 2,
                     "unitpower": 2,
                     "unitKind": "bowMan",
                     "unitresourceName": "dwarf-crossbow"
@@ -100,7 +100,7 @@
                     "buildingresourceName": "EmpireLevel2",
                     "cost": 20,
                     "createCount": 1,
-                    "spawnUnitID": 2,
+                    "spawnUnitID": 3,
                     "unitpower": 1,
                     "unitKind": "horseMan",
                     "unitresourceName": "dwarf-griffon"
@@ -111,7 +111,7 @@
                     "buildingresourceName": "EmpireLevel3",
                     "cost": 10,
                     "createCount": 1,
-                    "spawnUnitID": 3,
+                    "spawnUnitID": 4,
                     "unitpower": 2,
                     "unitKind": "skyMan",
                     "unitresourceName": "dwarf-knight"
@@ -126,7 +126,7 @@
                     "buildingresourceName": "EmpireCastle",
                     "cost": 0,
                     "createCount": 1,
-                    "spawnUnitID": 0,
+                    "spawnUnitID": 1,
                     "unitpower": 1,
                     "unitKind": "footMan",
                     "unitresourceName": "green-needle"
@@ -137,7 +137,7 @@
                     "buildingresourceName": "EmpireLevel0",
                     "cost": 0,
                     "createCount": 1,
-                    "spawnUnitID": 0,
+                    "spawnUnitID": 1,
                     "unitpower": 1,
                     "unitKind": "footMan",
                     "unitresourceName": "green-needle"
@@ -148,7 +148,7 @@
                     "buildingresourceName": "EmpireLevel1",
                     "cost": 10,
                     "createCount": 1,
-                    "spawnUnitID": 1,
+                    "spawnUnitID": 2,
                     "unitpower": 2,
                     "unitKind": "bowMan",
                     "unitresourceName": "green-worrior"
@@ -159,7 +159,7 @@
                     "buildingresourceName": "EmpireLevel2",
                     "cost": 20,
                     "createCount": 1,
-                    "spawnUnitID": 2,
+                    "spawnUnitID": 3,
                     "unitpower": 1,
                     "unitKind": "horseMan",
                     "unitresourceName": "green-wyvern"
@@ -170,7 +170,7 @@
                     "buildingresourceName": "EmpireLevel3",
                     "cost": 10,
                     "createCount": 1,
-                    "spawnUnitID": 3,
+                    "spawnUnitID": 4,
                     "unitpower": 2,
                     "unitKind": "skyMan",
                     "unitresourceName": "green-rider"
@@ -185,7 +185,7 @@
                 "buildingresourceName": "EmpireCastle",
                 "cost": 0,
                 "createCount": 1,
-                "spawnUnitID": 0,
+                "spawnUnitID": 1,
                 "unitpower": 1,
                 "unitKind": "footMan",
                 "unitresourceName": "human-army"
@@ -196,7 +196,7 @@
                 "buildingresourceName": "EmpireLevel0",
                 "cost": 0,
                 "createCount": 1,
-                "spawnUnitID": 0,
+                "spawnUnitID": 1,
                 "unitpower": 1,
                 "unitKind": "footMan",
                 "unitresourceName": "human-army"
@@ -207,7 +207,7 @@
                 "buildingresourceName": "EmpireLevel1",
                 "cost": 10,
                 "createCount": 1,
-                "spawnUnitID": 1,
+                "spawnUnitID": 2,
                 "unitpower": 2,
                 "unitKind": "bowMan",
                 "unitresourceName": "human-bow"
@@ -218,7 +218,7 @@
                 "buildingresourceName": "EmpireLevel2",
                 "cost": 20,
                 "createCount": 1,
-                "spawnUnitID": 2,
+                "spawnUnitID": 3,
                 "unitpower": 1,
                 "unitKind": "horseMan",
                 "unitresourceName": "human-dragonhawk"
@@ -229,7 +229,7 @@
                 "buildingresourceName": "EmpireLevel3",
                 "cost": 10,
                 "createCount": 1,
-                "spawnUnitID": 3,
+                "spawnUnitID": 4,
                 "unitpower": 2,
                 "unitKind": "skyMan",
                 "unitresourceName": "human-knight"

@@ -4,6 +4,7 @@ using Client;
 using UnityEngine.UI;
 using System.Collections.Generic;
 using EverChosenPacketLib;
+using Newtonsoft.Json;
 
 public class GameControllScript : MonoBehaviour
 {
@@ -201,7 +202,7 @@ public class GameControllScript : MonoBehaviour
                 .BuildingUnitCreateCounterFunction(ClientNetworkManager.IncrementeUnitInfo.Increment);
             ClientNetworkManager.IncrementeUnitInfo = null;
         }
-
+        
         if (ClientNetworkManager.FightResultinfo != null)
         {
             if (BuildingNode[ClientNetworkManager.FightResultinfo.Node].tag == "EmptyBuilding")
@@ -232,6 +233,7 @@ public class GameControllScript : MonoBehaviour
             }
             else if (BuildingNode[ClientNetworkManager.FightResultinfo.Node].tag == "Player2building")
             {
+                Debug.Log("GameControllScript : Player2 building.");
                 var Team =
                    BuildingNode[ClientNetworkManager.FightResultinfo.Node].GetComponent<BuildingControllScript>()
                        .PlayerTeam == "Blue"

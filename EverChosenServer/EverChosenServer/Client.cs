@@ -28,6 +28,9 @@ namespace EverChosenServer
         private readonly byte[] _tempBuffer = new byte[4096];
         private string _uniqueId { get; set; }
 
+        private List<byte> _buffer = new List<byte>();
+        private int _currentPacketLength = int.MinValue;
+
         /// <summary>
         /// Ingame Event Handler.
         /// When request is arrived, then call attached method.
@@ -42,6 +45,8 @@ namespace EverChosenServer
         {
             Sock = socket;
             IsIngame = false;
+            IsReadyToBattle = false;
+            IsReadyToFight = false;
         }
         
         /// <summary>
@@ -96,8 +101,6 @@ namespace EverChosenServer
             }
         }
         
-        private List<byte> _buffer = new List<byte>();
-        private int _currentPacketLength = int.MinValue;
 
         /// <summary>
         /// Process received packet.

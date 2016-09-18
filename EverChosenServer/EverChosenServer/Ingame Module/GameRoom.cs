@@ -165,12 +165,21 @@ namespace EverChosenServer.Ingame_Module
                     break;
 
                 case "FightInfo":
-                    var battleInfo = JsonConvert.DeserializeObject<FightInfo>(e.Data);
+                    client.IsReadyToFight = true;
+                    if (client.IsReadyToFight && target.IsReadyToFight)
+                    {
+                        Console.WriteLine("Fight logic");
+                        var battleInfo = JsonConvert.DeserializeObject<FightInfo>(e.Data);
 
-                    var result = Fight(battleInfo.Units, battleInfo.FightBuildingIdx);
-                    
-                    client.BeginSend(result);
-                    target.BeginSend(result);
+                        var result = Fight(battleInfo.Units, battleInfo.FightBuildingIdx);
+
+                        Console.WriteLine(JsonConvert.SerializeObject(result));
+
+                        client.BeginSend(result);
+                        target.BeginSend(result);
+                        client.IsReadyToFight = false;
+                        target.IsReadyToFight = false;
+                    }
                     break;
 
                 default:
@@ -212,6 +221,7 @@ namespace EverChosenServer.Ingame_Module
         /// <returns> Information of building. </returns>
         private ChangeBuildingInfo ChangeUnit(int idx, int kinds)
         {
+            Console.WriteLine("Node : " + idx + ", Kind : " + kinds);
             _map.MapNodes[idx].Kinds = kinds;
             _map.MapNodes[idx].UnitCount = 0;
 
@@ -234,15 +244,18 @@ namespace EverChosenServer.Ingame_Module
         /// <param name="fightBuildingIdx"></param>
         private FightResultInfo Fight(Building attacker, int fightBuildingIdx)
         {
-
+            
             var defender = _map.MapNodes[fightBuildingIdx];
-            Console.WriteLine(attacker.Kinds-1 + ", " + defender.Kinds);
             if (attacker.Owner == defender.Owner)
             {
-                _map.MapNodes[fightBuildingIdx].UnitCount += defender.UnitCount;
+                _map.MapNodes[fightBuildingIdx].UnitCount += attacker.UnitCount;
             }
             else
             {
+                Console.WriteLine("Fight between two players.\n" +
+                                  "Attacker : " + attacker.UnitCount + ", Kinds : " + attacker.Kinds +
+                                  "Defender : " + defender.UnitCount + ", Kinds : " + defender.Kinds);
+
                 while (attacker.UnitCount > 0 && defender.UnitCount > 0)
                 {
                     var damageOfAtkr = attacker.UnitCount*_synastry[attacker.Kinds, defender.Kinds];
@@ -262,7 +275,7 @@ namespace EverChosenServer.Ingame_Module
                 else
                 {
                     _map.MapNodes[fightBuildingIdx].Owner = attacker.Owner;
-                    _map.MapNodes[fightBuildingIdx].Kinds = attacker.Kinds;
+                    _map.MapNodes[fightBuildingIdx].Kinds = 1;//attacker.Kinds;
                     _map.MapNodes[fightBuildingIdx].UnitCount = attacker.UnitCount;
                 }
             }
@@ -285,6 +298,8 @@ namespace EverChosenServer.Ingame_Module
         /// <param name="conscriptionTime"> Unit spawn time frequency. </param>
         private void ConscriptUnit(int buildingIdx, double conscriptionTime)
         {
+            if(_timers[buildingIdx] != null)
+                _timers[buildingIdx].Close();
             _timers[buildingIdx] = new Timer(conscriptionTime);
 
             _timers[buildingIdx].Elapsed += (s, e) => OnCreateUnit(s, e, buildingIdx);
@@ -300,8 +315,7 @@ namespace EverChosenServer.Ingame_Module
         private void OnCreateUnit(object source, ElapsedEventArgs e, int buildingIdx)
         {
             _map.MapNodes[buildingIdx].UnitCount += 1;
-            //Console.WriteLine("Building " + buildingIdx + " : " + _map.MapNodes[buildingIdx].UnitCount);
-
+            
             var createUnit = new CreateUnitInfo
             {
                 Node = buildingIdx,
