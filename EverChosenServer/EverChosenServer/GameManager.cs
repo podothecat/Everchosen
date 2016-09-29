@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Net.Sockets;
 using System.Runtime.InteropServices;
 using System.Runtime.Remoting.Channels;
 using System.Security.Cryptography;
@@ -16,7 +17,7 @@ namespace EverChosenServer
     /// </summary>
     internal static class GameManager
     {
-        public static List<Client> Clients = new List<Client>();
+        private static List<Client> _clients = new List<Client>();
         
         /// <summary>
         /// Add connected client to list
@@ -24,7 +25,7 @@ namespace EverChosenServer
         /// <param name="c"> Connected client. </param>
         public static void AddClient(Client c)
         {
-            Clients.Add(c);
+            _clients.Add(c);
             Console.WriteLine("\nGAME MANAGER : client was added.");
             PrintConnectedClients();
         }
@@ -35,17 +36,39 @@ namespace EverChosenServer
         /// <param name="c"> Disconnected client. </param>
         public static void ReleaseClient(Client c)
         {
-            Clients.Remove(c);
+            _clients.Remove(c);
             Console.WriteLine("\nGAME MANAGER : client was removed.");
             PrintConnectedClients();
         }
 
         /// <summary>
-        /// Print # of connected clients to server soncole.
+        /// Find client when reconnect to server.
         /// </summary>
-        public static void PrintConnectedClients()
+        /// <param name="c"> Reconnected client. </param>
+        /// <param name="deviceId"> Reconnected client's device ID. </param>
+        /// <returns></returns>
+        public static bool FindClient(Client c, string deviceId)
         {
-            Console.WriteLine("# of connected clients : " + Clients.Count);
+            var existingClient = _clients.Find(x => x.UniqueId.Equals(deviceId));
+
+            if (existingClient == null)
+                return false;
+
+            if (existingClient.IsLogin)
+            {
+                c.ProfileData = existingClient.ProfileData;
+                c.MatchingData = existingClient.MatchingData;
+                c.IsIngame = existingClient.IsIngame;
+                c.IsReadyToBattle = existingClient.IsReadyToBattle;
+                c.IsReadyToFight = existingClient.IsReadyToFight;
+                c.IsLogin = existingClient.IsLogin;
+                if(existingClient.IsIngame)
+                    Console.WriteLine(IngameManager.FindRoom(existingClient, c));
+                ReleaseClient(existingClient);
+                AddClient(c);
+            }
+
+            return true;
         }
 
         /// <summary>
@@ -97,6 +120,14 @@ namespace EverChosenServer
         {
             if(!MatchingManager.MatchCancelProcess(client))
                 Console.WriteLine("Matching Cancel Error.");
+        }
+
+        /// <summary>
+        /// Print # of connected clients to server soncole.
+        /// </summary>
+        public static void PrintConnectedClients()
+        {
+            Console.WriteLine("# of connected clients : " + _clients.Count);
         }
     }
 }

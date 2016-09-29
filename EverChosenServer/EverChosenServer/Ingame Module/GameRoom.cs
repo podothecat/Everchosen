@@ -93,7 +93,6 @@ namespace EverChosenServer.Ingame_Module
                 _player2.BeginSend(new OutcomeInfo { Outcome = (int)Outcome.WIN});
                 Release();
                 IngameManager.DelRoom(this);
-                
             }
             else if (!_player2.Sock.Connected)
             {
@@ -103,6 +102,23 @@ namespace EverChosenServer.Ingame_Module
                 Release();
                 IngameManager.DelRoom(this);
             }
+        }
+
+        /// <summary>
+        /// Find existing client who is in game.
+        /// </summary>
+        /// <param name="c1"> Existing client. </param>
+        /// <param name="c2"> Reconnected client. </param>
+        /// <returns></returns>
+        public bool FindPlayer(Client c1, Client c2)
+        {
+            if (c1 == _player1)
+                _player1 = c2;
+            else if (c1 == _player2)
+                _player2 = c2;
+            else
+                return false;
+            return true;
         }
 
         /// <summary>

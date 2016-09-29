@@ -30,5 +30,12 @@ namespace EverChosenServer.Ingame_Module
             Console.WriteLine("Ingame Manager : Del game room.");
             _rooms.Remove(room);
         }
+
+        public static bool FindRoom(Client c1, Client c2)
+        {
+            var result = _rooms.Find(x => x.FindPlayer(c1, c2));
+
+            return result != null;
+        }
     }
 }

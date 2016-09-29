@@ -24,10 +24,10 @@ namespace EverChosenServer
         public bool IsIngame;
         public bool IsReadyToBattle;
         public bool IsReadyToFight;
+        public bool IsLogin;
+        public string UniqueId { get; set; }
 
         private readonly byte[] _tempBuffer = new byte[4096];
-        private string _uniqueId { get; set; }
-
         private List<byte> _buffer = new List<byte>();
         private int _currentPacketLength = int.MinValue;
 
@@ -44,6 +44,7 @@ namespace EverChosenServer
         public Client(Socket socket)
         {
             Sock = socket;
+            IsLogin = false;
             IsIngame = false;
             IsReadyToBattle = false;
             IsReadyToFight = false;
@@ -67,7 +68,7 @@ namespace EverChosenServer
             Buffer.BlockCopy(sendBuf, 0, totalBuf, 4, sendBuf.Length);
 
             Sock.BeginSend(totalBuf, 0, totalBuf.Length, SocketFlags.None, OnSendCallback, Sock);
-            //Console.WriteLine("Send : [" + packet.MsgName + "]");
+            Console.WriteLine("Send : [" + packet.MsgName + "] to " + Sock.RemoteEndPoint);
         }
 
         /// <summary>
@@ -100,7 +101,15 @@ namespace EverChosenServer
                 Console.WriteLine(e.ToString());
             }
         }
-        
+
+        /// <summary>
+        /// Close client socket
+        /// </summary>
+        public void Close()
+        {
+            Sock.Shutdown(SocketShutdown.Both);
+            Sock.Close();
+        }
 
         /// <summary>
         /// Process received packet.
@@ -115,7 +124,12 @@ namespace EverChosenServer
             if (size == 0)
             {
                 Console.WriteLine("Unexpected Request. Remove client.");
-                Close();
+                
+                if (IsLogin)
+                    GameManager.ReleaseClient(this);
+                else
+                    Close();
+
                 return;
             }
 
@@ -124,7 +138,6 @@ namespace EverChosenServer
             _buffer.AddRange(_tempBuffer.ToArray().Take(size));
             
             ProcessData();
-            
         }
 
         /// <summary>
@@ -187,14 +200,29 @@ namespace EverChosenServer
             {
                 case "LoginInfo":
                     var uniqueId = JsonConvert.DeserializeObject<LoginInfo>(req.Data);
-                    _uniqueId = uniqueId.DeviceId;
-                    ProfileData = DatabaseManager.GetClientInfo(_uniqueId);
-                    BeginSend(ProfileData);
+                    var result = GameManager.FindClient(this, uniqueId.DeviceId);
+                    if (result)
+                    {
+                        //result.Close();
+                        Console.WriteLine("Existing client.");
+                        // Send packet to client. (Inform reconnection.)
+                        if(!IsIngame)
+                            BeginSend(ProfileData);
+                    }
+                    else
+                    {
+                        UniqueId = uniqueId.DeviceId;
+                        ProfileData = DatabaseManager.GetClientInfo(UniqueId);
+                        GameManager.AddClient(this);
+                        BeginSend(ProfileData);
+                        Console.WriteLine("New client.");
+                        IsLogin = true;
+                    }
                     break;
 
                 case "NickNameInfo":
                     var nickName = JsonConvert.DeserializeObject<NickNameInfo>(req.Data);
-                    ProfileData.NickName = DatabaseManager.SetClientInfo(nickName.NickName, _uniqueId);
+                    ProfileData.NickName = DatabaseManager.SetClientInfo(nickName.NickName, UniqueId);
                     BeginSend(new NickNameInfo
                     {
                         NickName = ProfileData.NickName
@@ -219,17 +247,5 @@ namespace EverChosenServer
                     break;
             }
         }
-        
-        /// <summary>
-        /// Close client socket
-        /// </summary>
-        private void Close()
-        {
-            Console.WriteLine("Close");
-            Sock.Shutdown(SocketShutdown.Both);
-            Sock.Close();
-            GameManager.ReleaseClient(this);
-        }
-
     }
 }
