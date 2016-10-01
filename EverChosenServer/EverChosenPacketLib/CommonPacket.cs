@@ -41,19 +41,37 @@ namespace EverChosenPacketLib
     /// <summary>
     /// Data for matching clients.
     /// </summary>
-    public class MatchingInfo : Packet
+    public class MyMatchingInfo : Packet
     {
         public string Tribe { get; set; }
         public int Spell { get; set; }
         public int TeamColor { get; set; }
 
-        public MatchingInfo(string tribe, int spell, int teamColor)
+        public MyMatchingInfo(string tribe, int spell, int teamColor)
         {
             Tribe = tribe;
             Spell = spell;
             TeamColor = teamColor;
         }
     }
+
+    /// <summary>
+    /// Data for matching clients.
+    /// </summary>
+    public class EnemyMatchingInfo : Packet
+    {
+        public string Tribe { get; set; }
+        public int Spell { get; set; }
+        public int TeamColor { get; set; }
+
+        public EnemyMatchingInfo(string tribe, int spell, int teamColor)
+        {
+            Tribe = tribe;
+            Spell = spell;
+            TeamColor = teamColor;
+        }
+    }
+
 
     /// <summary>
     /// Nickname of client.

@@ -37,7 +37,9 @@ namespace EverChosenServer
         public static void ReleaseClient(Client c)
         {
             _clients.Remove(c);
-            Console.WriteLine("\nGAME MANAGER : client was removed.");
+            Console.WriteLine("\nGAME MANAGER : client [" + c.Sock.RemoteEndPoint + 
+                "] was removed.");
+            c.Sock.Close();
             PrintConnectedClients();
         }
 
@@ -49,24 +51,29 @@ namespace EverChosenServer
         /// <returns></returns>
         public static bool FindClient(Client c, string deviceId)
         {
-            var existingClient = _clients.Find(x => x.UniqueId.Equals(deviceId));
+            var existingClient = _clients.Find(x => x.UniqueId == deviceId);
+            //var existingClient = _clients.Find(x => x.UniqueId.Equals(deviceId));
 
             if (existingClient == null)
                 return false;
 
-            if (existingClient.IsLogin)
-            {
-                c.ProfileData = existingClient.ProfileData;
-                c.MatchingData = existingClient.MatchingData;
-                c.IsIngame = existingClient.IsIngame;
-                c.IsReadyToBattle = existingClient.IsReadyToBattle;
-                c.IsReadyToFight = existingClient.IsReadyToFight;
-                c.IsLogin = existingClient.IsLogin;
-                if(existingClient.IsIngame)
-                    Console.WriteLine(IngameManager.FindRoom(existingClient, c));
-                ReleaseClient(existingClient);
-                AddClient(c);
-            }
+            if (!existingClient.IsLogin)
+                return true;
+
+            c.UniqueId = deviceId;
+            c.ProfileData = existingClient.ProfileData;
+            c.MatchingData = existingClient.MatchingData;
+            c.IsIngame = existingClient.IsIngame;
+            c.IsReadyToBattle = existingClient.IsReadyToBattle;
+            c.IsReadyToFight = existingClient.IsReadyToFight;
+            c.IsLogin = existingClient.IsLogin;
+
+            if(existingClient.IsIngame)
+                Console.WriteLine(IngameManager.FindRoom(existingClient, c));
+            else
+                c.BeginSend(c.ProfileData);
+            ReleaseClient(existingClient);
+            AddClient(c);
 
             return true;
         }
@@ -82,7 +89,17 @@ namespace EverChosenServer
             // There is no user waiting queue.
             if (oppoClient == null)
                 return;
-            
+
+            var clientMatchingData = new EnemyMatchingInfo
+            (client.MatchingData.Tribe, client.MatchingData.Spell, client.MatchingData.TeamColor);
+
+            var opponentMatchingData = new EnemyMatchingInfo
+            (oppoClient.MatchingData.Tribe, oppoClient.MatchingData.Spell, oppoClient.MatchingData.TeamColor);
+
+            // Matching Data : Tribe, Spell, Team color
+            oppoClient.BeginSend(clientMatchingData);
+            client.BeginSend(opponentMatchingData);
+
             var clientProfile = new EnemyProfileInfo
             {
                 NickName = client.ProfileData.NickName,
@@ -96,10 +113,6 @@ namespace EverChosenServer
                 Wins = oppoClient.ProfileData.Wins,
                 Loses = oppoClient.ProfileData.Loses
             };
-
-            // Matching Data : Tribe, Spell, Team color
-            oppoClient.BeginSend(client.MatchingData);
-            client.BeginSend(oppoClient.MatchingData);
 
             // Profile : Nickname, Wins, Loses
             oppoClient.BeginSend(clientProfile);

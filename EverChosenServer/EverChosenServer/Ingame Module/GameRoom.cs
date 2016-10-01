@@ -112,12 +112,39 @@ namespace EverChosenServer.Ingame_Module
         /// <returns></returns>
         public bool FindPlayer(Client c1, Client c2)
         {
+            Client oppo;
             if (c1 == _player1)
+            {
                 _player1 = c2;
+                _player1.InGameRequest += IngameCommand;
+                oppo = _player2;
+            }
             else if (c1 == _player2)
+            {
                 _player2 = c2;
+                _player2.InGameRequest += IngameCommand;
+                oppo = _player1;
+            }
             else
                 return false;
+
+            //c2.BeginSend(c2.ProfileData);
+            c2.BeginSend(new ReconnectToIngameInfo
+            {
+                Map = _map,
+                MyProfile = c2.ProfileData,
+                MyMatchingData = c2.MatchingData,
+                EnemyMatchingData = new EnemyMatchingInfo(
+                    oppo.MatchingData.Tribe, oppo.MatchingData.Spell, oppo.MatchingData.TeamColor),
+                
+                EnemyProfile = new EnemyProfileInfo
+                {
+                    NickName = oppo.ProfileData.NickName,
+                    Wins = oppo.ProfileData.Wins,
+                    Loses = oppo.ProfileData.Loses
+                }
+            });
+            Console.WriteLine("Resend");
             return true;
         }
 

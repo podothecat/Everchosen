@@ -89,6 +89,7 @@ namespace EverChosenServer
         /// <returns> Nickname </returns>
         internal static string SetClientInfo(string nickName, string clientUniqueId)
         {
+            Console.WriteLine(nickName + "\n" + clientUniqueId);
             // Set ProfileInfo to DB when unique ID is not found.
             var filter = Builders<BsonDocument>.Filter.Eq("_id", clientUniqueId);
             var update = Builders<BsonDocument>.Update.Set("nickname", nickName)

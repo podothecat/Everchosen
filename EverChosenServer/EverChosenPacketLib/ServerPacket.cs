@@ -33,6 +33,9 @@ namespace EverChosenPacketLib
         public int Outcome { get; set; }
     }
 
+    /// <summary>
+    /// Result data of fights in building.
+    /// </summary>
     public class FightResultInfo : Packet
     {
         public int Node { get; set; }
@@ -48,5 +51,14 @@ namespace EverChosenPacketLib
     {
         public int Node { get; set; }
         public int Increment { get; set; }
+    }
+
+    public class ReconnectToIngameInfo : Packet
+    {
+        public MapInfo Map;
+        public MyProfileInfo MyProfile;
+        public MyMatchingInfo MyMatchingData;
+        public EnemyMatchingInfo EnemyMatchingData;
+        public EnemyProfileInfo EnemyProfile;
     }
 }

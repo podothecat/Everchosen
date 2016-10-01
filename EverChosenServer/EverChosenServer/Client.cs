@@ -20,7 +20,7 @@ namespace EverChosenServer
     {
         public Socket Sock { get; set; }
         public MyProfileInfo ProfileData;
-        public MatchingInfo MatchingData;
+        public MyMatchingInfo MatchingData;
         public bool IsIngame;
         public bool IsReadyToBattle;
         public bool IsReadyToFight;
@@ -49,7 +49,7 @@ namespace EverChosenServer
             IsReadyToBattle = false;
             IsReadyToFight = false;
         }
-        
+
         /// <summary>
         /// Send data to client.
         /// </summary>
@@ -68,7 +68,7 @@ namespace EverChosenServer
             Buffer.BlockCopy(sendBuf, 0, totalBuf, 4, sendBuf.Length);
 
             Sock.BeginSend(totalBuf, 0, totalBuf.Length, SocketFlags.None, OnSendCallback, Sock);
-            Console.WriteLine("Send : [" + packet.MsgName + "] to " + Sock.RemoteEndPoint);
+            Console.WriteLine("Send : [" + packet.MsgName + "] to [" + Sock.RemoteEndPoint + "]");
         }
 
         /// <summary>
@@ -118,26 +118,38 @@ namespace EverChosenServer
         private void OnReceiveCallback(IAsyncResult ar)
         {
             var clientSock = (Socket)ar.AsyncState;
-            var size = clientSock.EndReceive(ar);
 
-            // Unexpected request (ex : force quit)
-            if (size == 0)
-            {
-                Console.WriteLine("Unexpected Request. Remove client.");
-                
-                if (IsLogin)
-                    GameManager.ReleaseClient(this);
-                else
-                    Close();
-
+            if (!clientSock.Connected)
                 return;
+
+            try
+            {
+                var size = clientSock.EndReceive(ar);
+                Console.WriteLine(size);
+                // Unexpected request (ex : force quit)
+                if (size == 0)
+                {
+                    Console.WriteLine("Unexpected Request. Remove client.");
+
+                    if (IsLogin)
+                        GameManager.ReleaseClient(this);
+                    else
+                        Close();
+
+                    return;
+                }
+
+                //Console.WriteLine("Receive {0} bytes from client", size);
+
+                _buffer.AddRange(_tempBuffer.ToArray().Take(size));
+
+                ProcessData();
             }
-
-            //Console.WriteLine("Receive {0} bytes from client", size);
-
-            _buffer.AddRange(_tempBuffer.ToArray().Take(size));
-            
-            ProcessData();
+            catch (SocketException e)
+            {
+                Console.WriteLine(e.ErrorCode);
+                throw;
+            }
         }
 
         /// <summary>
@@ -201,13 +213,12 @@ namespace EverChosenServer
                 case "LoginInfo":
                     var uniqueId = JsonConvert.DeserializeObject<LoginInfo>(req.Data);
                     var result = GameManager.FindClient(this, uniqueId.DeviceId);
+
+                    // Same client is existing in server already.
                     if (result)
                     {
-                        //result.Close();
-                        Console.WriteLine("Existing client.");
+                        Console.WriteLine("Reconnected.");
                         // Send packet to client. (Inform reconnection.)
-                        if(!IsIngame)
-                            BeginSend(ProfileData);
                     }
                     else
                     {
@@ -229,8 +240,8 @@ namespace EverChosenServer
                     });
                     break;
 
-                case "MatchingInfo":
-                    MatchingData = JsonConvert.DeserializeObject<MatchingInfo>(req.Data);
+                case "MyMatchingInfo":
+                    MatchingData = JsonConvert.DeserializeObject<MyMatchingInfo>(req.Data);
                     GameManager.MatchingRequest(this);
                     break;
 

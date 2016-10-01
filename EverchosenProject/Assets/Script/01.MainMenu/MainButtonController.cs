@@ -85,6 +85,13 @@ public class MainButtonController : MonoBehaviour
                 StartCoroutine(MatchStart(2));
             }
         }
+        if (ClientNetworkManager.ReconnectedIngame)
+        {
+            if (ClientNetworkManager.EnemyMatchingData != null && ClientNetworkManager.EnemyProfileData != null && ClientNetworkManager.MapInfo != null)
+            {
+                StartCoroutine(MatchReStart(2));
+            }
+        }
         //프로필 변경관련
         if (ClientNetworkManager.ReceiveMsg == "OnChangedProfile"&& ClientNetworkManager.ProfileData.NickName != TribeSetManager.PData.NickName)
         {
@@ -125,7 +132,7 @@ public class MainButtonController : MonoBehaviour
     // Send to Server
     public void ServerQueue()
     {
-        var setData = new MatchingInfo(TribeSetManager.PData.TribeName, TribeSetManager.PData.Spell, 0);//마지막 파라미터는 teamflag 그냥 0 으로 보냄 
+        var setData = new MyMatchingInfo(TribeSetManager.PData.TribeName, TribeSetManager.PData.Spell, 0);//마지막 파라미터는 teamflag 그냥 0 으로 보냄 
         ClientNetworkManager.Send(setData);
     }
     // QueuePanel Ins
@@ -286,5 +293,12 @@ public class MainButtonController : MonoBehaviour
         yield return new WaitForSeconds(count);
         SceneManager.LoadScene("02.Match");
     }
-#endregion
+
+    // 인게임 재접속
+    IEnumerator MatchReStart(float count)
+    {
+        yield return new WaitForSeconds(count);
+        SceneManager.LoadScene("02.Match");
+    }
+    #endregion
 }

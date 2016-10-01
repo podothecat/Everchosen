@@ -3,10 +3,13 @@ using System;
 using System.Text;
 using Newtonsoft.Json;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using Debug = UnityEngine.Debug;
 using EverChosenPacketLib;
+using UnityEngine.SceneManagement;
+
 //2.0만사용가능 3.5이후로는 호환이 안됨 유니티
 
 namespace Client
@@ -20,10 +23,12 @@ namespace Client
         
         public static string ClientDeviceId;
         public static bool Connected = false;
+        public static bool ReconnectedIngame = false;
+        public static bool IsReadyToReplay = false;
 
         public static EnemyProfileInfo EnemyProfileData;
         public static MyProfileInfo ProfileData;
-        public static MatchingInfo EnemyMatchingData;
+        public static EnemyMatchingInfo EnemyMatchingData;
         public static MapInfo MapInfo;
 
         //인게임
@@ -117,7 +122,7 @@ namespace Client
         {
             var sock = (Socket)ar.AsyncState;
             var size = sock.EndSend(ar);
-            Debug.Log("Sent " + size + " bytes to server.");
+            //Debug.Log("Sent " + size + " bytes to server.");
         }
 
         #endregion
@@ -187,14 +192,14 @@ namespace Client
                     _buffer.RemoveRange(0, _currentPacketLength + 4);
                     _currentPacketLength = int.MinValue;
 
-                 //   Debug.Log(receiveJson.Length + "\n" + receiveJson);
+                    //Debug.Log(receiveJson.Length + "\n" + receiveJson);
 
                     var receiveData = JsonConvert.DeserializeObject<Packet>(receiveJson, new JsonSerializerSettings
                     {
                         TypeNameHandling = TypeNameHandling.Objects
                     });
                     ReceiveMsg = receiveData.MsgName;
-
+                    
                     switch (ReceiveMsg)
                     {
                         //로딩씬
@@ -207,48 +212,75 @@ namespace Client
                             var nickName = JsonConvert.DeserializeObject<NickNameInfo>(receiveData.Data);
                             ProfileData.NickName = nickName.NickName;
                             break;
-                        case "MatchingInfo": //종족 스펠
-                            EnemyMatchingData = JsonConvert.DeserializeObject<MatchingInfo>(receiveData.Data);
+                        case "MyMatchingInfo":
+
+                            break;
+                        case "EnemyMatchingInfo": //종족 스펠
+                            EnemyMatchingData = JsonConvert.DeserializeObject<EnemyMatchingInfo>(receiveData.Data);
                             break;
                         case "EnemyProfileInfo": //닉네임, 승패
                             EnemyProfileData = JsonConvert.DeserializeObject<EnemyProfileInfo>(receiveData.Data);
                             Send(new MapReq { Req = "Map" });
                             break;
-                        case "MapInfo": //맵데이터 
+                        case "MapInfo": //맵데이터                             
                             MapInfo = JsonConvert.DeserializeObject<MapInfo>(receiveData.Data);
                             break;
 
-                        //ingame
-                        case "UnitInfo":
-                            var units = JsonConvert.DeserializeObject<UnitInfo>(receiveData.Data);
+                        case "ReconnectToIngameInfo":
+                            var result = JsonConvert.DeserializeObject<ReconnectToIngameInfo>(receiveData.Data);
+                            MapInfo = result.Map;
+                            switch (result.MyMatchingData.Tribe)
+                            {
+                                case "Chaos":
+                                    TribeSetManager.PData.Tribe = 0;
+                                    break;
+                                case "Dwarf":
+                                    TribeSetManager.PData.Tribe = 1;
+                                    break;
+                                case "Green":
+                                    TribeSetManager.PData.Tribe = 2;
+                                    break;
+                                case "Human":
+                                    TribeSetManager.PData.Tribe = 3;
+                                    break;
+                            }
+                            TribeSetManager.PData.TribeName = result.MyMatchingData.Tribe;
+                            TribeSetManager.PData.Spell = result.MyMatchingData.Spell;
+                            ProfileData = result.MyProfile;
+                            EnemyMatchingData = result.EnemyMatchingData;
+                            EnemyProfileData = result.EnemyProfile;
+                            ReconnectedIngame = true;
+                            Debug.Log("Reconnect");
+                            break;
+                    }
 
-                            if (units.Units.Owner == 1)
-                                EnemyMoveUnitInfo = units;
-                            else if (units.Units.Owner == 2)
-                                MyMoveUnitInfo = units;
-                            break;
-                        case "ChangeBuildingInfo":
-                            var building = JsonConvert.DeserializeObject<ChangeBuildingInfo>(receiveData.Data);
-                            BuildingInfo = building;
-                            break;
-                        case "CreateUnitInfo":
-                            Debug.Log("CreateUnitInfo Message.");
-                            var createInfo = JsonConvert.DeserializeObject<CreateUnitInfo>(receiveData.Data);
-                            IncrementeUnitInfo = createInfo;
-                            break;
-                        case "FightResultInfo":
-                            Debug.Log(receiveData.Data);
-                            FightResultinfo = JsonConvert.DeserializeObject<FightResultInfo>(receiveData.Data);
-                            break;
-                        case "MoveOppo":
-                            //EnemyMoveUnitInfo = JsonConvert.DeserializeObject<MoveUnitInfo>(receiveData.Data);
-                            break;
-                        case "ChangeMine":
-                            //MyInfo = JsonConvert.DeserializeObject<ChangeBuildingInfo>(receiveData.Data);
-                            break;
-                        case "ChangeOppo":
-                            //EnemyInfo = JsonConvert.DeserializeObject<ChangeBuildingInfo>(receiveData.Data);
-                            break;
+                    if (IsReadyToReplay)
+                    {
+                        switch (ReceiveMsg)
+                        {
+                            //ingame
+                            case "UnitInfo":
+                                var units = JsonConvert.DeserializeObject<UnitInfo>(receiveData.Data);
+
+                                if (units.Units.Owner == 1)
+                                    EnemyMoveUnitInfo = units;
+                                else if (units.Units.Owner == 2)
+                                    MyMoveUnitInfo = units;
+                                break;
+                            case "ChangeBuildingInfo":
+                                var building = JsonConvert.DeserializeObject<ChangeBuildingInfo>(receiveData.Data);
+                                BuildingInfo = building;
+                                break;
+                            case "CreateUnitInfo":
+                                Debug.Log("CreateUnitInfo Message.");
+                                var createInfo = JsonConvert.DeserializeObject<CreateUnitInfo>(receiveData.Data);
+                                IncrementeUnitInfo = createInfo;
+                                break;
+                            case "FightResultInfo":
+                                Debug.Log(receiveData.Data);
+                                FightResultinfo = JsonConvert.DeserializeObject<FightResultInfo>(receiveData.Data);
+                                break;
+                        }
                     }
 
                     if (_buffer.Count > 0)

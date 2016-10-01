@@ -23,7 +23,7 @@ public class GameControllScript : MonoBehaviour
     
     public GameObject ParentObject;
 
-    private MatchingInfo _enemyViewPanelSetdata;
+    private EnemyMatchingInfo _enemyViewPanelSetdata;
     private EnemyProfileInfo _enemyViewPanelProfileData;
     
     public List<GameObject> NodePosition;
@@ -307,6 +307,7 @@ public class GameControllScript : MonoBehaviour
             }
 
             ClientNetworkManager.Send(new StartGameReq { Req = "Start" });
+            ClientNetworkManager.IsReadyToReplay = true;
         }
         else
         {

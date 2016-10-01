@@ -185,6 +185,7 @@ public class BuildingControllScript : MonoBehaviour
     public void BuildingDataSet(int buildingId)
     {
         //건물관련
+        Debug.Log(_buildingDataList[buildingId].BuildingSprite.name);
         this.gameObject.GetComponent<SpriteRenderer>().sprite = _buildingDataList[buildingId].BuildingSprite;//선택한 빌딩에 따라 건물스프라이트 가져옴
 
         _delayCreateCount = _buildingDataList[buildingId].CreateCount;//건물에 따라 유닛수증가 딜레이 설정
