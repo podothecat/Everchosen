@@ -24,7 +24,7 @@ namespace Client
         public static string ClientDeviceId;
         public static bool Connected = false;
         public static bool ReconnectedIngame = false;
-        public static bool IsReadyToReplay = false;
+        public static bool IsReadyToPlay = false;
 
         public static EnemyProfileInfo EnemyProfileData;
         public static MyProfileInfo ProfileData;
@@ -254,7 +254,7 @@ namespace Client
                             break;
                     }
 
-                    if (IsReadyToReplay)
+                    if (IsReadyToPlay)
                     {
                         switch (ReceiveMsg)
                         {
@@ -279,6 +279,10 @@ namespace Client
                             case "FightResultInfo":
                                 Debug.Log(receiveData.Data);
                                 FightResultinfo = JsonConvert.DeserializeObject<FightResultInfo>(receiveData.Data);
+                                break;
+                            case "OutcomeInfo":
+                                var result = JsonConvert.DeserializeObject<OutcomeInfo>(receiveData.Data);
+                                Debug.Log("Outcome : " + result.Outcome);
                                 break;
                         }
                     }

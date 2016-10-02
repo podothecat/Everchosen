@@ -210,7 +210,6 @@ public class GameControllScript : MonoBehaviour
                 var Team = ClientNetworkManager.FightResultinfo.Owner == 1 ? "Blue" : "Red";
                 
                 BuildingNode[ClientNetworkManager.FightResultinfo.Node].GetComponent<EmptyBuildingScript>().BuildingSpawn(Team, ClientNetworkManager.FightResultinfo.Node,ClientNetworkManager.FightResultinfo.UnitCount);
-                
             }
             else if(BuildingNode[ClientNetworkManager.FightResultinfo.Node].tag == "Player1building")
             {
@@ -226,10 +225,12 @@ public class GameControllScript : MonoBehaviour
                         .UnitNumber = ClientNetworkManager.FightResultinfo.UnitCount;
                 }
                 else
-                  {
+                { 
                     //건물 변경
                     BuildingNode[ClientNetworkManager.FightResultinfo.Node].GetComponent<BuildingControllScript>().DestroythisBuilding(ClientNetworkManager.FightResultinfo.UnitCount);
-                  }
+                }
+                BuildingNode[ClientNetworkManager.FightResultinfo.Node].GetComponent<BuildingControllScript>()
+                       .BuildingUnitCreateCounterFunction(ClientNetworkManager.FightResultinfo.UnitCount);
             }
             else if (BuildingNode[ClientNetworkManager.FightResultinfo.Node].tag == "Player2building")
             {
@@ -250,6 +251,8 @@ public class GameControllScript : MonoBehaviour
                     //건물 변경
                     BuildingNode[ClientNetworkManager.FightResultinfo.Node].GetComponent<BuildingControllScript>().DestroythisBuilding(ClientNetworkManager.FightResultinfo.UnitCount);
                 }
+                BuildingNode[ClientNetworkManager.FightResultinfo.Node].GetComponent<BuildingControllScript>()
+                       .BuildingUnitCreateCounterFunction(ClientNetworkManager.FightResultinfo.UnitCount);
             }
             ClientNetworkManager.FightResultinfo = null;
         }
@@ -307,7 +310,7 @@ public class GameControllScript : MonoBehaviour
             }
 
             ClientNetworkManager.Send(new StartGameReq { Req = "Start" });
-            ClientNetworkManager.IsReadyToReplay = true;
+            ClientNetworkManager.IsReadyToPlay = true;
         }
         else
         {

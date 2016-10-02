@@ -34,6 +34,13 @@ namespace EverChosenServer.Ingame_Module
             LOSE
         };
 
+        public enum CENTRAL
+        {
+            NONE,
+            BLUE,
+            RED
+        };
+
         private readonly double _spawnTime = 1000; 
 
         private Client _player1;
@@ -313,13 +320,30 @@ namespace EverChosenServer.Ingame_Module
                 if (attacker.UnitCount <= 0)
                     attacker.UnitCount = 0;
 
+                // Defence was succeed.
                 if (defender.UnitCount >= attacker.UnitCount)
                     _map.MapNodes[fightBuildingIdx].UnitCount = defender.UnitCount;
+                // Offence was succeed
                 else
                 {
                     _map.MapNodes[fightBuildingIdx].Owner = attacker.Owner;
                     _map.MapNodes[fightBuildingIdx].Kinds = 1;//attacker.Kinds;
                     _map.MapNodes[fightBuildingIdx].UnitCount = attacker.UnitCount;
+
+                    if (fightBuildingIdx == (int)CENTRAL.BLUE 
+                        || fightBuildingIdx == (int)CENTRAL.RED)
+                    {
+                        if (attacker.Owner == _player1.MatchingData.TeamColor)
+                        {
+                            _player1.BeginSend(new OutcomeInfo {Outcome = (int) Outcome.WIN});
+                            _player2.BeginSend(new OutcomeInfo {Outcome = (int) Outcome.LOSE});
+                        }
+                        else if (attacker.Owner == _player2.MatchingData.TeamColor)
+                        {
+                            _player1.BeginSend(new OutcomeInfo {Outcome = (int) Outcome.LOSE});
+                            _player2.BeginSend(new OutcomeInfo {Outcome = (int) Outcome.WIN});
+                        }
+                    }
                 }
             }
 
