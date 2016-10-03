@@ -50,6 +50,9 @@ namespace EverChosenServer.Ingame_Module
         private Timer[] _timers;
         private double[,] _synastry;
 
+        private Timer _checkConnectionPlayer1;
+        private Timer _checkConnectionPlayer2;
+
         /// <summary>
         /// Constructor of GameRoom class.
         /// </summary>
@@ -87,6 +90,10 @@ namespace EverChosenServer.Ingame_Module
             if (_player1.Sock.Connected && _player2.Sock.Connected)
             {
                 Console.WriteLine("Matching connection is smooth.");
+                if (_checkConnectionPlayer1.Enabled)
+                    _checkConnectionPlayer1.Close();
+                if(_checkConnectionPlayer2.Enabled)
+                    _checkConnectionPlayer2.Close();
             }
             else if (!_player1.Sock.Connected && !_player2.Sock.Connected)
             {
@@ -95,20 +102,56 @@ namespace EverChosenServer.Ingame_Module
             }
             else if (!_player1.Sock.Connected)
             {
-                Console.WriteLine("Player 1 was Disconnected.");
-                
-                _player2.BeginSend(new OutcomeInfo { Outcome = (int)Outcome.WIN});
-                Release();
-                IngameManager.DelRoom(this);
+                if (_checkConnectionPlayer1 == null)
+                {
+                    Console.WriteLine("Player 1 was Disconnected.");
+                    _checkConnectionPlayer1 = new Timer(30000);
+                    _checkConnectionPlayer1.Elapsed += CheckConnectionP1;
+                    _checkConnectionPlayer1.Start();
+                }
             }
             else if (!_player2.Sock.Connected)
             {
-                Console.WriteLine("Player 2 was Disconnected.");
-                
-                _player1.BeginSend(new OutcomeInfo { Outcome = (int)Outcome.WIN });
-                Release();
-                IngameManager.DelRoom(this);
+                if (_checkConnectionPlayer2 == null)
+                {
+                    Console.WriteLine("Player 2 was Disconnected.");
+                    _checkConnectionPlayer2 = new Timer(30000);
+                    _checkConnectionPlayer2.Elapsed += CheckConnectionP1;
+                    _checkConnectionPlayer2.Start();
+                }
             }
+        }
+
+        public void CheckConnectionP1(object s, ElapsedEventArgs e)
+        {
+            if (_player1.Sock.Connected)
+            {
+                Console.WriteLine("P1 reconnect");
+                _checkConnectionPlayer1.Close();
+                return;
+            }
+
+            Console.WriteLine("Waiting time was over.");
+            _player2.BeginSend(new OutcomeInfo { Outcome = (int)Outcome.WIN });
+            _checkConnectionPlayer1.Close();
+            Release();
+            IngameManager.DelRoom(this);
+        }
+
+        public void CheckConnectionP2(object s, ElapsedEventArgs e)
+        {
+            if (_player2.Sock.Connected)
+            {
+                Console.WriteLine("P2 reconnect");
+                _checkConnectionPlayer2.Close();
+                return;
+            }
+
+            Console.WriteLine("Waiting time was over.");
+            _player1.BeginSend(new OutcomeInfo { Outcome = (int)Outcome.WIN });
+            _checkConnectionPlayer2.Close();
+            Release();
+            IngameManager.DelRoom(this);
         }
 
         /// <summary>

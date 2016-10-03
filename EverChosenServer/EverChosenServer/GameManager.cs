@@ -36,6 +36,8 @@ namespace EverChosenServer
         /// <param name="c"> Disconnected client. </param>
         public static void ReleaseClient(Client c)
         {
+            if (c.IsIngame)
+                return;
             _clients.Remove(c);
             Console.WriteLine("\nGAME MANAGER : client [" + c.Sock.RemoteEndPoint + 
                 "] was removed.");
@@ -72,6 +74,7 @@ namespace EverChosenServer
                 Console.WriteLine(IngameManager.FindRoom(existingClient, c));
             else
                 c.BeginSend(c.ProfileData);
+            existingClient.IsIngame = false;
             ReleaseClient(existingClient);
             AddClient(c);
 
